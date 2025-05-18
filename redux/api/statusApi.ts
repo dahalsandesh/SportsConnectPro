@@ -1,0 +1,40 @@
+import { baseApi } from "./baseApi"
+import type { ApiResponse, CreateStatusRequest, DeleteStatusRequest, Status } from "@/types/api"
+
+export const statusApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    getStatuses: builder.query<Status[], void>({
+      query: () => "/web/api/v1/adminapp/v1/GetAllStatus",
+      providesTags: ["Statuses"],
+    }),
+
+    getStatusById: builder.query<Status, string>({
+      query: (statusId) => ({
+        url: "/web/api/v1/adminapp/v1/GetStatusById",
+        params: { statusId },
+      }),
+      providesTags: (result, error, id) => [{ type: "Statuses", id }],
+    }),
+
+    createStatus: builder.mutation<ApiResponse<null>, CreateStatusRequest>({
+      query: (data) => ({
+        url: "/web/api/v1/adminapp/v1/CreateStatus",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Statuses"],
+    }),
+
+    deleteStatus: builder.mutation<ApiResponse<null>, DeleteStatusRequest>({
+      query: (data) => ({
+        url: "/web/api/v1/adminapp/v1/DelStatus",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Statuses"],
+    }),
+  }),
+})
+
+export const { useGetStatusesQuery, useGetStatusByIdQuery, useCreateStatusMutation, useDeleteStatusMutation } =
+  statusApi
