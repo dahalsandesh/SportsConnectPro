@@ -15,6 +15,8 @@ import {
   BarChart,
   MessageSquare,
   HelpCircle,
+  FileText,
+  Newspaper,
 } from "lucide-react"
 
 const sidebarItems = [
@@ -34,6 +36,11 @@ const sidebarItems = [
     icon: <MapPin className="h-5 w-5" />,
   },
   {
+    title: "Venue Applications",
+    href: "/admin/venue-applications",
+    icon: <FileText className="h-5 w-5" />,
+  },
+  {
     title: "Bookings",
     href: "/admin/bookings",
     icon: <Calendar className="h-5 w-5" />,
@@ -47,6 +54,11 @@ const sidebarItems = [
     title: "Payments",
     href: "/admin/payments",
     icon: <CreditCard className="h-5 w-5" />,
+  },
+  {
+    title: "News & Media",
+    href: "/admin/news",
+    icon: <Newspaper className="h-5 w-5" />,
   },
   {
     title: "Reports",
@@ -83,19 +95,22 @@ export function AdminSidebar() {
       </div>
       <div className="flex-1 overflow-auto py-4">
         <nav className="grid gap-1 px-2">
-          {sidebarItems.map((item) => (
-            <Button
-              key={item.href}
-              variant={pathname === item.href ? "secondary" : "ghost"}
-              className={cn("justify-start gap-2", pathname === item.href && "bg-secondary")}
-              asChild
-            >
-              <Link href={item.href}>
-                {item.icon}
-                {item.title}
-              </Link>
-            </Button>
-          ))}
+          {sidebarItems.map((item) => {
+            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
+            return (
+              <Button
+                key={item.href}
+                variant={isActive ? "secondary" : "ghost"}
+                className={cn("justify-start gap-2", isActive && "bg-secondary")}
+                asChild
+              >
+                <Link href={item.href}>
+                  {item.icon}
+                  {item.title}
+                </Link>
+              </Button>
+            )
+          })}
         </nav>
       </div>
       <div className="border-t p-4">
