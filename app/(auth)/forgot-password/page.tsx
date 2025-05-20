@@ -15,9 +15,9 @@ export default function ForgotPasswordPage() {
       <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
         <div className="w-full max-w-md">
           <Button variant="ghost" asChild className="mb-6">
-            <Link href="/">
+            <Link href="/login">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to home
+              Back to login
             </Link>
           </Button>
           <ForgotPasswordForm />

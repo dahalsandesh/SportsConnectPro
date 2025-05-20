@@ -1,101 +1,104 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import type {
-  LoginRequest,
   SignupRequest,
-  AuthResponse,
-  ForgotPasswordRequest,
-  ResetPasswordRequest,
-  VerifyEmailRequest,
+  SignupResponse,
+  LoginRequest,
+  LoginResponse,
+  LogoutResponse,
+  SendOtpRequest,
+  SendOtpResponse,
+  VerifyOtpRequest,
+  VerifyOtpResponse,
   ChangePasswordRequest,
-  UpdateProfileRequest,
+  ChangePasswordResponse,
 } from "@/types/auth"
+import type { RootState } from "../store"
+
+// Define our base API URL from environment variable
+let baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
+if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
+  baseUrl = "http://" + baseUrl
+}
 
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
+    baseUrl: `${baseUrl}/web/api/v1/account/user`,
     prepareHeaders: (headers, { getState }) => {
       // Get token from state
-      const token = (getState() as any).auth.token
+      const token = (getState() as RootState).auth.token
 
       // If token exists, add authorization header
       if (token) {
-        headers.set("authorization", `Bearer ${token}`)
+        headers.set("Authorization", `token ${token}`)
       }
 
       return headers
     },
   }),
   endpoints: (builder) => ({
-    login: builder.mutation<AuthResponse, LoginRequest>({
+    signup: builder.mutation<SignupResponse, SignupRequest>({
       query: (credentials) => ({
-        url: "/auth/login",
+        url: "/register",
         method: "POST",
         body: credentials,
       }),
     }),
-    signup: builder.mutation<{ message: string }, SignupRequest>({
-      query: (userData) => ({
-        url: "/auth/register",
+
+    login: builder.mutation<LoginResponse, LoginRequest>({
+      query: (credentials) => ({
+        url: "/login",
         method: "POST",
-        body: userData,
+        body: credentials,
       }),
     }),
-    logout: builder.mutation<{ message: string }, void>({
+
+    logout: builder.mutation<LogoutResponse, void>({
       query: () => ({
-        url: "/auth/logout",
+        url: "/logout",
         method: "POST",
       }),
     }),
-    forgotPassword: builder.mutation<{ message: string }, ForgotPasswordRequest>({
+
+    sendOtp: builder.mutation<SendOtpResponse, SendOtpRequest>({
       query: (data) => ({
-        url: "/auth/forgot-password",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    resetPassword: builder.mutation<{ message: string }, ResetPasswordRequest>({
-      query: (data) => ({
-        url: "/auth/reset-password",
+        url: "/send-otp",
         method: "POST",
         body: data,
       }),
     }),
-    verifyEmail: builder.mutation<{ message: string }, VerifyEmailRequest>({
+
+    verifyOtp: builder.mutation<VerifyOtpResponse, VerifyOtpRequest>({
       query: (data) => ({
-        url: "/auth/verify-email",
+        url: "/verify-otp",
         method: "POST",
         body: data,
       }),
     }),
-    changePassword: builder.mutation<{ message: string }, ChangePasswordRequest>({
+
+    changePassword: builder.mutation<ChangePasswordResponse, ChangePasswordRequest>({
       query: (data) => ({
-        url: "/auth/change-password",
-        method: "PUT",
+        url: "/changepassword",
+        method: "POST",
         body: data,
       }),
     }),
-    updateProfile: builder.mutation<AuthResponse, UpdateProfileRequest>({
-      query: (data) => ({
-        url: "/auth/profile",
-        method: "PUT",
-        body: data,
+
+    activateAccount: builder.query<{ message: string }, { uid: string; token: string }>({
+      query: ({ uid, token }) => ({
+        url: `/activate/${uid}/${token}`,
+        method: "GET",
       }),
-    }),
-    getProfile: builder.query<AuthResponse, void>({
-      query: () => "/auth/profile",
     }),
   }),
 })
 
 export const {
-  useLoginMutation,
   useSignupMutation,
+  useLoginMutation,
   useLogoutMutation,
-  useForgotPasswordMutation,
-  useResetPasswordMutation,
-  useVerifyEmailMutation,
+  useSendOtpMutation,
+  useVerifyOtpMutation,
   useChangePasswordMutation,
-  useUpdateProfileMutation,
-  useGetProfileQuery,
+  useLazyActivateAccountQuery,
 } = authApi

@@ -1,34 +1,3 @@
-export enum UserType {
-  Admin = "Admin",
-  VenueOwner = "VenueOwner",
-  NormalUsers = "NormalUsers",
-}
-
-export interface User {
-  id: string
-  userName: string
-  email: string
-  fullName?: string
-  phoneNumber?: string
-  userType: UserType
-  profileImage?: string
-  isVerified: boolean
-  createdAt: string
-  updatedAt: string
-}
-
-export interface AuthState {
-  user: User
-  token: string | null
-  isAuthenticated: boolean
-  loading: boolean
-}
-
-export interface LoginRequest {
-  email: string
-  password: string
-}
-
 export interface SignupRequest {
   firstName: string
   lastName: string
@@ -38,43 +7,57 @@ export interface SignupRequest {
   phoneNumber: string
 }
 
-export interface AuthResponse {
-  id: string
-  userName: string
+export interface SignupResponse {
+  message: string
+}
+
+export interface LoginRequest {
   email: string
+  password: string
+}
+
+export interface LoginResponse {
+  token: string
+  email: string
+  userName: string
   fullName: string
   phoneNumber: string
   userType: UserType
-  profileImage?: string
-  isVerified: boolean
-  token: string
-  createdAt: string
-  updatedAt: string
 }
 
-export interface ForgotPasswordRequest {
+export interface LogoutResponse {
+  message: string
+}
+
+export interface SendOtpRequest {
   email: string
 }
 
-export interface ResetPasswordRequest {
-  token: string
-  password: string
-  confirmPassword: string
+export interface SendOtpResponse {
+  message: string
 }
 
-export interface VerifyEmailRequest {
-  token: string
+export interface VerifyOtpRequest {
+  email: string
+  otp: string
+}
+
+export interface VerifyOtpResponse {
+  message: string
 }
 
 export interface ChangePasswordRequest {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
+  email: string
+  password: string
+  password1: string
 }
 
-export interface UpdateProfileRequest {
-  firstName?: string
-  lastName?: string
-  phoneNumber?: string
-  profileImage?: string
+export interface ChangePasswordResponse {
+  message: string
+}
+
+export enum UserType {
+  NormalUsers = "NormalUsers",
+  VenueOwner = "VenueOwner",
+  Admin = "Admin",
 }

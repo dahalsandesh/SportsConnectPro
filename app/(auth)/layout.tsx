@@ -1,17 +1,18 @@
 import type React from "react"
-import { MainHeader } from "@/components/layout/main-header"
-import { MainFooter } from "@/components/layout/main-footer"
+import type { Metadata } from "next"
+import { ThemeProvider } from "@/components/theme-provider"
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export const metadata: Metadata = {
+  title: "Authentication",
+  description: "Authentication pages for SportConnect Pro",
+}
+
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <MainHeader />
-      <main className="flex-1">{children}</main>
-      <MainFooter />
-    </>
+    <div className="min-h-screen bg-background">
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <main className="flex min-h-screen flex-col">{children}</main>
+      </ThemeProvider>
+    </div>
   )
 }
