@@ -15,15 +15,12 @@ import type {
 import type { RootState } from "../store"
 
 // Define our base API URL from environment variable
-let baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
-if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
-  baseUrl = "http://" + baseUrl
-}
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
 
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${baseUrl}/web/api/v1/account/user`,
+    baseUrl: `${BASE_URL}/web/api/v1/account/user`,
     prepareHeaders: (headers, { getState }) => {
       // Get token from state
       const token = (getState() as RootState).auth.token
