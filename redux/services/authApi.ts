@@ -81,6 +81,14 @@ export const authApi = createApi({
       }),
     }),
 
+    forgotPassword: builder.mutation<{ message: string }, { email: string }>({
+      query: (data) => ({
+        url: "/forgot-password",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
     activateAccount: builder.query<{ message: string }, { uid: string; token: string }>({
       query: ({ uid, token }) => ({
         url: `/activate/${uid}/${token}`,
@@ -97,5 +105,6 @@ export const {
   useSendOtpMutation,
   useVerifyOtpMutation,
   useChangePasswordMutation,
+  useForgotPasswordMutation,
   useLazyActivateAccountQuery,
 } = authApi
