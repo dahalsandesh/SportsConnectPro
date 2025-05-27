@@ -91,11 +91,9 @@ export function MainHeader() {
       toast({
         title: "Logged out",
         description: "You have been logged out successfully",
-        variant: "success",
       })
     } catch (error) {
       console.error("Logout failed:", error)
-      // Still logout from the client side even if the API call fails
       dispatch(logout())
     }
   }
@@ -109,7 +107,7 @@ export function MainHeader() {
   const getDashboardLink = () => {
     if (!isAuthenticated) return "/login"
 
-    switch (user.userType) {
+    switch (user?.userType) {
       case UserType.Admin:
         return "/admin"
       case UserType.VenueOwner:
@@ -122,35 +120,42 @@ export function MainHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300",
-        isScrolled
-          ? "bg-background/95 backdrop-blur-md shadow-sm dark:bg-background/90 dark:shadow-md dark:shadow-black/20"
-          : pathname === "/"
-            ? "bg-transparent"
-            : "bg-background",
+        "sticky top-0 z-50 w-full transition-all duration-300 border-b",
+        "bg-background/95 backdrop-blur-md shadow-sm border-border/40",
+        // Ensure visibility
+        "visible opacity-100 block",
       )}
+      style={{
+        visibility: "visible",
+        opacity: 1,
+        display: "block",
+        minHeight: "64px",
+      }}
     >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link
+            href="/"
+            className="flex items-center space-x-2 focus-ring rounded-md p-1"
+            style={{ visibility: "visible", opacity: 1 }}
+          >
             <span className="text-xl font-bold text-primary">Sport</span>
-            <span className="text-xl font-bold">Connect</span>
+            <span className="text-xl font-bold text-foreground">Connect</span>
             <span className="text-xl font-bold text-primary">Pro</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-1">
             {mainNavItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary focus-ring rounded-md px-2 py-1",
-                  pathname === item.href
-                    ? "text-primary dark:text-primary dark:font-semibold"
-                    : "text-foreground/70 dark:text-foreground/80 dark:hover:text-primary",
+                  "text-sm font-medium transition-colors hover:text-primary focus-ring rounded-md px-3 py-2",
+                  pathname === item.href ? "text-primary font-semibold" : "text-foreground/70 hover:text-primary",
                 )}
+                style={{ visibility: "visible", opacity: 1 }}
               >
                 {item.title}
               </Link>
@@ -158,34 +163,38 @@ export function MainHeader() {
           </nav>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-2">
             <ThemeToggle />
 
             {isAuthenticated ? (
               <>
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="h-5 w-5" />
-                  <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
+                <Button variant="ghost" size="icon" className="relative h-9 w-9">
+                  <Bell className="h-4 w-4" />
+                  <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px] bg-primary text-primary-foreground">
                     3
                   </Badge>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-2 h-9 px-2">
+                    <Button variant="ghost" className="flex items-center gap-2 h-9 px-2 focus-ring">
                       <Avatar className="h-7 w-7">
-                        <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                        <AvatarFallback className="bg-primary text-primary-foreground text-xs font-medium">
                           {initials}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-sm font-medium">{user.fullName || user.userName}</span>
+                      <span className="text-sm font-medium text-foreground max-w-[120px] truncate">
+                        {user?.fullName || user?.userName}
+                      </span>
                       <ChevronDown className="h-4 w-4 text-muted-foreground" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel>
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.fullName || user.userName}</p>
-                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                        <p className="text-sm font-medium leading-none text-foreground">
+                          {user?.fullName || user?.userName}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
@@ -208,7 +217,10 @@ export function MainHeader() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="cursor-pointer text-destructive focus:text-destructive"
+                    >
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Log out</span>
                     </DropdownMenuItem>
@@ -217,13 +229,13 @@ export function MainHeader() {
               </>
             ) : (
               <>
-                <Button variant="ghost" asChild>
+                <Button variant="ghost" asChild className="h-9">
                   <Link href="/login">
                     <LogIn className="mr-2 h-4 w-4" />
                     Log in
                   </Link>
                 </Button>
-                <Button asChild>
+                <Button asChild className="h-9">
                   <Link href="/signup">
                     <User className="mr-2 h-4 w-4" />
                     Sign up
@@ -238,8 +250,8 @@ export function MainHeader() {
             <ThemeToggle />
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="ml-2">
-                  <Menu className="h-6 w-6" />
+                <Button variant="ghost" size="icon" className="ml-2 h-9 w-9">
+                  <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
@@ -252,8 +264,8 @@ export function MainHeader() {
                       className={cn(
                         "flex items-center text-sm font-medium transition-colors hover:text-primary p-2 rounded-md",
                         pathname === item.href
-                          ? "bg-accent text-primary dark:bg-accent/80 dark:text-primary dark:font-semibold"
-                          : "text-foreground/70 dark:text-foreground/80 dark:hover:text-primary",
+                          ? "bg-accent text-primary font-semibold"
+                          : "text-foreground/70 hover:text-primary",
                       )}
                     >
                       {item.icon}
@@ -265,37 +277,41 @@ export function MainHeader() {
                     <>
                       <div className="flex items-center gap-4 p-2">
                         <Avatar className="h-10 w-10">
-                          <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
+                          <AvatarFallback className="bg-primary text-primary-foreground font-medium">
+                            {initials}
+                          </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                          <span className="text-sm font-medium">{user.fullName || user.userName}</span>
-                          <span className="text-xs text-muted-foreground">{user.email}</span>
+                          <span className="text-sm font-medium text-foreground">
+                            {user?.fullName || user?.userName}
+                          </span>
+                          <span className="text-xs text-muted-foreground">{user?.email}</span>
                         </div>
                       </div>
                       <Link
                         href={getDashboardLink()}
-                        className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent"
+                        className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent transition-colors"
                       >
                         <User className="mr-2 h-4 w-4" />
                         Dashboard
                       </Link>
                       <Link
                         href="/dashboard/bookings"
-                        className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent"
+                        className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent transition-colors"
                       >
                         <Calendar className="mr-2 h-4 w-4" />
                         My Bookings
                       </Link>
                       <Link
                         href="/dashboard/settings"
-                        className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent"
+                        className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent transition-colors"
                       >
                         <Settings className="mr-2 h-4 w-4" />
                         Settings
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent text-left w-full"
+                        className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent text-left w-full transition-colors text-destructive"
                       >
                         <LogOut className="mr-2 h-4 w-4" />
                         Log out

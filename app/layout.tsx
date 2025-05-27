@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Inter, Montserrat } from "next/font/google"
+import { Inter, Poppins } from "next/font/google"
 import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ReduxProvider } from "@/redux/provider"
@@ -16,8 +16,9 @@ const inter = Inter({
   display: "swap",
 })
 
-const montserrat = Montserrat({
+const poppins = Poppins({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-heading",
   display: "swap",
 })
@@ -32,6 +33,7 @@ export const metadata: Metadata = {
   authors: [{ name: "SportConnect Pro Team" }],
   creator: "SportConnect Pro",
   publisher: "SportConnect Pro",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"),
     generator: 'v0.dev'
 }
 
@@ -52,13 +54,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable, montserrat.variable)}>
+      <body
+        className={cn("min-h-screen bg-background font-sans antialiased", inter.variable, poppins.variable)}
+        style={{ visibility: "visible", opacity: 1 }}
+      >
         <ReduxProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
             <NotificationProvider>
-              <div className="flex min-h-screen flex-col">
+              <div className="relative flex min-h-screen flex-col">
+                {/* Header - Always visible */}
                 <MainHeader />
-                <main className="flex-1">{children}</main>
+
+                {/* Main Content */}
+                <main className="flex-1 relative z-10">{children}</main>
+
+                {/* Footer - Always visible */}
                 <MainFooter />
               </div>
               <Toaster />

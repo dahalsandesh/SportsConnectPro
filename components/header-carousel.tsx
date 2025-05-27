@@ -8,25 +8,25 @@ import { Button } from "@/components/ui/button"
 const carouselItems = [
   {
     id: 1,
-    image: "/placeholder.svg?height=800&width=1920",
+    image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1920&h=800&fit=crop&crop=center",
     title: "Book Your Perfect Futsal Court",
-    subtitle: "Find and reserve the best futsal courts in your area",
+    subtitle: "Find and reserve the best futsal courts in your area with instant confirmation",
     cta: "Book Now",
     link: "/venues",
   },
   {
     id: 2,
-    image: "/placeholder.svg?height=800&width=1920",
+    image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1920&h=800&fit=crop&crop=center",
     title: "Join Tournaments & Events",
-    subtitle: "Participate in local tournaments and futsal events",
+    subtitle: "Participate in local tournaments and futsal events with players from your community",
     cta: "View Events",
     link: "/events",
   },
   {
     id: 3,
-    image: "/placeholder.svg?height=800&width=1920",
+    image: "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?w=1920&h=800&fit=crop&crop=center",
     title: "Own a Futsal Venue?",
-    subtitle: "List your venue and increase bookings",
+    subtitle: "List your venue on our platform and increase your bookings by 300%",
     cta: "Register Venue",
     link: "/register-venue",
   },
@@ -66,15 +66,15 @@ export default function HeaderCarousel() {
               className="object-cover"
               priority={item.id === 1}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30 z-10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/40 z-10" />
             <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center text-white p-4">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 max-w-3xl animate-fade-in">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 max-w-4xl text-white drop-shadow-lg">
                 {item.title}
               </h1>
-              <p className="text-xl md:text-2xl mb-8 max-w-2xl animate-fade-in-delay">{item.subtitle}</p>
+              <p className="text-xl md:text-2xl mb-8 max-w-3xl text-white/90 drop-shadow-md">{item.subtitle}</p>
               <Button
                 size="lg"
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg animate-bounce-in"
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
                 asChild
               >
                 <a href={item.link}>{item.cta}</a>
