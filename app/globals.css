@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    /* Light theme colors with enhanced contrast */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -34,6 +35,9 @@
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
 
+    --info: 217.2 91.2% 59.8%;
+    --info-foreground: 210 40% 98%;
+
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 142 76% 36%;
@@ -42,17 +46,18 @@
   }
 
   .dark {
-    --background: 222.2 47% 11.2%;
+    /* Dark theme colors with enhanced contrast */
+    --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 47% 11.2%;
+    --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 47% 11.2%;
+    --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 142 76% 45%;
-    --primary-foreground: 222.2 47% 11.2%;
+    --primary-foreground: 222.2 84% 4.9%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -60,17 +65,20 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 75.1%;
 
-    --accent: 142 76% 20%;
+    --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 210 40% 98%;
 
     --success: 142 76% 45%;
-    --success-foreground: 222.2 47% 11.2%;
+    --success-foreground: 222.2 84% 4.9%;
 
     --warning: 38 92% 50%;
-    --warning-foreground: 222.2 47% 11.2%;
+    --warning-foreground: 222.2 84% 4.9%;
+
+    --info: 217.2 91.2% 59.8%;
+    --info-foreground: 222.2 84% 4.9%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
@@ -82,117 +90,245 @@
   * {
     @apply border-border;
   }
+
+  html {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 100vh;
   }
+
+  /* Ensure header and footer are always visible */
+  header,
+  footer {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+  }
+
+  /* Enhanced typography with perfect contrast */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+    color: hsl(var(--foreground)) !important;
+    font-weight: 600;
+  }
+
   h1 {
-    @apply text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl font-heading;
+    @apply text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl;
   }
+
   h2 {
-    @apply text-2xl font-bold tracking-tight md:text-3xl font-heading;
+    @apply text-2xl font-bold tracking-tight md:text-3xl;
   }
+
   h3 {
-    @apply text-xl font-bold tracking-tight md:text-2xl font-heading;
+    @apply text-xl font-bold tracking-tight md:text-2xl;
   }
+
   h4 {
-    @apply text-lg font-semibold tracking-tight font-heading;
+    @apply text-lg font-semibold tracking-tight;
   }
+
   p {
     @apply leading-7;
+    color: hsl(var(--muted-foreground)) !important;
   }
+
   .lead {
-    @apply text-xl text-muted-foreground;
+    @apply text-xl;
+    color: hsl(var(--muted-foreground)) !important;
   }
+
   small {
     @apply text-sm font-medium leading-none;
+    color: hsl(var(--muted-foreground)) !important;
   }
+
   .subtle {
-    @apply text-sm text-muted-foreground;
+    @apply text-sm;
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  /* Enhanced link styling */
+  a {
+    @apply transition-colors duration-200;
+    color: hsl(var(--primary)) !important;
+  }
+
+  a:hover {
+    color: hsl(var(--primary) / 0.8) !important;
+  }
+
+  /* Form elements with proper contrast */
+  input,
+  textarea,
+  select {
+    @apply transition-colors duration-200;
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+    border-color: hsl(var(--border)) !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Ensure text is always visible */
+  .text-white {
+    color: white !important;
+  }
+
+  .text-black {
+    color: black !important;
+  }
+
+  /* Dark mode specific overrides */
+  .dark .text-gray-500,
+  .dark .text-gray-600 {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  .dark .text-gray-700,
+  .dark .text-gray-800,
+  .dark .text-gray-900 {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Light mode specific overrides */
+  .text-gray-500,
+  .text-gray-600 {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  .text-gray-700,
+  .text-gray-800,
+  .text-gray-900 {
+    color: hsl(var(--foreground)) !important;
   }
 }
 
 @layer components {
-  .container-tight {
-    @apply container max-w-screen-md;
+  /* Enhanced visibility utilities */
+  .ensure-visible {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
   }
 
-  .container-wide {
-    @apply container max-w-screen-xl;
+  .text-contrast {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .text-contrast-muted {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  /* Enhanced card styling */
+  .card-enhanced {
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-200;
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--card-foreground)) !important;
+    border-color: hsl(var(--border)) !important;
+  }
+
+  /* Enhanced button styling */
+  .btn-enhanced {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors;
+    background-color: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+  }
+
+  .btn-enhanced:hover {
+    background-color: hsl(var(--primary) / 0.9) !important;
+  }
+
+  /* Enhanced input styling */
+  .input-enhanced {
+    @apply flex h-10 w-full rounded-md border px-3 py-2 text-sm transition-colors;
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+    border-color: hsl(var(--border)) !important;
+  }
+
+  .input-enhanced::placeholder {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  /* Force visibility for critical elements */
+  header[class*="main"],
+  footer[class*="main"],
+  .main-header,
+  .main-footer {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+  }
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .container {
+    @apply px-4;
   }
 
   .section-padding {
-    @apply py-12 md:py-16 lg:py-20;
+    @apply py-8 md:py-12;
   }
 
-  .section-padding-top {
-    @apply pt-12 md:pt-16 lg:pt-20;
+  h1 {
+    @apply text-2xl md:text-3xl;
   }
 
-  .section-padding-bottom {
-    @apply pb-12 md:pb-16 lg:pb-20;
-  }
-
-  .card-hover {
-    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-1;
-  }
-
-  .card-interactive {
-    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-1 active:translate-y-0 active:shadow-sm;
-  }
-
-  .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
-  }
-
-  .heading-gradient {
-    @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
-  }
-
-  /* Fixed alert styles for dark mode */
-  .dark .alert-success {
-    background-color: hsl(var(--success) / 0.1);
-    border-color: hsl(var(--success) / 0.3);
-    color: hsl(var(--success-foreground));
-  }
-
-  .dark .alert-warning {
-    background-color: hsl(var(--warning) / 0.1);
-    border-color: hsl(var(--warning) / 0.3);
-    color: hsl(var(--warning-foreground));
-  }
-
-  .dark .alert-error {
-    background-color: hsl(var(--destructive) / 0.1);
-    border-color: hsl(var(--destructive) / 0.3);
-    color: hsl(var(--destructive-foreground));
+  h2 {
+    @apply text-xl md:text-2xl;
   }
 }
 
-/* Dark mode specific styles */
-.dark .dark-card-shadow {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --foreground: 0 0% 0%;
+    --muted-foreground: 0 0% 30%;
+  }
+
+  .dark {
+    --border: 0 0% 80%;
+    --input: 0 0% 80%;
+    --foreground: 0 0% 100%;
+    --muted-foreground: 0 0% 80%;
+  }
 }
 
-.dark .dark-border-subtle {
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.dark .dark-glow {
-  box-shadow: 0 0 15px rgba(var(--primary), 0.3);
-}
-
-.dark .dark-text-shadow {
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* Improved form field visibility in dark mode */
-.dark input::placeholder,
-.dark textarea::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.dark .form-highlight {
-  border-color: hsl(var(--primary) / 0.5);
-  background-color: hsl(var(--primary) / 0.05);
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -1,8 +1,7 @@
 import * as React from "react"
 import * as ToastPrimitives from "@radix-ui/react-toast"
 import { cva, type VariantProps } from "class-variance-authority"
-import { X } from "lucide-react"
-
+import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const ToastProvider = ToastPrimitives.Provider
@@ -27,9 +26,12 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border bg-background text-foreground",
-        destructive: "destructive group border-destructive bg-destructive text-destructive-foreground",
-        success: "border-green-500 bg-green-500 text-white",
+        default: "border bg-background text-foreground dark:border-border/50",
+        destructive:
+          "destructive border-destructive/50 bg-destructive text-destructive-foreground dark:border-destructive/30 dark:bg-destructive/90",
+        success: "border-success/50 bg-success text-success-foreground dark:border-success/30 dark:bg-success/90",
+        warning: "border-warning/50 bg-warning text-warning-foreground dark:border-warning/30 dark:bg-warning/90",
+        info: "border-primary/50 bg-primary text-primary-foreground dark:border-primary/30 dark:bg-primary/90",
       },
     },
     defaultVariants: {
@@ -99,6 +101,51 @@ type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>
 
+// Enhanced toast with icons
+interface EnhancedToastProps extends ToastProps {
+  title?: string
+  description?: string
+  action?: ToastActionElement
+  showIcon?: boolean
+}
+
+const EnhancedToast = React.forwardRef<React.ElementRef<typeof Toast>, EnhancedToastProps>(
+  ({ variant, title, description, action, showIcon = true, children, ...props }, ref) => {
+    const getIcon = () => {
+      if (!showIcon) return null
+
+      switch (variant) {
+        case "success":
+          return <CheckCircle className="h-5 w-5" />
+        case "destructive":
+          return <AlertCircle className="h-5 w-5" />
+        case "warning":
+          return <AlertTriangle className="h-5 w-5" />
+        case "info":
+          return <Info className="h-5 w-5" />
+        default:
+          return <Info className="h-5 w-5" />
+      }
+    }
+
+    return (
+      <Toast ref={ref} variant={variant} {...props}>
+        <div className="flex items-start gap-3">
+          {getIcon()}
+          <div className="grid gap-1">
+            {title && <ToastTitle>{title}</ToastTitle>}
+            {description && <ToastDescription>{description}</ToastDescription>}
+            {children}
+          </div>
+        </div>
+        {action}
+        <ToastClose />
+      </Toast>
+    )
+  },
+)
+EnhancedToast.displayName = "EnhancedToast"
+
 export {
   type ToastProps,
   type ToastActionElement,
@@ -109,4 +156,5 @@ export {
   ToastDescription,
   ToastClose,
   ToastAction,
+  EnhancedToast,
 }

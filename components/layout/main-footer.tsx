@@ -6,36 +6,44 @@ import { Separator } from "@/components/ui/separator"
 
 export function MainFooter() {
   return (
-    <footer className="bg-secondary dark:bg-secondary/50">
+    <footer
+      className="bg-secondary/30 border-t border-border/40 mt-auto"
+      style={{
+        visibility: "visible",
+        opacity: 1,
+        display: "block",
+        minHeight: "200px",
+      }}
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <span className="text-xl font-bold text-primary">Sport</span>
-              <span className="text-xl font-bold">Connect</span>
+              <span className="text-xl font-bold text-foreground">Connect</span>
               <span className="text-xl font-bold text-primary">Pro</span>
             </div>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground mb-4 leading-relaxed">
               The easiest way to find and book sports venues near you. Play more, worry less.
             </p>
             <div className="flex space-x-4">
               <Link
                 href="#"
-                className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-full p-1"
+                className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-full p-2"
                 aria-label="Facebook"
               >
                 <Facebook className="h-5 w-5" />
               </Link>
               <Link
                 href="#"
-                className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-full p-1"
+                className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-full p-2"
                 aria-label="Twitter"
               >
                 <Twitter className="h-5 w-5" />
               </Link>
               <Link
                 href="#"
-                className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-full p-1"
+                className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-full p-2"
                 aria-label="Instagram"
               >
                 <Instagram className="h-5 w-5" />
@@ -44,12 +52,12 @@ export function MainFooter() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
+            <h3 className="text-lg font-semibold mb-4 text-foreground">Quick Links</h3>
+            <ul className="space-y-3">
               <li>
                 <Link
                   href="/venues"
-                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block dark:text-muted-foreground/90 dark:hover:text-primary"
+                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block"
                 >
                   Find Venues
                 </Link>
@@ -57,7 +65,7 @@ export function MainFooter() {
               <li>
                 <Link
                   href="/how-it-works"
-                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block dark:text-muted-foreground/90 dark:hover:text-primary"
+                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block"
                 >
                   How It Works
                 </Link>
@@ -65,7 +73,7 @@ export function MainFooter() {
               <li>
                 <Link
                   href="/events"
-                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block dark:text-muted-foreground/90 dark:hover:text-primary"
+                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block"
                 >
                   Events & Tournaments
                 </Link>
@@ -73,7 +81,7 @@ export function MainFooter() {
               <li>
                 <Link
                   href="/register-venue"
-                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block dark:text-muted-foreground/90 dark:hover:text-primary"
+                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block"
                 >
                   List Your Venue
                 </Link>
@@ -81,7 +89,7 @@ export function MainFooter() {
               <li>
                 <Link
                   href="/faq"
-                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block dark:text-muted-foreground/90 dark:hover:text-primary"
+                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block"
                 >
                   FAQs
                 </Link>
@@ -90,12 +98,12 @@ export function MainFooter() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Legal</h3>
-            <ul className="space-y-2">
+            <h3 className="text-lg font-semibold mb-4 text-foreground">Legal</h3>
+            <ul className="space-y-3">
               <li>
                 <Link
                   href="/terms"
-                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block dark:text-muted-foreground/90 dark:hover:text-primary"
+                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block"
                 >
                   Terms of Service
                 </Link>
@@ -103,7 +111,7 @@ export function MainFooter() {
               <li>
                 <Link
                   href="/privacy"
-                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block dark:text-muted-foreground/90 dark:hover:text-primary"
+                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block"
                 >
                   Privacy Policy
                 </Link>
@@ -111,7 +119,7 @@ export function MainFooter() {
               <li>
                 <Link
                   href="/refund"
-                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block dark:text-muted-foreground/90 dark:hover:text-primary"
+                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block"
                 >
                   Refund Policy
                 </Link>
@@ -119,7 +127,7 @@ export function MainFooter() {
               <li>
                 <Link
                   href="/cookies"
-                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block dark:text-muted-foreground/90 dark:hover:text-primary"
+                  className="text-muted-foreground hover:text-primary transition-colors focus-ring rounded-md px-2 py-1 inline-block"
                 >
                   Cookie Policy
                 </Link>
@@ -128,28 +136,30 @@ export function MainFooter() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
-            <p className="text-muted-foreground mb-4">Subscribe to get updates on new venues and special offers.</p>
-            <div className="flex flex-col space-y-2">
+            <h3 className="text-lg font-semibold mb-4 text-foreground">Newsletter</h3>
+            <p className="text-muted-foreground mb-4 leading-relaxed">
+              Subscribe to get updates on new venues and special offers.
+            </p>
+            <div className="flex flex-col space-y-3">
               <Input
                 type="email"
                 placeholder="Your email address"
-                className="bg-background dark:border-input/80 focus:dark:border-primary"
+                className="bg-background border-border text-foreground placeholder:text-muted-foreground"
               />
-              <Button>Subscribe</Button>
+              <Button className="w-full">Subscribe</Button>
             </div>
-            <div className="mt-6 space-y-2">
-              <div className="flex items-center text-muted-foreground dark:text-muted-foreground/90">
-                <Mail className="h-5 w-5 mr-2" />
-                <span>support@sportconnectpro.com</span>
+            <div className="mt-6 space-y-3">
+              <div className="flex items-center text-muted-foreground">
+                <Mail className="h-4 w-4 mr-3 flex-shrink-0" />
+                <span className="text-sm">support@sportconnectpro.com</span>
               </div>
-              <div className="flex items-center text-muted-foreground dark:text-muted-foreground/90">
-                <Phone className="h-5 w-5 mr-2" />
-                <span>+977 9812345678</span>
+              <div className="flex items-center text-muted-foreground">
+                <Phone className="h-4 w-4 mr-3 flex-shrink-0" />
+                <span className="text-sm">+977 9812345678</span>
               </div>
-              <div className="flex items-start text-muted-foreground dark:text-muted-foreground/90">
-                <MapPin className="h-5 w-5 mr-2 mt-1" />
-                <span>123 Sports Avenue, Kathmandu, Nepal</span>
+              <div className="flex items-start text-muted-foreground">
+                <MapPin className="h-4 w-4 mr-3 mt-0.5 flex-shrink-0" />
+                <span className="text-sm">123 Sports Avenue, Kathmandu, Nepal</span>
               </div>
             </div>
           </div>
