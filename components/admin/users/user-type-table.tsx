@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, Edit, Trash } from "lucide-react"
-import { useDeleteUserTypeMutation } from "@/redux/services/adminApi"
+import { useDeleteUserTypeMutation } from "@/redux/api/user-types/userTypesApi"
 import { useToast } from "@/components/ui/use-toast"
 import {
   AlertDialog,

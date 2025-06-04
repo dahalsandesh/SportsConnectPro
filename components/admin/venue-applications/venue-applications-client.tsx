@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useGetAllVenueApplicationsQuery } from "@/redux/services/adminApi"
+import { useGetAllVenueApplicationsQuery } from "@/redux/api/venue-applications/venueApplicationsApi"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"

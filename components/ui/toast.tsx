@@ -1,7 +1,10 @@
+"use client"
+
 import * as React from "react"
 import * as ToastPrimitives from "@radix-ui/react-toast"
 import { cva, type VariantProps } from "class-variance-authority"
-import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from "lucide-react"
+import { X } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 
 const ToastProvider = ToastPrimitives.Provider
@@ -14,7 +17,7 @@ const ToastViewport = React.forwardRef<
     ref={ref}
     className={cn(
       "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
-      className,
+      className
     )}
     {...props}
   />
@@ -26,25 +29,29 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border bg-background text-foreground dark:border-border/50",
+        default: "border bg-background text-foreground",
         destructive:
-          "destructive border-destructive/50 bg-destructive text-destructive-foreground dark:border-destructive/30 dark:bg-destructive/90",
-        success: "border-success/50 bg-success text-success-foreground dark:border-success/30 dark:bg-success/90",
-        warning: "border-warning/50 bg-warning text-warning-foreground dark:border-warning/30 dark:bg-warning/90",
-        info: "border-primary/50 bg-primary text-primary-foreground dark:border-primary/30 dark:bg-primary/90",
+          "destructive group border-destructive bg-destructive text-destructive-foreground",
       },
     },
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 )
 
 const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> & VariantProps<typeof toastVariants>
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
+    VariantProps<typeof toastVariants>
 >(({ className, variant, ...props }, ref) => {
-  return <ToastPrimitives.Root ref={ref} className={cn(toastVariants({ variant }), className)} {...props} />
+  return (
+    <ToastPrimitives.Root
+      ref={ref}
+      className={cn(toastVariants({ variant }), className)}
+      {...props}
+    />
+  )
 })
 Toast.displayName = ToastPrimitives.Root.displayName
 
@@ -56,7 +63,7 @@ const ToastAction = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive",
-      className,
+      className
     )}
     {...props}
   />
@@ -71,7 +78,7 @@ const ToastClose = React.forwardRef<
     ref={ref}
     className={cn(
       "absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
-      className,
+      className
     )}
     toast-close=""
     {...props}
@@ -85,7 +92,11 @@ const ToastTitle = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Title>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitives.Title ref={ref} className={cn("text-sm font-semibold", className)} {...props} />
+  <ToastPrimitives.Title
+    ref={ref}
+    className={cn("text-sm font-semibold", className)}
+    {...props}
+  />
 ))
 ToastTitle.displayName = ToastPrimitives.Title.displayName
 
@@ -93,58 +104,17 @@ const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitives.Description ref={ref} className={cn("text-sm opacity-90", className)} {...props} />
+  <ToastPrimitives.Description
+    ref={ref}
+    className={cn("text-sm opacity-90", className)}
+    {...props}
+  />
 ))
 ToastDescription.displayName = ToastPrimitives.Description.displayName
 
 type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>
-
-// Enhanced toast with icons
-interface EnhancedToastProps extends ToastProps {
-  title?: string
-  description?: string
-  action?: ToastActionElement
-  showIcon?: boolean
-}
-
-const EnhancedToast = React.forwardRef<React.ElementRef<typeof Toast>, EnhancedToastProps>(
-  ({ variant, title, description, action, showIcon = true, children, ...props }, ref) => {
-    const getIcon = () => {
-      if (!showIcon) return null
-
-      switch (variant) {
-        case "success":
-          return <CheckCircle className="h-5 w-5" />
-        case "destructive":
-          return <AlertCircle className="h-5 w-5" />
-        case "warning":
-          return <AlertTriangle className="h-5 w-5" />
-        case "info":
-          return <Info className="h-5 w-5" />
-        default:
-          return <Info className="h-5 w-5" />
-      }
-    }
-
-    return (
-      <Toast ref={ref} variant={variant} {...props}>
-        <div className="flex items-start gap-3">
-          {getIcon()}
-          <div className="grid gap-1">
-            {title && <ToastTitle>{title}</ToastTitle>}
-            {description && <ToastDescription>{description}</ToastDescription>}
-            {children}
-          </div>
-        </div>
-        {action}
-        <ToastClose />
-      </Toast>
-    )
-  },
-)
-EnhancedToast.displayName = "EnhancedToast"
 
 export {
   type ToastProps,
@@ -156,5 +126,4 @@ export {
   ToastDescription,
   ToastClose,
   ToastAction,
-  EnhancedToast,
 }

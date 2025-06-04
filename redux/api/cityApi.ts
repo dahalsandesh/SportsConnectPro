@@ -4,13 +4,13 @@ import type { ApiResponse, City, CreateCityRequest, DeleteCityRequest } from "@/
 export const cityApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCities: builder.query<City[], void>({
-      query: () => "/web/api/v1/adminapp/v1/GetAllCity",
+      query: () => "/web/api/v1/adminapp/GetAllCity",
       providesTags: ["Cities"],
     }),
 
     getCityById: builder.query<City, string>({
       query: (cityId) => ({
-        url: "/web/api/v1/adminapp/v1/GetCityById",
+        url: "/web/api/v1/adminapp/GetCityById",
         params: { cityId },
       }),
       providesTags: (result, error, id) => [{ type: "Cities", id }],
@@ -18,7 +18,7 @@ export const cityApi = baseApi.injectEndpoints({
 
     createCity: builder.mutation<ApiResponse<null>, CreateCityRequest>({
       query: (data) => ({
-        url: "/web/api/v1/adminapp/v1/CreateCity",
+        url: "/web/api/v1/adminapp/CreateCity",
         method: "POST",
         body: data,
       }),
@@ -27,7 +27,7 @@ export const cityApi = baseApi.injectEndpoints({
 
     deleteCity: builder.mutation<ApiResponse<null>, DeleteCityRequest>({
       query: (data) => ({
-        url: "/web/api/v1/adminapp/v1/DelCity",
+        url: "/web/api/v1/adminapp/DelCity",
         method: "POST",
         body: data,
       }),

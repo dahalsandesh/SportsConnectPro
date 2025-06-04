@@ -12,15 +12,15 @@ import type {
   ChangePasswordRequest,
   ChangePasswordResponse,
 } from "@/types/auth"
-import type { RootState } from "../store"
+import type { RootState } from "../store/reducers"
 
-// Define our base API URL from environment variable
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
+// Import the base URL utility
+import { getBaseUrl } from "../api/baseApi"
 
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/web/api/v1/account/user`,
+    baseUrl: `${getBaseUrl()}/web/api/v1/account/user`,
     prepareHeaders: (headers, { getState }) => {
       // Get token from state
       const token = (getState() as RootState).auth.token

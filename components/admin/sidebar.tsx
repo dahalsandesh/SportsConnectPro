@@ -19,7 +19,7 @@ import {
   Newspaper,
 } from "lucide-react"
 
-const sidebarItems = [
+export const sidebarItems = [
   {
     title: "Dashboard",
     href: "/admin",

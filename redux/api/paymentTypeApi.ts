@@ -10,7 +10,7 @@ export const paymentTypeApi = baseApi.injectEndpoints({
 
     getPaymentTypeById: builder.query<PaymentType, string>({
       query: (paymentTypeId) => ({
-        url: "/web/api/v1/adminapp/v1/GetPaymentTypeById",
+        url: "/web/api/v1/adminapp/GetPaymentTypeById",
         params: { paymentTypeId },
       }),
       providesTags: (result, error, id) => [{ type: "PaymentTypes", id }],
@@ -18,7 +18,7 @@ export const paymentTypeApi = baseApi.injectEndpoints({
 
     createPaymentType: builder.mutation<ApiResponse<null>, CreatePaymentTypeRequest>({
       query: (data) => ({
-        url: "/web/api/v1/adminapp/v1/CreatePaymentType",
+        url: "/web/api/v1/adminapp/CreatePaymentType",
         method: "POST",
         body: data,
       }),
@@ -27,7 +27,7 @@ export const paymentTypeApi = baseApi.injectEndpoints({
 
     deletePaymentType: builder.mutation<ApiResponse<null>, DeletePaymentTypeRequest>({
       query: (data) => ({
-        url: "/web/api/v1/adminapp/v1/DelPaymentType",
+        url: "/web/api/v1/adminapp/DelPaymentType",
         method: "POST",
         body: data,
       }),
