@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { useCreateUserTypeMutation } from "@/redux/services/adminApi"
+import { useCreateUserTypeMutation } from "@/redux/api/user-types/userTypesApi"
 import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import {

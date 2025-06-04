@@ -1,11 +1,22 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import type { RootState } from "../store"
+import type { RootState } from "../store/reducers"
+
+// Get base URL from environment variables with fallback
+export const getBaseUrl = () => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:8000';
+  // Ensure the URL has a protocol and doesn't end with a slash
+  let url = baseUrl.trim();
+  if (!url.startsWith('http')) {
+    url = `http://${url}`;
+  }
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+};
 
 // Create our base API with shared configuration
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
+    baseUrl: getBaseUrl(),
     prepareHeaders: (headers, { getState }) => {
       // Get token from state
       const token = (getState() as RootState).auth.token
@@ -18,6 +29,19 @@ export const baseApi = createApi({
       return headers
     },
   }),
-  tagTypes: ["UserTypes", "Cities", "PaymentTypes", "Statuses", "SportCategories", "Genders", "Dashboard"],
+  tagTypes: [
+    "UserTypes",
+    "Cities",
+    "PaymentTypes",
+    "Statuses",
+    "SportCategories",
+    "Genders",
+    "Dashboard",
+    "Posts",
+    "VenueApplications",
+    "Venues",
+    "Courts",
+    "Profile",
+  ],
   endpoints: () => ({}),
 })

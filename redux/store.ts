@@ -1,19 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { setupListeners } from "@reduxjs/toolkit/query"
-import authReducer from "./features/authSlice"
-import { authApi } from "./services/authApi"
-import { adminApi } from "./services/adminApi"
+import { rootReducer, RootState } from "./store/reducers"
+import { apiMiddlewares } from "./store/middleware"
 
+// Create the store
 export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    [authApi.reducerPath]: authApi.reducer,
-    [adminApi.reducerPath]: adminApi.reducer,
-  },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(authApi.middleware, adminApi.middleware),
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(...apiMiddlewares),
+  devTools: process.env.NODE_ENV !== 'production',
 })
 
+// Enable refetchOnFocus/refetchOnReconnect behaviors
 setupListeners(store.dispatch)
 
-export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

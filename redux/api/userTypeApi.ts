@@ -4,13 +4,13 @@ import type { ApiResponse, CreateUserTypeRequest, DeleteUserTypeRequest, UserTyp
 export const userTypeApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUserTypes: builder.query<UserType[], void>({
-      query: () => "/web/api/v1/adminapp/v1/GetAllUserType",
+      query: () => "/web/api/v1/adminapp/GetAllUserType",
       providesTags: ["UserTypes"],
     }),
 
     getUserTypeById: builder.query<UserType, string>({
       query: (userTypeId) => ({
-        url: "/web/api/v1/adminapp/v1/GetUserTypeById",
+        url: "/web/api/v1/adminapp/GetUserTypeById",
         params: { userTypeId },
       }),
       providesTags: (result, error, id) => [{ type: "UserTypes", id }],
@@ -18,7 +18,7 @@ export const userTypeApi = baseApi.injectEndpoints({
 
     createUserType: builder.mutation<ApiResponse<null>, CreateUserTypeRequest>({
       query: (data) => ({
-        url: "/web/api/v1/adminapp/v1/CreateUserType",
+        url: "/web/api/v1/adminapp/CreateUserType",
         method: "POST",
         body: data,
       }),
@@ -27,7 +27,7 @@ export const userTypeApi = baseApi.injectEndpoints({
 
     deleteUserType: builder.mutation<ApiResponse<null>, DeleteUserTypeRequest>({
       query: (data) => ({
-        url: "/web/api/v1/adminapp/v1/DelUserType",
+        url: "/web/api/v1/adminapp/DelUserType",
         method: "POST",
         body: data,
       }),

@@ -4,13 +4,13 @@ import type { ApiResponse, CreateStatusRequest, DeleteStatusRequest, Status } fr
 export const statusApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getStatuses: builder.query<Status[], void>({
-      query: () => "/web/api/v1/adminapp/v1/GetAllStatus",
+      query: () => "/web/api/v1/adminapp/GetAllStatus",
       providesTags: ["Statuses"],
     }),
 
     getStatusById: builder.query<Status, string>({
       query: (statusId) => ({
-        url: "/web/api/v1/adminapp/v1/GetStatusById",
+        url: "/web/api/v1/adminapp/GetStatusById",
         params: { statusId },
       }),
       providesTags: (result, error, id) => [{ type: "Statuses", id }],
@@ -18,7 +18,7 @@ export const statusApi = baseApi.injectEndpoints({
 
     createStatus: builder.mutation<ApiResponse<null>, CreateStatusRequest>({
       query: (data) => ({
-        url: "/web/api/v1/adminapp/v1/CreateStatus",
+        url: "/web/api/v1/adminapp/CreateStatus",
         method: "POST",
         body: data,
       }),
@@ -27,7 +27,7 @@ export const statusApi = baseApi.injectEndpoints({
 
     deleteStatus: builder.mutation<ApiResponse<null>, DeleteStatusRequest>({
       query: (data) => ({
-        url: "/web/api/v1/adminapp/v1/DelStatus",
+        url: "/web/api/v1/adminapp/DelStatus",
         method: "POST",
         body: data,
       }),

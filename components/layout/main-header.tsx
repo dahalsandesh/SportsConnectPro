@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { useAppSelector } from "@/hooks/redux"
 import { UserType } from "@/types/auth"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,12 +68,19 @@ const mainNavItems = [
 ]
 
 export function MainHeader() {
+  const [isMounted, setIsMounted] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { isAuthenticated, user } = useAppSelector((state) => state.auth)
-  const pathname = usePathname()
   const dispatch = useAppDispatch()
+  const pathname = usePathname()
   const { toast } = useToast()
   const [logoutApi] = useLogoutMutation()
+
+  useEffect(() => {
+    setIsMounted(true)
+    return () => setIsMounted(false)
+  }, [])
 
   // Handle scroll effect
   useEffect(() => {
@@ -163,10 +170,12 @@ export function MainHeader() {
           </nav>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="flex items-center gap-4">
             <ThemeToggle />
-
-            {isAuthenticated ? (
+            {!isMounted ? (
+              // Render skeleton or null during SSR
+              <div className="h-9 w-9" />
+            ) : isAuthenticated ? (
               <>
                 <Button variant="ghost" size="icon" className="relative h-9 w-9">
                   <Bell className="h-4 w-4" />
@@ -229,18 +238,20 @@ export function MainHeader() {
               </>
             ) : (
               <>
-                <Button variant="ghost" asChild className="h-9">
-                  <Link href="/login">
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Log in
-                  </Link>
-                </Button>
-                <Button asChild className="h-9">
-                  <Link href="/signup">
-                    <User className="mr-2 h-4 w-4" />
-                    Sign up
-                  </Link>
-                </Button>
+                <Link 
+                  href="/login" 
+                  className={buttonVariants({ variant: 'ghost', className: 'h-9' })}
+                >
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Log in
+                </Link>
+                <Link 
+                  href="/signup" 
+                  className={buttonVariants({ className: 'h-9' })}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  Sign up
+                </Link>
               </>
             )}
           </div>

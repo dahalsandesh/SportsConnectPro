@@ -1,7 +1,8 @@
 "use client"
 
+import { useState, useEffect } from 'react'
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { useAppSelector, useAppDispatch } from "@/hooks/redux"
 import { useLogoutMutation } from "@/redux/services/authApi"
 import { logout } from "@/redux/features/authSlice"
@@ -21,13 +22,24 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Badge } from "@/components/ui/badge"
+import { sidebarItems } from "./sidebar"
 
 export function AdminHeader() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
   const { user } = useAppSelector((state) => state.auth)
   const dispatch = useAppDispatch()
-  const router = useRouter()
   const { toast } = useToast()
   const [logoutApi] = useLogoutMutation()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
 
   const handleLogout = async () => {
     try {
@@ -52,83 +64,102 @@ export function AdminHeader() {
     : user.userName?.[0] || "A"
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background dark:border-border/50">
-      <div className="flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-4 lg:hidden">
+    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between">
+        <div className="flex items-center gap-4">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[240px] sm:w-[300px]">
-              <nav className="flex flex-col gap-4 mt-8">{/* Mobile sidebar content will go here */}</nav>
+            <SheetContent side="left" className="w-[300px] p-0">
+              <div className="flex h-full flex-col">
+                <div className="p-4">
+                  <Link href="/admin" className="text-lg font-semibold">
+                    Admin Panel
+                  </Link>
+                </div>
+                <nav className="flex-1 space-y-1 p-4">
+                  {sidebarItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${
+                        pathname === item.href
+                          ? "bg-accent text-accent-foreground"
+                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      }`}
+                    >
+                      <item.icon className="mr-2 h-4 w-4" />
+                      {item.title}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
             </SheetContent>
           </Sheet>
-          <Link href="/admin" className="flex items-center gap-2">
-            <span className="text-xl font-bold">Admin</span>
+          <Link href="/admin" className="hidden md:block text-lg font-semibold">
+            Admin Panel
           </Link>
         </div>
-        <div className="hidden lg:flex lg:items-center lg:gap-2">
-          <Link href="/admin" className="flex items-center gap-2">
-            <span className="text-xl font-bold">SportConnect Pro Admin</span>
-          </Link>
-        </div>
-        <div className="flex flex-1 items-center justify-end gap-4">
-          <div className="relative w-full max-w-sm">
+        <div className="flex items-center gap-4">
+          <div className="relative w-64">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search..."
-              className="w-full bg-background pl-8 md:w-[300px] lg:w-[400px] dark:border-input/80 focus:dark:border-primary"
+              className="w-full rounded-lg bg-background pl-8"
             />
           </div>
-          <ThemeToggle />
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
-              5
-            </Badge>
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                <Avatar className="h-9 w-9">
-                  {user.profileImage ? (
-                    <AvatarImage src={user.profileImage || "/placeholder.svg"} alt={user.fullName || user.userName} />
-                  ) : null}
-                  <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user.fullName || user.userName}</p>
-                  <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/admin/profile" className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/settings" className="cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="h-5 w-5" />
+              <span className="sr-only">Notifications</span>
+              <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
+                5
+              </Badge>
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                  <Avatar className="h-9 w-9">
+                    {user.profileImage ? (
+                      <AvatarImage src={user.profileImage || "/placeholder.svg"} alt={user.fullName || user.userName} />
+                    ) : null}
+                    <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user.fullName || user.userName}</p>
+                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/admin/profile" className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/admin/settings" className="cursor-pointer">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </header>

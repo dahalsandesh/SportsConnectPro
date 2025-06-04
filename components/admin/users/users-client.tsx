@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useGetAllUserTypesQuery } from "@/redux/services/adminApi"
+import { useGetAllUserTypesQuery } from "@/redux/api/user-types/userTypesApi"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
