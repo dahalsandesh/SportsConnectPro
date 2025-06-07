@@ -1,13 +1,16 @@
 "use client"
 
-import { useState } from "react"
-import { format, addDays } from "date-fns"
-import { CalendarIcon } from "lucide-react"
+import { useState, useEffect } from "react"
+import { format, addDays, parse } from "date-fns"
+import { CalendarIcon, Loader2 } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
+import { useGetVenueBookingsQuery, useCreateBookingMutation } from "@/redux/api/bookings/bookingsApi"
 
 // Generate time slots from 6 AM to 10 PM
 const generateTimeSlots = () => {
@@ -22,48 +25,155 @@ const generateTimeSlots = () => {
 
 const timeSlots = generateTimeSlots()
 
-// Dummy availability data - in a real app, this would come from an API
-const availabilityData = {
-  c1: {
-    "2023-04-20": ["6:00 AM", "7:00 AM", "8:00 AM", "5:00 PM", "6:00 PM", "7:00 PM"],
-    "2023-04-21": ["9:00 AM", "10:00 AM", "11:00 AM", "4:00 PM", "5:00 PM"],
-    "2023-04-22": ["6:00 AM", "7:00 AM", "8:00 AM", "9:00 AM", "6:00 PM", "7:00 PM", "8:00 PM"],
-  },
-  c2: {
-    "2023-04-20": ["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "8:00 PM", "9:00 PM"],
-    "2023-04-21": ["6:00 AM", "7:00 AM", "8:00 AM", "6:00 PM", "7:00 PM", "8:00 PM"],
-    "2023-04-22": ["10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "5:00 PM", "6:00 PM"],
-  },
+interface Court {
+  id: string
+  name: string
+  price: number
+  surface: string
 }
 
-export default function BookingCalendar({
-  venueId,
-  courts,
-}: {
+interface BookingCalendarProps {
   venueId: string
-  courts: any[]
-}) {
+  courts: Court[]
+}
+
+export default function BookingCalendar({ venueId, courts }: BookingCalendarProps) {
+  const { toast } = useToast()
   const [date, setDate] = useState<Date | undefined>(new Date())
   const [court, setCourt] = useState(courts[0]?.id || "")
   const [timeSlot, setTimeSlot] = useState<string | undefined>()
   const [duration, setDuration] = useState("1")
+  const [availableSlots, setAvailableSlots] = useState<string[]>([])
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  // For demo purposes, we'll just use the current date + 1 for available slots
+  // Fetch bookings for the selected court and date
   const formattedDate = date ? format(date, "yyyy-MM-dd") : ""
-  const tomorrow = addDays(new Date(), 1)
-  const formattedTomorrow = format(tomorrow, "yyyy-MM-dd")
+  const { data: courtBookings, isLoading: isLoadingBookings } = useGetVenueBookingsQuery(
+    { venueId, dateFrom: formattedDate, dateTo: formattedDate },
+    { skip: !court || !formattedDate }
+  )
 
-  // Use dummy data or fallback to empty array
-  const availableSlots =
-    court && formattedDate
-      ? availabilityData[court as keyof typeof availabilityData]?.[
-          formattedDate as keyof (typeof availabilityData)[typeof court]
-        ] ||
-        availabilityData[court as keyof typeof availabilityData]?.[
-          formattedTomorrow as keyof (typeof availabilityData)[typeof court]
-        ] ||
-        timeSlots.slice(0, 8) // Fallback to first 8 slots
-      : []
+  // Create booking mutation
+  const [createBooking, { isLoading: isCreatingBooking }] = useCreateBookingMutation()
+
+  // Calculate available time slots based on existing bookings
+  useEffect(() => {
+    if (!court || !formattedDate || !courtBookings?.data) {
+      setAvailableSlots([])
+      return
+    }
+
+    try {
+      setIsLoadingSlots(true)
+      setError(null)
+
+      // Get all booked slots for the selected court and date
+      const bookedSlots = courtBookings.data
+        .filter((booking: any) => booking.court?.courtId === court)
+        .map((booking: any) => ({
+          start: new Date(booking.startTime),
+          end: new Date(booking.endTime),
+        }))
+
+      // Generate available slots
+      const allSlots = generateTimeSlots()
+      const now = new Date()
+      const currentDate = new Date()
+      currentDate.setHours(0, 0, 0, 0)
+      
+      const selectedDate = date ? new Date(date) : null
+      
+      const available = allSlots.filter((slot) => {
+        if (!selectedDate) return false
+        
+        const [time, period] = slot.split(" ")
+        let [hours, minutes] = time.split(":").map(Number)
+        
+        // Convert to 24-hour format
+        if (period === "PM" && hours < 12) hours += 12
+        if (period === "AM" && hours === 12) hours = 0
+        
+        const slotDate = new Date(selectedDate)
+        slotDate.setHours(hours, minutes, 0, 0)
+        
+        // Check if slot is in the past (only for current date)
+        const isToday = selectedDate.toDateString() === currentDate.toDateString()
+        if (isToday && slotDate < now) return false
+        
+        // Check if slot is already booked
+        return !bookedSlots.some(
+          (booked: any) => slotDate >= booked.start && slotDate < booked.end
+        )
+      })
+
+      setAvailableSlots(available)
+    } catch (err) {
+      console.error("Error calculating available slots:", err)
+      setError("Failed to load available time slots. Please try again.")
+      setAvailableSlots([])
+    } finally {
+      setIsLoadingSlots(false)
+    }
+  }, [court, formattedDate, courtBookings, date])
+  
+  // Handle booking submission
+  const handleBookingSubmit = async () => {
+    if (!court || !date || !timeSlot || !duration) {
+      toast({
+        title: "Missing information",
+        description: "Please select court, date, time, and duration.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      // Parse the selected time
+      const [time, period] = timeSlot.split(" ")
+      let [hours, minutes] = time.split(":").map(Number)
+      
+      // Convert to 24-hour format
+      if (period === "PM" && hours < 12) hours += 12
+      if (period === "AM" && hours === 12) hours = 0
+      
+      const startTime = new Date(date)
+      startTime.setHours(hours, minutes, 0, 0)
+      
+      const endTime = new Date(startTime)
+      endTime.setHours(endTime.getHours() + parseInt(duration))
+      
+      // Create booking payload
+      const bookingData = {
+        courtId: court,
+        bookingDate: format(date, "yyyy-MM-dd"),
+        startTime: format(startTime, "HH:mm:ss"),
+        endTime: format(endTime, "HH:mm:ss"),
+        paymentMethod: "online", // Default payment method
+      }
+      
+      // Call the API
+      const result = await createBooking(bookingData).unwrap()
+      
+      // Show success message
+      toast({
+        title: "Booking successful!",
+        description: `Your booking for ${format(date, "PPP")} at ${timeSlot} has been confirmed.`,
+        variant: "default",
+      })
+      
+      // Reset form
+      setTimeSlot(undefined)
+      
+    } catch (err: any) {
+      console.error("Error creating booking:", err)
+      toast({
+        title: "Booking failed",
+        description: err.data?.message || "Failed to create booking. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -183,8 +293,19 @@ export default function BookingCalendar({
           </div>
         </div>
 
-        <Button className="w-full bg-green-600 hover:bg-green-700" disabled={!court || !date || !timeSlot}>
-          Proceed to Payment
+        <Button 
+          className="w-full bg-green-600 hover:bg-green-700" 
+          onClick={handleBookingSubmit}
+          disabled={!court || !date || !timeSlot || isCreatingBooking}
+        >
+          {isCreatingBooking ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            'Proceed to Payment'
+          )}
         </Button>
       </div>
     </div>

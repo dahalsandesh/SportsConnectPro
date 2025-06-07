@@ -71,6 +71,9 @@ export default function Navbar() {
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
+            <Link href="/my-bookings" className="text-gray-700 hover:text-green-600 font-medium">
+              My Bookings
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon" className="relative">
@@ -151,6 +154,13 @@ export default function Navbar() {
               onClick={() => setIsMenuOpen(false)}
             >
               List Your Venue
+            </Link>
+            <Link
+              href="/my-bookings"
+              className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              My Bookings
             </Link>
             <Link
               href="/contact"
