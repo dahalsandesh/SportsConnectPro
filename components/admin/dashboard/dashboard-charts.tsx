@@ -17,6 +17,8 @@ import {
   Legend,
 } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { useGetSportCategoriesQuery } from "@/redux/api/sportCategoryApi"
+import { Loader2 } from "lucide-react"
 
 // Sample data for charts
 const bookingData = [
@@ -113,7 +115,52 @@ export function RevenueChart() {
   )
 }
 
+import type { SportCategory } from "@/types/api"
+
+interface ChartData {
+  name: string
+  value: number
+}
+
 export function SportTypeChart() {
+  const { data, isLoading, isError } = useGetSportCategoriesQuery()
+
+  if (isLoading) {
+    return (
+      <Card className="col-span-3">
+        <CardHeader>
+          <CardTitle>Sport Categories</CardTitle>
+          <CardDescription>Loading sport category distribution...</CardDescription>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-[300px]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (isError || !data) {
+    return (
+      <Card className="col-span-3">
+        <CardHeader>
+          <CardTitle>Sport Categories</CardTitle>
+          <CardDescription>Error loading sport category data</CardDescription>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-[300px] text-destructive">
+          Failed to load sport category data
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Transform the API response to match the chart data format
+  // Transform the API response to match the chart data format
+  // Using sportCategory as the name and a default count of 1 since count isn't provided
+  const chartData: ChartData[] = data.map((category: SportCategory) => ({
+    name: category.sportCategory,
+    value: 1 // Default value since count isn't part of the SportCategory type
+  }))
+
   return (
     <Card className="col-span-3">
       <CardHeader>
@@ -125,7 +172,7 @@ export function SportTypeChart() {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={sportTypeData}
+                data={chartData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
@@ -134,11 +181,11 @@ export function SportTypeChart() {
                 fill="#8884d8"
                 dataKey="value"
               >
-                {sportTypeData.map((entry, index) => (
+                {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`${value}%`, "Percentage"]} />
+              <Tooltip formatter={(value) => [`${value} bookings`, "Count"]} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>

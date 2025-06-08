@@ -73,40 +73,37 @@ export function UserTypeTable({ userTypes, isLoading }: UserTypeTableProps) {
   }
 
   return (
-    <>
+    <div className="space-y-4">
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
               <TableHead>User Type</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-[100px] text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {userTypes.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={3} className="h-24 text-center">
-                  No user types found.
-                </TableCell>
-              </TableRow>
-            ) : (
+            {userTypes.length > 0 ? (
               userTypes.map((userType) => (
                 <TableRow key={userType.userTypeId}>
-                  <TableCell className="font-medium">{userType.userTypeId}</TableCell>
-                  <TableCell>{userType.userType}</TableCell>
+                  <TableCell className="font-medium">{userType.userType}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
+                        <Button variant="ghost" className="h-8 w-8 p-0">
                           <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>
-                          <Edit className="mr-2 h-4 w-4" /> Edit
+                        <DropdownMenuItem
+                          onClick={() => {
+                            // Handle edit
+                          }}
+                        >
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
@@ -116,13 +113,20 @@ export function UserTypeTable({ userTypes, isLoading }: UserTypeTableProps) {
                             setDeleteDialogOpen(true)
                           }}
                         >
-                          <Trash className="mr-2 h-4 w-4" /> Delete
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={2} className="h-24 text-center">
+                  No user types found.
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>
@@ -145,6 +149,6 @@ export function UserTypeTable({ userTypes, isLoading }: UserTypeTableProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   )
 }

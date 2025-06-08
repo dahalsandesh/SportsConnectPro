@@ -1,6 +1,6 @@
 "use client"
 
-import { useGetDashboardDataQuery } from "@/redux/api/dashboardApi"
+import { useGetDashboardDataQuery } from "@/redux/api/dashboard/dashboardApi"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Users, MapPin, Calendar, CreditCard } from "lucide-react"
 

@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import type { RootState } from "../../store/reducers"
 import { getBaseUrl } from "../baseApi"
 
+// Define interfaces for the API
 export interface City {
   cityId: string
   cityName: string
@@ -15,30 +16,28 @@ export interface UpdateCityRequest extends CreateCityRequest {
   cityId: string
 }
 
-export const citiesApi = createApi({
-  reducerPath: "citiesApi",
+// Create the API instance
+const api = createApi({
+  reducerPath: 'citiesApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${getBaseUrl()}/web/api/v1/admin`,
+    baseUrl: `${getBaseUrl()}/web/api/v1/adminapp`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token
       if (token) {
-        headers.set("Authorization", `token ${token}`)
+        headers.set('Authorization', `token ${token}`)
       }
       return headers
     },
   }),
-  tagTypes: ["Cities"],
+  tagTypes: ['Cities'],
   endpoints: (builder) => ({
     // Get all cities
     getAllCities: builder.query<City[], void>({
       query: () => "/GetAllCity",
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map(({ cityId }) => ({ type: 'Cities' as const, cityId })),
-              { type: 'Cities', id: 'LIST' },
-            ]
-          : [{ type: 'Cities', id: 'LIST' }],
+      providesTags: (result = []) => [
+        ...(result?.map(({ cityId }) => ({ type: 'Cities' as const, id: cityId })) || []),
+        { type: 'Cities', id: 'LIST' },
+      ],
     }),
 
     // Get city by ID
@@ -47,52 +46,55 @@ export const citiesApi = createApi({
         url: "/GetCityById",
         params: { cityId: id },
       }),
-      providesTags: (result, error, id) => [{ type: 'Cities', id }],
+      providesTags: (result, error, id) => [{ type: 'Cities' as const, id }],
     }),
 
     // Create a new city
-    createCity: builder.mutation<{ message: string }, CreateCityRequest>({
+    createCity: builder.mutation<City, CreateCityRequest>({
       query: (city) => ({
         url: "/CreateCity",
-        method: 'POST',
+        method: "POST",
         body: city,
       }),
       invalidatesTags: [{ type: 'Cities', id: 'LIST' }],
     }),
 
     // Update a city
-    updateCity: builder.mutation<{ message: string }, UpdateCityRequest>({
+    updateCity: builder.mutation<City, UpdateCityRequest>({
       query: ({ cityId, ...updates }) => ({
         url: "/UpdateCity",
-        method: 'PUT',
+        method: "PUT",
         body: updates,
         params: { cityId },
       }),
       invalidatesTags: (result, error, { cityId }) => [
-        { type: 'Cities', id: cityId },
-        { type: 'Cities', id: 'LIST' },
+        { type: 'Cities' as const, id: cityId },
+        { type: 'Cities' as const, id: 'LIST' },
       ],
     }),
 
     // Delete a city
-    deleteCity: builder.mutation<{ message: string }, string>({
+    deleteCity: builder.mutation<void, string>({
       query: (id) => ({
         url: "/DelCity",
-        method: 'DELETE',
-        params: { cityId: id },
+        method: "DELETE",
+        body: { cityId: id },
       }),
       invalidatesTags: (result, error, id) => [
-        { type: 'Cities', id },
-        { type: 'Cities', id: 'LIST' },
+        { type: 'Cities' as const, id },
+        { type: 'Cities' as const, id: 'LIST' },
       ],
     }),
   }),
 })
 
+// Export hooks for usage in functional components
 export const {
   useGetAllCitiesQuery,
   useGetCityByIdQuery,
   useCreateCityMutation,
   useUpdateCityMutation,
   useDeleteCityMutation,
-} = citiesApi
+} = api
+
+export const citiesApi = api

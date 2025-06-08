@@ -1,53 +1,49 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import type { RootState } from "../../store/reducers"
-import { getBaseUrl } from "../baseApi"
+import { baseApi } from "../baseApi"
 
 export interface UserType {
-  id: string
-  name: string
-  description: string
+  userTypeId: string
+  userType: string
 }
 
-export const userTypesApi = createApi({
-  reducerPath: "userTypesApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${getBaseUrl()}/web/api/v1/admin`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token
-      if (token) {
-        headers.set("Authorization", `token ${token}`)
-      }
-      return headers
-    },
-  }),
-  tagTypes: ["UserTypes"],
+export const userTypesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllUserTypes: builder.query<UserType[], void>({
-      query: () => "user-types",
+      query: () => "/web/api/v1/adminapp/GetAllUserType",
       providesTags: ["UserTypes"],
     }),
 
-    createUserType: builder.mutation<{ message: string }, { name: string; description: string }>({
+    getUserTypeById: builder.query<UserType, string>({
+      query: (userTypeId) => ({
+        url: "/web/api/v1/adminapp/GetUserTypeById",
+        params: { userTypeId },
+      }),
+      providesTags: (result, error, id) => [{ type: "UserTypes", id }],
+    }),
+
+    createUserType: builder.mutation<{ message: string }, { userType: string }>({
       query: (data) => ({
-        url: "user-types",
+        url: "/web/api/v1/adminapp/CreateUserType",
         method: "POST",
         body: data,
       }),
       invalidatesTags: ["UserTypes"],
     }),
 
-    deleteUserType: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
-        url: `user-types/${id}`,
-        method: "DELETE",
+    deleteUserType: builder.mutation<{ message: string }, { userTypeId: string }>({
+      query: (data) => ({
+        url: "/web/api/v1/adminapp/DelUserType",
+        method: "POST",
+        body: data,
       }),
       invalidatesTags: ["UserTypes"],
     }),
   }),
+  overrideExisting: false,
 })
 
 export const {
   useGetAllUserTypesQuery,
+  useGetUserTypeByIdQuery,
   useCreateUserTypeMutation,
   useDeleteUserTypeMutation,
 } = userTypesApi
