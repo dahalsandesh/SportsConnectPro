@@ -9098,6 +9098,694 @@
 							]
 						}
 					]
+				},
+				{
+					"name": "ticket",
+					"item": [
+						{
+							"name": "create-ticket",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "token 53b9b0c7ec54d42eda567304384fa36a0e2e652e",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"courtId\" : \"5236984e-2bf9-49e5-a248-ae418661ba52\",\n    \"date\":\"2025-05-04\",\n    \"ticketList\":[\n        {\n            \"startTime\":\"10:00\",\n            \"endTime\":\"11:00\",\n            \"specialPrice\":\"1200\" // give fees or give null value\n        },\n        {\n            \"startTime\":\"12:00\",\n            \"endTime\":\"13:00\",\n            \"specialPrice\":null\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/web/api/v1/venue/CreateTicket",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"web",
+										"api",
+										"v1",
+										"venue",
+										"CreateTicket"
+									],
+									"query": [
+										{
+											"key": "firstName",
+											"value": "Aryan",
+											"disabled": true
+										},
+										{
+											"key": "lastName",
+											"value": "shah",
+											"disabled": true
+										},
+										{
+											"key": "userName",
+											"value": "Aryan11",
+											"disabled": true
+										},
+										{
+											"key": "email",
+											"value": "aaryanshah615@gmail.com",
+											"disabled": true
+										},
+										{
+											"key": "password",
+											"value": "Pankaj123",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "New Request",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "token 53b9b0c7ec54d42eda567304384fa36a0e2e652e",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"courtId\" : \"5236984e-2bf9-49e5-a248-ae418661ba52\",\n    \"date\":\"2025-05-04\",\n    \"ticketList\":[\n        {\n            \"startTime\":\"10:00\",\n            \"endTime\":\"11:00\",\n            \"specialPrice\":\"1200\" // give fees or give null value\n        },\n        {\n            \"startTime\":\"12:00\",\n            \"endTime\":\"13:00\",\n            \"specialPrice\":null\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/web/api/v1/venue/CreateTicket",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"web",
+												"api",
+												"v1",
+												"venue",
+												"CreateTicket"
+											],
+											"query": [
+												{
+													"key": "firstName",
+													"value": "Aryan",
+													"disabled": true
+												},
+												{
+													"key": "lastName",
+													"value": "shah",
+													"disabled": true
+												},
+												{
+													"key": "userName",
+													"value": "Aryan11",
+													"disabled": true
+												},
+												{
+													"key": "email",
+													"value": "aaryanshah615@gmail.com",
+													"disabled": true
+												},
+												{
+													"key": "password",
+													"value": "Pankaj123",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Wed, 04 Jun 2025 14:17:51 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.13.3"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "POST, OPTIONS"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Length",
+											"value": "41"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "same-origin"
+										},
+										{
+											"key": "Cross-Origin-Opener-Policy",
+											"value": "same-origin"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Ticket Created Successfully\"\n}"
+								}
+							]
+						},
+						{
+							"name": "get-ticket-by-date",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "token 53b9b0c7ec54d42eda567304384fa36a0e2e652e",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"courtId\" : \"5236984e-2bf9-49e5-a248-ae418661ba52\",\n    \"date\":\"2025-05-04\",\n    \"ticketList\":[\n        {\n            \"startTime\":\"10:00\",\n            \"endTime\":\"11:00\",\n            \"specialPrice\":\"1200\" // give fees or give null value\n        },\n        {\n            \"startTime\":\"12:00\",\n            \"endTime\":\"13:00\",\n            \"specialPrice\":null\n        }\n    ]\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetTicket?courtId=5236984e-2bf9-49e5-a248-ae418661ba52&date=2025-05-04",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"web",
+										"api",
+										"v1",
+										"venue",
+										"GetTicket"
+									],
+									"query": [
+										{
+											"key": "firstName",
+											"value": "Aryan",
+											"disabled": true
+										},
+										{
+											"key": "lastName",
+											"value": "shah",
+											"disabled": true
+										},
+										{
+											"key": "userName",
+											"value": "Aryan11",
+											"disabled": true
+										},
+										{
+											"key": "email",
+											"value": "aaryanshah615@gmail.com",
+											"disabled": true
+										},
+										{
+											"key": "password",
+											"value": "Pankaj123",
+											"disabled": true
+										},
+										{
+											"key": "courtId",
+											"value": "5236984e-2bf9-49e5-a248-ae418661ba52"
+										},
+										{
+											"key": "date",
+											"value": "2025-05-04"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "get-ticket-by-date",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "token 53b9b0c7ec54d42eda567304384fa36a0e2e652e",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"courtId\" : \"5236984e-2bf9-49e5-a248-ae418661ba52\",\n    \"date\":\"2025-05-04\",\n    \"ticketList\":[\n        {\n            \"startTime\":\"10:00\",\n            \"endTime\":\"11:00\",\n            \"specialPrice\":\"1200\" // give fees or give null value\n        },\n        {\n            \"startTime\":\"12:00\",\n            \"endTime\":\"13:00\",\n            \"specialPrice\":null\n        }\n    ]\n}"
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetTicket?courtId=5236984e-2bf9-49e5-a248-ae418661ba52&date=2025-05-04",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"web",
+												"api",
+												"v1",
+												"venue",
+												"GetTicket"
+											],
+											"query": [
+												{
+													"key": "firstName",
+													"value": "Aryan",
+													"disabled": true
+												},
+												{
+													"key": "lastName",
+													"value": "shah",
+													"disabled": true
+												},
+												{
+													"key": "userName",
+													"value": "Aryan11",
+													"disabled": true
+												},
+												{
+													"key": "email",
+													"value": "aaryanshah615@gmail.com",
+													"disabled": true
+												},
+												{
+													"key": "password",
+													"value": "Pankaj123",
+													"disabled": true
+												},
+												{
+													"key": "courtId",
+													"value": "5236984e-2bf9-49e5-a248-ae418661ba52"
+												},
+												{
+													"key": "date",
+													"value": "2025-05-04"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Wed, 04 Jun 2025 14:29:19 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.13.3"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "GET, HEAD, OPTIONS"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Length",
+											"value": "281"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "same-origin"
+										},
+										{
+											"key": "Cross-Origin-Opener-Policy",
+											"value": "same-origin"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": \"b3fcc989-9913-494d-a31c-da0a5c2fa673\",\n        \"date\": \"2025-05-04\",\n        \"startTime\": \"12:00:00\",\n        \"endTime\": \"13:00:00\",\n        \"isActive\": true,\n        \"rate\": 1000\n    },\n    {\n        \"id\": \"cd278bab-9e32-49bc-b490-66c574a4aa51\",\n        \"date\": \"2025-05-04\",\n        \"startTime\": \"10:00:00\",\n        \"endTime\": \"11:00:00\",\n        \"isActive\": true,\n        \"rate\": 1200\n    }\n]"
+								}
+							]
+						},
+						{
+							"name": "get-ticket-by-id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetTicketById?ticketId=b3fcc989-9913-494d-a31c-da0a5c2fa673",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"web",
+										"api",
+										"v1",
+										"venue",
+										"GetTicketById"
+									],
+									"query": [
+										{
+											"key": "ticketId",
+											"value": "b3fcc989-9913-494d-a31c-da0a5c2fa673"
+										},
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "New Request",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetTicketById?ticketId=b3fcc989-9913-494d-a31c-da0a5c2fa673",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"web",
+												"api",
+												"v1",
+												"venue",
+												"GetTicketById"
+											],
+											"query": [
+												{
+													"key": "ticketId",
+													"value": "b3fcc989-9913-494d-a31c-da0a5c2fa673"
+												},
+												{
+													"key": "",
+													"value": null,
+													"disabled": true
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Wed, 04 Jun 2025 14:29:44 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.13.3"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "GET, HEAD, OPTIONS"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Length",
+											"value": "139"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "same-origin"
+										},
+										{
+											"key": "Cross-Origin-Opener-Policy",
+											"value": "same-origin"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": \"b3fcc989-9913-494d-a31c-da0a5c2fa673\",\n    \"date\": \"2025-05-04\",\n    \"startTime\": \"12:00:00\",\n    \"endTime\": \"13:00:00\",\n    \"isActive\": true,\n    \"rate\": 1000\n}"
+								}
+							]
+						},
+						{
+							"name": "update",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "token 53b9b0c7ec54d42eda567304384fa36a0e2e652e",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"courtId\": \"5236984e-2bf9-49e5-a248-ae418661ba52\",\n    \"ticketId\" : \"b3fcc989-9913-494d-a31c-da0a5c2fa673\",\n    \"date\":\"2025-05-04\",\n    \"startTime\":\"12:00\",\n    \"endTime\":\"13:00\",\n    \"rate\":\"1200\" ,\n    \"isActive\":1       \n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/web/api/v1/venue/UpdateTicket",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"web",
+										"api",
+										"v1",
+										"venue",
+										"UpdateTicket"
+									],
+									"query": [
+										{
+											"key": "firstName",
+											"value": "Aryan",
+											"disabled": true
+										},
+										{
+											"key": "lastName",
+											"value": "shah",
+											"disabled": true
+										},
+										{
+											"key": "userName",
+											"value": "Aryan11",
+											"disabled": true
+										},
+										{
+											"key": "email",
+											"value": "aaryanshah615@gmail.com",
+											"disabled": true
+										},
+										{
+											"key": "password",
+											"value": "Pankaj123",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "New Request",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "token 53b9b0c7ec54d42eda567304384fa36a0e2e652e",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"courtId\": \"5236984e-2bf9-49e5-a248-ae418661ba52\",\n    \"ticketId\" : \"b3fcc989-9913-494d-a31c-da0a5c2fa673\",\n    \"date\":\"2025-05-04\",\n    \"startTime\":\"12:00\",\n    \"endTime\":\"13:00\",\n    \"rate\":\"1200\" ,\n    \"isActive\":1       \n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/web/api/v1/venue/UpdateTicket",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"web",
+												"api",
+												"v1",
+												"venue",
+												"UpdateTicket"
+											],
+											"query": [
+												{
+													"key": "firstName",
+													"value": "Aryan",
+													"disabled": true
+												},
+												{
+													"key": "lastName",
+													"value": "shah",
+													"disabled": true
+												},
+												{
+													"key": "userName",
+													"value": "Aryan11",
+													"disabled": true
+												},
+												{
+													"key": "email",
+													"value": "aaryanshah615@gmail.com",
+													"disabled": true
+												},
+												{
+													"key": "password",
+													"value": "Pankaj123",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Wed, 04 Jun 2025 14:30:18 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.13.3"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "POST, OPTIONS"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Length",
+											"value": "38"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "same-origin"
+										},
+										{
+											"key": "Cross-Origin-Opener-Policy",
+											"value": "same-origin"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Update Data Successfully\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "booking",
+					"item": []
 				}
 			]
 		}

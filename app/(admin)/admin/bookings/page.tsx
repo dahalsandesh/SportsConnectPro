@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { DataTable } from "@/components/ui/data-table"
 import { columns } from "./columns"
 import { Button } from "@/components/ui/button"
 import { Plus, RefreshCw, Calendar } from "lucide-react"
-import { useGetAllBookingsQuery } from "@/redux/api/bookingApi"
+import { useGetBookingsQuery } from "@/redux/api/bookings/bookingsApi"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/components/ui/use-toast"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -16,13 +16,39 @@ export default function BookingsPage() {
   const { toast } = useToast()
   const [isRefreshing, setIsRefreshing] = useState(false)
   
+  const [page, setPage] = React.useState(1)
+  const [pageSize, setPageSize] = React.useState(10)
+  
   const { 
-    data: bookings = [], 
+    data: response, 
     isLoading, 
-    isError, 
-    isFetching,
+    error, 
     refetch 
-  } = useGetAllBookingsQuery()
+  } = useGetBookingsQuery({ page, limit: pageSize })
+  
+  // Transform the API response to match the expected Booking type
+  const bookings = React.useMemo(() => 
+    (response?.data || []).map(booking => ({
+      id: booking.bookingId,
+      userName: booking.userName || 'N/A',
+      venueName: booking.court?.venueName || 'N/A',
+      courtName: booking.court?.courtName || 'N/A',
+      bookingDate: booking.bookingDate,
+      date: booking.bookingDate, // Using the same as bookingDate for now
+      startTime: booking.startTime,
+      endTime: booking.endTime,
+      status: booking.status,
+      totalAmount: booking.totalAmount || 0,
+      paymentStatus: booking.paymentStatus,
+      createdAt: booking.createdAt,
+      updatedAt: booking.updatedAt
+    })) || [],
+    [response?.data]
+  )
+  
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage + 1) // Table is 0-indexed, API is 1-indexed
+  }
 
   const handleRefresh = async () => {
     try {
@@ -53,7 +79,7 @@ export default function BookingsPage() {
           <p className="text-muted-foreground">
             {isDataLoading 
               ? "Loading..." 
-              : `Showing ${bookings.length} ${bookings.length === 1 ? 'booking' : 'bookings'}`}
+              : `Showing ${bookings.length} ${bookings.length === 1 ? 'booking' : 'bookings'} of ${response?.total || 0}`}
           </p>
         </div>
         <div className="flex space-x-2">
@@ -93,7 +119,7 @@ export default function BookingsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          {isError ? (
+          {error ? (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
@@ -124,11 +150,41 @@ export default function BookingsPage() {
               </Button>
             </div>
           ) : (
-            <DataTable 
-              columns={columns} 
-              data={bookings} 
-              searchKey="userName"
-            />
+            <div className="space-y-4">
+              <DataTable 
+                columns={columns} 
+                data={bookings} 
+                searchKey="userName"
+              />
+              {response && (
+                <div className="flex items-center justify-between px-2">
+                  <div className="text-sm text-muted-foreground">
+                    Showing {bookings.length} of {response.total} bookings
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(page - 2)} // -2 because page is 1-indexed
+                      disabled={page <= 1}
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-sm">
+                      Page {page} of {response.totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(page)} // page is already 1-indexed, so we pass as is
+                      disabled={page >= response.totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </CardContent>
       </Card>

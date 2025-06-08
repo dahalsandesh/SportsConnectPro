@@ -13,7 +13,7 @@ export type Booking = {
   date: string
   startTime: string
   endTime: string
-  status: "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED"
+  status: "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED" | "REJECTED"
   totalAmount: number
   paymentStatus: "PENDING" | "PAID" | "REFUNDED" | "FAILED"
   createdAt: string
@@ -64,7 +64,8 @@ export const columns: ColumnDef<Booking>[] = [
         PENDING: { label: "Pending", variant: "outline" },
         CONFIRMED: { label: "Confirmed", variant: "default" },
         CANCELLED: { label: "Cancelled", variant: "destructive" },
-        COMPLETED: { label: "Completed", variant: "secondary" }
+        COMPLETED: { label: "Completed", variant: "secondary" },
+        REJECTED: { label: "Rejected", variant: "destructive" }
       }
       return <Badge variant={statusMap[status]?.variant as any}>{statusMap[status]?.label}</Badge>
     }

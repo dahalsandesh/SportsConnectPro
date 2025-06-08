@@ -24,10 +24,10 @@ interface CityListProps {
 export function CityList({ cities, onAddCity, onEditCity, onDeleteCity }: CityListProps) {
   const [search, setSearch] = useState("")
 
-  const filteredCities = cities.filter(city =>
-    city.name.toLowerCase().includes(search.toLowerCase()) ||
-    city.state.toLowerCase().includes(search.toLowerCase()) ||
-    city.country.toLowerCase().includes(search.toLowerCase())
+  const filteredCities = (cities || []).filter(city =>
+    city?.name?.toLowerCase().includes(search.toLowerCase()) ||
+    city?.state?.toLowerCase().includes(search.toLowerCase()) ||
+    city?.country?.toLowerCase().includes(search.toLowerCase())
   )
 
   return (

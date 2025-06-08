@@ -30,18 +30,29 @@ export const baseApi = createApi({
     },
   }),
   tagTypes: [
+    // Core entities
     "UserTypes",
     "Cities",
     "PaymentTypes",
     "Statuses",
     "SportCategories",
     "Genders",
+    
+    // Business domains
     "Dashboard",
     "Posts",
     "VenueApplications",
     "Venues",
     "Courts",
     "Profile",
+    "Bookings",
+    
+    // Newly added tags
+    "Sports",
+    "TimeSlots",
+    "Reviews",
+    "Payments",
+    "Notifications"
   ],
   endpoints: () => ({}),
 })

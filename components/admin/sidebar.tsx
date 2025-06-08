@@ -4,8 +4,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { LayoutDashboard as LayoutDashboardIcon } from "lucide-react"
 import {
-  LayoutDashboard,
   Users,
   MapPin,
   Calendar,
@@ -23,7 +23,7 @@ export const sidebarItems = [
   {
     title: "Dashboard",
     href: "/admin",
-    icon: <LayoutDashboard className="h-5 w-5" />,
+    icon: <LayoutDashboardIcon className="h-5 w-5" />,
   },
   {
     title: "Users",

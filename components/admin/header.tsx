@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { useAppSelector, useAppDispatch } from "@/hooks/redux"
@@ -82,20 +82,27 @@ export function AdminHeader() {
                   </Link>
                 </div>
                 <nav className="flex-1 space-y-1 p-4">
-                  {sidebarItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${
-                        pathname === item.href
-                          ? "bg-accent text-accent-foreground"
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                      }`}
-                    >
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {item.title}
-                    </Link>
-                  ))}
+                  {sidebarItems.map((item) => {
+                    // Clone the icon element to ensure it has the correct className
+                    const Icon = () => item.icon && React.cloneElement(item.icon, { 
+                      className: 'mr-2 h-4 w-4' 
+                    });
+                    
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`flex items-center rounded-md px-3 py-2 text-sm font-medium ${
+                          pathname === item.href
+                            ? "bg-accent text-accent-foreground"
+                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                        }`}
+                      >
+                        <Icon />
+                        {item.title}
+                      </Link>
+                    );
+                  })}
                 </nav>
               </div>
             </SheetContent>
