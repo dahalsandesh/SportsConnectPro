@@ -141,6 +141,43 @@ export const venueManagementApi = baseApi.injectEndpoints({
       query: () => "/web/api/v1/venue/GetDashboardData",
       providesTags: ["Dashboard"],
     }),
+
+    // News and Media
+    createVenuePost: builder.mutation<ApiResponse<null>, FormData>({
+      query: (formData) => ({
+        url: "/web/api/v1/venue/CreatePost",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["VenuePosts"],
+    }),
+    getVenuePosts: builder.query<any[], void>({
+      query: () => "/web/api/v1/venue/GetAllPosts",
+      providesTags: ["VenuePosts"],
+    }),
+    getVenuePostDetails: builder.query<any, string>({
+      query: (postId) => ({
+        url: "/web/api/v1/venue/GetPostDetails",
+        params: { postId },
+      }),
+      providesTags: (result, error, id) => [{ type: "VenuePosts", id }],
+    }),
+    updateVenuePost: builder.mutation<ApiResponse<null>, FormData>({
+      query: (formData) => ({
+        url: "/web/api/v1/venue/UpdatePost",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["VenuePosts"],
+    }),
+    deleteVenuePost: builder.mutation<ApiResponse<null>, { postId: string }>({
+      query: ({ postId }) => ({
+        url: "/web/api/v1/venue/DeletePost",
+        method: "POST",
+        body: { postId },
+      }),
+      invalidatesTags: ["VenuePosts"],
+    }),
   }),
 })
 
@@ -154,4 +191,9 @@ export const {
   useUpdateCourtMutation,
   useUploadCourtImageMutation,
   useGetVenueDashboardDataQuery,
+  useCreateVenuePostMutation,
+  useGetVenuePostsQuery,
+  useGetVenuePostDetailsQuery,
+  useUpdateVenuePostMutation,
+  useDeleteVenuePostMutation,
 } = venueManagementApi

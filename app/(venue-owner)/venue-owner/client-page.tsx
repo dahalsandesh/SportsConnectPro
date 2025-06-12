@@ -24,6 +24,8 @@ import { useGetVenuesQuery } from "@/redux/api/venues/venuesApi";
 import { useAppSelector } from "@/redux/store/hooks";
 import { useGetCourtsQuery } from "@/redux/api/venueManagementApi";
 import SlotManagement from "./SlotManagement";
+import React from "react";
+import VenueNewsMedia from "./VenueNewsMedia";
 
 const COLORS = ["#16a34a", "#0ea5e9", "#f59e0b"];
 
@@ -258,6 +260,7 @@ function VenueCardWithCourts({ venue }: { venue: any }) {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="venues">Venues</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
+          <TabsTrigger value="news">News & Media</TabsTrigger>
           <TabsTrigger value="payments">Payments</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
@@ -424,6 +427,20 @@ function VenueCardWithCourts({ venue }: { venue: any }) {
           <Card>
             <CardHeader>
               <CardTitle>My Venues</CardTitle>
+
+        <TabsContent value="news" className="space-y-4">
+          {/* Venue News & Media Management */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Venue News & Media</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {/* News/media management UI */}
+              {/* VenueNewsMedia component renders the news/media management UI */}
+              <VenueNewsMedia />
+            </CardContent>
+          </Card>
+        </TabsContent>
               <CardDescription>Manage your venues</CardDescription>
             </CardHeader>
             <CardContent>
