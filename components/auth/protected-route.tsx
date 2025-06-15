@@ -17,32 +17,33 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   const { isAuthenticated, user, loading } = useAppSelector((state) => state.auth)
   const router = useRouter()
 
+  // Always render the same output during SSR and first client render
+  // Only perform redirects in useEffect (client-side)
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      router.push("/login")
+      router.replace("/login")
       return
     }
-
     if (!loading && isAuthenticated && requiredRole) {
       const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole]
-
       if (!roles.includes(user.userType)) {
         // Redirect based on user type
         switch (user.userType) {
           case UserType.Admin:
-            router.push("/admin")
+            router.replace("/admin")
             break
-          case UserType.VenueOwner:
-            router.push("/venue-owner")
+          case UserType.VenueUsers:
+            router.replace("/venue-owner")
             break
           default:
-            router.push("/dashboard")
+            router.replace("/dashboard")
         }
       }
     }
   }, [isAuthenticated, loading, router, user, requiredRole])
 
-  if (loading) {
+  // Always render something (never return null), so SSR and client match
+  if (loading || !isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col items-center gap-2">
@@ -53,14 +54,16 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     )
   }
 
-  if (!isAuthenticated) {
-    return null
-  }
-
+  // If user is authenticated but doesn't have the required role, show nothing (could also show an unauthorized message)
   if (requiredRole) {
     const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole]
     if (!roles.includes(user.userType)) {
-      return null
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen text-red-500">
+          <h2 className="text-2xl font-bold mb-2">Unauthorized</h2>
+          <p>You do not have permission to access this page.</p>
+        </div>
+      )
     }
   }
 

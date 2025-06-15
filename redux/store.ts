@@ -4,7 +4,7 @@ import { rootReducer, RootState } from "./store/reducers"
 import { apiMiddlewares } from "./store/middleware"
 
 // Create the store
-export const store = configureStore({
+const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(...apiMiddlewares),
@@ -15,3 +15,7 @@ export const store = configureStore({
 setupListeners(store.dispatch)
 
 export type AppDispatch = typeof store.dispatch
+export type AppStore = typeof store
+
+// Export the store and types
+export { store }

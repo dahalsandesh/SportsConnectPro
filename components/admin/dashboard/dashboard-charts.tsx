@@ -88,7 +88,7 @@ export function RevenueChart() {
     <Card className="col-span-4">
       <CardHeader>
         <CardTitle>Revenue Overview</CardTitle>
-        <CardDescription>Monthly revenue in ₹</CardDescription>
+        <CardDescription>Monthly revenue in Rs.</CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
         <ChartContainer

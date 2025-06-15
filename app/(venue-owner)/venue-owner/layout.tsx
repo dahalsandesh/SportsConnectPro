@@ -16,7 +16,7 @@ export default function VenueOwnerLayout({
   children: React.ReactNode
 }) {
   return (
-    <ProtectedRoute requiredRole={UserType.VenueOwner}>
+    <ProtectedRoute requiredRole={UserType.VenueUsers}>
       <div className="flex min-h-screen flex-col">
         <VenueOwnerHeader />
         <div className="flex flex-1">

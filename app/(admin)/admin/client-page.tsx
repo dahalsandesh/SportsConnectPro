@@ -55,7 +55,7 @@ export default function AdminDashboardClient() {
                 <CreditCard className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">₹245,678</div>
+                <div className="text-2xl font-bold">Rs.245,678</div>
                 <div className="flex items-center text-xs text-muted-foreground">
                   <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
                   <span className="text-green-500 font-medium">+18%</span> from last month

@@ -7358,6 +7358,157 @@
 							]
 						}
 					]
+				},
+				{
+					"name": "notification",
+					"item": [
+						{
+							"name": "get-notification",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "token d174c61bef554459ec7a8420dca80810d1deda2c",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:8000/web/api/v1/adminapp/GetNotification",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"web",
+										"api",
+										"v1",
+										"adminapp",
+										"GetNotification"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "New Request",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "token d174c61bef554459ec7a8420dca80810d1deda2c",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetNotification",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"web",
+												"api",
+												"v1",
+												"venue",
+												"GetNotification"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Sat, 14 Jun 2025 06:49:53 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.13.3"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "GET, HEAD, OPTIONS"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Length",
+											"value": "30"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "same-origin"
+										},
+										{
+											"key": "Cross-Origin-Opener-Policy",
+											"value": "same-origin"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"count\": 0,\n    \"notifications\": []\n}"
+								}
+							]
+						},
+						{
+							"name": "get-notification-by-id",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/web/api/v1/adminapp/GetNotificationById?notificationId=5236984e-2bf9-49e5-a248-ae418661ba52",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"web",
+										"api",
+										"v1",
+										"adminapp",
+										"GetNotificationById"
+									],
+									"query": [
+										{
+											"key": "notificationId",
+											"value": "5236984e-2bf9-49e5-a248-ae418661ba52"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		},
@@ -9785,7 +9936,538 @@
 				},
 				{
 					"name": "booking",
-					"item": []
+					"item": [
+						{
+							"name": "get-all-booking",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "token d174c61bef554459ec7a8420dca80810d1deda2c",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetBooking?courtId=5236984e-2bf9-49e5-a248-ae418661ba52&startDate=2020-01-01&endDate=2026-01-01",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"web",
+										"api",
+										"v1",
+										"venue",
+										"GetBooking"
+									],
+									"query": [
+										{
+											"key": "courtId",
+											"value": "5236984e-2bf9-49e5-a248-ae418661ba52"
+										},
+										{
+											"key": "startDate",
+											"value": "2020-01-01"
+										},
+										{
+											"key": "endDate",
+											"value": "2026-01-01"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "get-all-booking",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "token d174c61bef554459ec7a8420dca80810d1deda2c",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetBooking?courtId=5236984e-2bf9-49e5-a248-ae418661ba52&startDate=2020-01-01&endDate=2026-01-01",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"web",
+												"api",
+												"v1",
+												"venue",
+												"GetBooking"
+											],
+											"query": [
+												{
+													"key": "courtId",
+													"value": "5236984e-2bf9-49e5-a248-ae418661ba52"
+												},
+												{
+													"key": "startDate",
+													"value": "2020-01-01"
+												},
+												{
+													"key": "endDate",
+													"value": "2026-01-01"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Sat, 14 Jun 2025 08:07:56 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.13.3"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "GET, HEAD, OPTIONS"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Length",
+											"value": "213"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "same-origin"
+										},
+										{
+											"key": "Cross-Origin-Opener-Policy",
+											"value": "same-origin"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"bookingId\": \"1dd826f0-8459-482c-b08e-4fcf714e6a5e\",\n        \"BookerName\": \"PankajShah\",\n        \"status\": \"Pending\",\n        \"paymentMethod\": \"Cash\",\n        \"totalPrice\": 5000,\n        \"bookDate\": \"2025-05-04\",\n        \"timeSlot\": \"12:00:00.000000 - 13:00:00.000000\"\n    }\n]"
+								}
+							]
+						},
+						{
+							"name": "get-booking-by-id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetBookingById?bookingId=1dd826f0-8459-482c-b08e-4fcf714e6a5e",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"web",
+										"api",
+										"v1",
+										"venue",
+										"GetBookingById"
+									],
+									"query": [
+										{
+											"key": "bookingId",
+											"value": "1dd826f0-8459-482c-b08e-4fcf714e6a5e"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "get-booking-by-id",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetBookingById?bookingId=1dd826f0-8459-482c-b08e-4fcf714e6a5e",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"web",
+												"api",
+												"v1",
+												"venue",
+												"GetBookingById"
+											],
+											"query": [
+												{
+													"key": "bookingId",
+													"value": "1dd826f0-8459-482c-b08e-4fcf714e6a5e"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Sat, 14 Jun 2025 14:32:11 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.13.3"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "GET, HEAD, OPTIONS"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Length",
+											"value": "207"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "same-origin"
+										},
+										{
+											"key": "Cross-Origin-Opener-Policy",
+											"value": "same-origin"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"bookingId\": \"1dd826f0-8459-482c-b08e-4fcf714e6a5e\",\n    \"BookerName\": \"Pankaj Shah\",\n    \"status\": \"Pending\",\n    \"paymentMethod\": \"Cash\",\n    \"totalPrice\": null,\n    \"bookDate\": \"2025-05-04\",\n    \"startTime\": \"12:00:00\",\n    \"endTime\": \"13:00:00\"\n}"
+								}
+							]
+						},
+						{
+							"name": "update-status-booking",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "token d174c61bef554459ec7a8420dca80810d1deda2c",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"statusId\":\"a4c41116-fd4d-4aa7-ba74-d7dcb57e1ff9\",\n    \"bookingId\":\"1dd826f0-8459-482c-b08e-4fcf714e6a5e\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/web/api/v1/venue/UpdateBookingStatus",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"web",
+										"api",
+										"v1",
+										"venue",
+										"UpdateBookingStatus"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "New Request",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "token d174c61bef554459ec7a8420dca80810d1deda2c",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"statusId\":\"a4c41116-fd4d-4aa7-ba74-d7dcb57e1ff9\",\n    \"bookingId\":\"1dd826f0-8459-482c-b08e-4fcf714e6a5e\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/web/api/v1/venue/UpdateBookingStatus",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"web",
+												"api",
+												"v1",
+												"venue",
+												"UpdateBookingStatus"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Sat, 14 Jun 2025 14:39:45 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.13.3"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "POST, OPTIONS"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Length",
+											"value": "49"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "same-origin"
+										},
+										{
+											"key": "Cross-Origin-Opener-Policy",
+											"value": "same-origin"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Booking Status Updated Successfully\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "notification",
+					"item": [
+						{
+							"name": "get-notification",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "token d174c61bef554459ec7a8420dca80810d1deda2c",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetNotification",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"web",
+										"api",
+										"v1",
+										"venue",
+										"GetNotification"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "New Request",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "token d174c61bef554459ec7a8420dca80810d1deda2c",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetNotification",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"web",
+												"api",
+												"v1",
+												"venue",
+												"GetNotification"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Sat, 14 Jun 2025 06:49:53 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.13.3"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "GET, HEAD, OPTIONS"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Length",
+											"value": "30"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "Referrer-Policy",
+											"value": "same-origin"
+										},
+										{
+											"key": "Cross-Origin-Opener-Policy",
+											"value": "same-origin"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"count\": 0,\n    \"notifications\": []\n}"
+								}
+							]
+						},
+						{
+							"name": "get-notification-by-id",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/web/api/v1/venue/GetNotificationById?notificationId=5236984e-2bf9-49e5-a248-ae418661ba52",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"web",
+										"api",
+										"v1",
+										"venue",
+										"GetNotificationById"
+									],
+									"query": [
+										{
+											"key": "notificationId",
+											"value": "5236984e-2bf9-49e5-a248-ae418661ba52"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}

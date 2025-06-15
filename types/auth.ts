@@ -59,5 +59,6 @@ export interface ChangePasswordResponse {
 export enum UserType {
   NormalUsers = "NormalUsers",
   VenueOwner = "VenueOwner",
+  VenueUsers = "VenueUsers",
   Admin = "Admin",
 }

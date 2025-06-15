@@ -124,7 +124,7 @@ export default function DashboardPage() {
                       <p className="text-sm font-medium">{booking.court?.venueName} - {booking.court?.courtName}</p>
                       <p className="text-xs text-muted-foreground">{booking.bookingDate} • {booking.startTime} - {booking.endTime}</p>
                     </div>
-                    <div className="text-sm font-medium">₹{booking.totalAmount}</div>
+                    <div className="text-sm font-medium">Rs.{booking.totalAmount}</div>
                   </div>
                 ))
               )}
@@ -152,7 +152,7 @@ export default function DashboardPage() {
                   <CreditCard className="h-4 w-4 text-blue-600" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm">Payment of ₹1,200 completed</p>
+                  <p className="text-sm">Payment of Rs.1,200 completed</p>
                   <p className="text-xs text-muted-foreground">2 days ago</p>
                 </div>
               </div>

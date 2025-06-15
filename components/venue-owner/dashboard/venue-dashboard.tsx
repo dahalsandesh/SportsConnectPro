@@ -36,7 +36,7 @@ export function VenueDashboard() {
     },
     {
       title: "Total Revenue",
-      value: `₹${dashboardData?.totalRevenue || 0}`,
+      value: `Rs.${dashboardData?.totalRevenue || 0}`,
       icon: DollarSign,
       description: "Revenue generated",
       color: "text-green-600",

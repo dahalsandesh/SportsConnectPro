@@ -36,7 +36,7 @@ import { BookingChart } from "@/components/admin/dashboard/booking-chart";
 import { RevenueChart } from "@/components/admin/dashboard/revenue-chart";
 import { subMonths, startOfMonth, format } from "date-fns";
 
-export default function VenueOwnerDashboardClient() {
+export default function VenueOwnerDashboard() {
   const { user } = useAppSelector((state) => state.auth);
   const { data: venues = [], isLoading, isError } = useGetVenuesQuery({});
   const ownerVenues = venues.filter((venue) => venue.ownerEmail === user?.email);
@@ -81,6 +81,8 @@ export default function VenueOwnerDashboardClient() {
     return { date: month + '-01', revenue, target: revenue * 1.1 };
   });
 
+
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -121,7 +123,7 @@ export default function VenueOwnerDashboardClient() {
             ) : isDashboardError ? (
               <div className="text-red-500">Error</div>
             ) : (
-              <div className="text-2xl font-bold">₹{dashboardData?.totalRevenue?.toLocaleString() ?? 0}</div>
+              <div className="text-2xl font-bold">Rs.{dashboardData?.totalRevenue?.toLocaleString() ?? 0}</div>
             )}
           </CardContent>
         </Card>
@@ -196,11 +198,11 @@ export default function VenueOwnerDashboardClient() {
   );
 }
 
-
 // Child component for venue card with courts
 function VenueCardWithCourts({ venue }: { venue: any }) {
   const { data: courts = [], isLoading: isCourtsLoading, isError: isCourtsError } = useGetCourtsQuery({ venueId: venue.venueId });
   const [openSlotCourtId, setOpenSlotCourtId] = React.useState<string | null>(null);
+  
   return (
     <Card className="overflow-hidden h-full">
       <CardHeader>
@@ -223,263 +225,28 @@ function VenueCardWithCourts({ venue }: { venue: any }) {
           {!isCourtsLoading && !isCourtsError && courts.length > 0 && (
             <ul className="list-disc list-inside space-y-1">
               {courts.map((court: any) => (
-  <li key={court.courtId} className="text-sm mb-2">
-    <div className="flex items-center justify-between">
-      <span>
-        <span className="font-medium">{court.courtName}</span> — {court.surfaceType}, ₹{court.hourlyRate}/hr, {court.capacity} players
-      </span>
-      <button
-        className="ml-2 text-xs px-2 py-1 rounded bg-blue-100 hover:bg-blue-200 text-blue-700"
-        onClick={() => setOpenSlotCourtId(openSlotCourtId === court.courtId ? null : court.courtId)}
-        type="button"
-      >
-        {openSlotCourtId === court.courtId ? "Hide Slots" : "Manage Slots"}
-      </button>
-    </div>
-    {openSlotCourtId === court.courtId && (
-      <SlotManagement courtId={court.courtId} date={new Date().toISOString().slice(0, 10)} />
-    )}
-  </li>
-))}
+                <li key={court.courtId} className="text-sm mb-2">
+                  <div className="flex items-center justify-between">
+                    <span>
+                      <span className="font-medium">{court.courtName}</span> — {court.surfaceType}, Rs.{court.hourlyRate}/hr, {court.capacity} players
+                    </span>
+                    <button
+                      className="ml-2 text-xs px-2 py-1 rounded bg-blue-100 hover:bg-blue-200 text-blue-700"
+                      onClick={() => setOpenSlotCourtId(openSlotCourtId === court.courtId ? null : court.courtId)}
+                      type="button"
+                    >
+                      {openSlotCourtId === court.courtId ? "Hide Slots" : "Manage Slots"}
+                    </button>
+                  </div>
+                  {openSlotCourtId === court.courtId && (
+                    <SlotManagement courtId={court.courtId} date={new Date().toISOString().slice(0, 10)} />
+                  )}
+                </li>
+              ))}
             </ul>
           )}
         </div>
       </CardContent>
     </Card>
   );
-}
-          <p className="text-muted-foreground">Manage your venues and bookings</p>
-        </div>
-        <Button asChild>
-          <Link href="/venue-owner/venues/new">Add New Venue</Link>
-        </Button>
-      </div>
-
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="venues">Venues</TabsTrigger>
-          <TabsTrigger value="bookings">Bookings</TabsTrigger>
-          <TabsTrigger value="news">News & Media</TabsTrigger>
-          <TabsTrigger value="payments">Payments</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Venues</CardTitle>
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">3</div>
-                <div className="flex items-center text-xs text-muted-foreground">
-                  <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
-                  <span className="text-green-500 font-medium">+1</span> from last month
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">88</div>
-                <div className="flex items-center text-xs text-muted-foreground">
-                  <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
-                  <span className="text-green-500 font-medium">+12%</span> from last month
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                <CreditCard className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">₹88,000</div>
-                <div className="flex items-center text-xs text-muted-foreground">
-                  <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
-                  <span className="text-green-500 font-medium">+18%</span> from last month
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Weekly Bookings</CardTitle>
-                <CardDescription>Number of bookings this week</CardDescription>
-              </CardHeader>
-              <CardContent className="pl-2">
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={bookingData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="bookings" fill="#16a34a" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Venue Performance</CardTitle>
-                <CardDescription>Bookings by venue</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={venueData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {venueData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Weekly Revenue</CardTitle>
-                <CardDescription>Revenue this week in ₹</CardDescription>
-              </CardHeader>
-              <CardContent className="pl-2">
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={revenueData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip formatter={(value) => [`₹${value}`, "Revenue"]} />
-                      <Line type="monotone" dataKey="revenue" stroke="#16a34a" strokeWidth={2} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Recent Bookings</CardTitle>
-                <CardDescription>Latest bookings for your venues</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                      <Users className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">Green Field Futsal - Court A</p>
-                      <p className="text-xs text-muted-foreground">Today, 6:00 PM - 7:00 PM</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                      <Users className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">Urban Kicks Arena - Court B</p>
-                      <p className="text-xs text-muted-foreground">Today, 8:00 PM - 9:00 PM</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                      <Users className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">Victory Court - Main Court</p>
-                      <p className="text-xs text-muted-foreground">Tomorrow, 5:00 PM - 6:00 PM</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                      <Users className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">Green Field Futsal - Court B</p>
-                      <p className="text-xs text-muted-foreground">Tomorrow, 7:00 PM - 8:00 PM</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        <TabsContent value="venues" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>My Venues</CardTitle>
-
-        <TabsContent value="news" className="space-y-4">
-          {/* Venue News & Media Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Venue News & Media</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* News/media management UI */}
-              {/* VenueNewsMedia component renders the news/media management UI */}
-              <VenueNewsMedia />
-            </CardContent>
-          </Card>
-        </TabsContent>
-              <CardDescription>Manage your venues</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center h-[400px] border rounded-md">
-                <MapPin className="h-12 w-12 text-muted-foreground" />
-                <p className="ml-2 text-muted-foreground">Venues content will be implemented in the next phase</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="bookings" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Bookings</CardTitle>
-              <CardDescription>Manage your bookings</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center h-[400px] border rounded-md">
-                <Calendar className="h-12 w-12 text-muted-foreground" />
-                <p className="ml-2 text-muted-foreground">Bookings content will be implemented in the next phase</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="payments" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Payments</CardTitle>
-              <CardDescription>Manage your payments</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center h-[400px] border rounded-md">
-                <CreditCard className="h-12 w-12 text-muted-foreground" />
-                <p className="ml-2 text-muted-foreground">Payments content will be implemented in the next phase</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
-  )
 }
