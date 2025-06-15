@@ -1,5 +1,11 @@
 import { baseApi } from "./baseApi"
 import type { ApiResponse } from "@/types/api"
+import type {
+  VenueBooking,
+  UpdateVenueBookingStatusRequest,
+  VenueNotification,
+  VenueNotificationsResponse
+} from "@/types/venue-owner-api"
 
 export interface VenueDetails {
   venueId: string
@@ -106,13 +112,13 @@ export const venueManagementApi = baseApi.injectEndpoints({
     }),
 
     getCourts: builder.query<Court[], void>({
-      query: () => "/web/api/v1/venue/GetCounrt",
+      query: () => "/web/api/v1/venue/GetCourt",
       providesTags: ["Courts"],
     }),
 
     getCourtById: builder.query<Court, string>({
       query: (courtId) => ({
-        url: "/web/api/v1/venue/GetCounrtById",
+        url: "/web/api/v1/venue/GetCourtById",
         params: { courtId },
       }),
       providesTags: (result, error, id) => [{ type: "Courts", id }],
@@ -140,6 +146,45 @@ export const venueManagementApi = baseApi.injectEndpoints({
     getVenueDashboardData: builder.query<VenueDashboardData, void>({
       query: () => "/web/api/v1/venue/GetDashboardData",
       providesTags: ["Dashboard"],
+    }),
+
+    // Venue Owner Booking APIs
+    getVenueBookings: builder.query<VenueBooking[], { courtId: string; startDate: string; endDate: string }>({
+      query: ({ courtId, startDate, endDate }) => ({
+        url: "/web/api/v1/venue/GetBooking",
+        params: { courtId, startDate, endDate },
+      }),
+      transformResponse: (response: VenueBooking[]) => response,
+    }),
+    getVenueBookingById: builder.query<VenueBooking, { bookingId: string }>({
+      query: ({ bookingId }) => ({
+        url: "/web/api/v1/venue/GetBookingById",
+        params: { bookingId },
+      }),
+      transformResponse: (response: VenueBooking) => response,
+    }),
+    updateVenueBookingStatus: builder.mutation<{ message: string }, UpdateVenueBookingStatusRequest>({
+      query: (data) => ({
+        url: "/web/api/v1/venue/UpdateBookingStatus",
+        method: "POST",
+        body: data,
+      }),
+      transformResponse: (response: { message: string }) => response,
+    }),
+
+    // Venue Owner Notification APIs
+    getVenueNotifications: builder.query<VenueNotificationsResponse, void>({
+      query: () => ({
+        url: "/web/api/v1/venue/GetNotification",
+      }),
+      transformResponse: (response: VenueNotificationsResponse) => response,
+    }),
+    getVenueNotificationById: builder.query<VenueNotification, { notificationId: string }>({
+      query: ({ notificationId }) => ({
+        url: "/web/api/v1/venue/GetNotificationById",
+        params: { notificationId },
+      }),
+      transformResponse: (response: VenueNotification) => response,
     }),
 
     // News and Media
@@ -191,6 +236,11 @@ export const {
   useUpdateCourtMutation,
   useUploadCourtImageMutation,
   useGetVenueDashboardDataQuery,
+  useGetVenueBookingsQuery,
+  useGetVenueBookingByIdQuery,
+  useUpdateVenueBookingStatusMutation,
+  useGetVenueNotificationsQuery,
+  useGetVenueNotificationByIdQuery,
   useCreateVenuePostMutation,
   useGetVenuePostsQuery,
   useGetVenuePostDetailsQuery,
