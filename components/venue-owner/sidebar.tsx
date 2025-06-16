@@ -82,9 +82,12 @@ const sidebarItems = [
 ];
 
 export function VenueOwnerSidebarContent() {
-  const { data: venues = [], isLoading, isError } = useGetVenuesQuery();
+  const { data: venuesData, isLoading, isError } = useGetVenuesQuery();
   const [openVenueId, setOpenVenueId] = useState<string | null>(null);
   const pathname = usePathname();
+
+  // Ensure venues is always an array
+  const venues = Array.isArray(venuesData) ? venuesData : [];
 
   return (
     <>

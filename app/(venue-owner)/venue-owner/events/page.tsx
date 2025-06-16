@@ -1,11 +1,23 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import EventManagement from "./EventManagement";
+import SportsEventManagement from "../components/SportsEventManagement";
 
 export default function EventsPage() {
+  // You might want to get the venueId from a parent component or context
+  // For now, using a placeholder or you can modify as per your app's requirements
+  const venueId = "";
+  
+  if (!venueId) {
+    return (
+      <div className="p-4">
+        <p>Please select a venue to manage events.</p>
+      </div>
+    );
+  }
+
   return (
     <Suspense fallback={<EventsSkeleton />}>
-      <EventManagement />
+      <SportsEventManagement venueId={venueId} />
     </Suspense>
   );
 }

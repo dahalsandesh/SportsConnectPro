@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 export async function GET() {
   try {
-    const { getToken } = auth()
-    const token = await getToken()
+    // const { getToken } = auth()
+    // const token = await getToken()
 
     const response = await fetch(`${API_BASE_URL}/web/api/v1/adminapp/GetPost`, {
       headers: {
-        'Authorization': `token ${token}`,
+        // 'Authorization': `token ${token}`,
         'Content-Type': 'application/json',
       },
     })
@@ -29,14 +28,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { getToken } = auth()
-    const token = await getToken()
+    // const { getToken } = auth()
+    // const token = await getToken()
     const formData = await request.formData()
 
     const response = await fetch(`${API_BASE_URL}/web/api/v1/adminapp/CreatePost`, {
       method: 'POST',
       headers: {
-        'Authorization': `token ${token}`,
+        // 'Authorization': `token ${token}`,
       },
       body: formData,
     })

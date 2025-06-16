@@ -53,8 +53,15 @@ const api = createApi({
       }),
       providesTags: (result) => {
         if (!result) return [{ type: 'Venues', id: 'LIST' }];
+        if (Array.isArray(result)) {
+          return [
+            ...result.map(({ venueId }) => ({ type: 'Venues' as const, id: venueId })),
+            { type: 'Venues', id: 'LIST' },
+          ];
+        }
+        // If result is a single object
         return [
-          ...result.map(({ venueId }) => ({ type: 'Venues' as const, id: venueId })),
+          { type: 'Venues' as const, id: result.venueId },
           { type: 'Venues', id: 'LIST' },
         ];
       },

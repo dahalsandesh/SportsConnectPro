@@ -38,10 +38,11 @@ import { subMonths, startOfMonth, format } from "date-fns";
 
 export default function VenueOwnerDashboard() {
   const { user } = useAppSelector((state) => state.auth);
-  const { data: venues = [], isLoading, isError } = useGetVenuesQuery({});
+  const { data: venuesResponse, isLoading, isError } = useGetVenuesQuery({});
+  const venues = Array.isArray(venuesResponse?.data) ? venuesResponse.data : [];
   const ownerVenues = venues.filter(
     (venue) => venue.ownerEmail === user?.email
-  );
+  ) || [];
   const {
     data: dashboardData,
     isLoading: isDashboardLoading,

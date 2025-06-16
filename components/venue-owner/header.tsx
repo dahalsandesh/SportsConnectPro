@@ -36,6 +36,7 @@ import {
   useMarkAsReadMutation,
   useDeleteNotificationMutation,
 } from "@/redux/api/notifications/notificationsApi";
+import { useState, useEffect } from "react";
 
 export function VenueOwnerHeader() {
   const { user } = useAppSelector((state) => state.auth);
@@ -43,14 +44,22 @@ export function VenueOwnerHeader() {
   const router = useRouter();
   const { toast } = useToast();
   const [logoutApi] = useLogoutMutation();
+  const [mounted, setMounted] = useState(false);
 
   const {
     data: notifications = [],
     isLoading,
     refetch,
-  } = useGetNotificationsQuery();
+  } = useGetNotificationsQuery(undefined, {
+    skip: !mounted,
+  });
+
   const [markAsRead] = useMarkAsReadMutation();
   const [deleteNotification] = useDeleteNotificationMutation();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -58,8 +67,7 @@ export function VenueOwnerHeader() {
       dispatch(logout());
       toast({
         title: "Logged out",
-        description: "You have been logged out successfully",
-        variant: "success",
+        description: "You have been logged out successfully"
       });
       router.push("/login");
     } catch (error) {
@@ -71,7 +79,7 @@ export function VenueOwnerHeader() {
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
-      await markAsRead({ notificationId }).unwrap();
+      await markAsRead({ id: notificationId }).unwrap();
       toast({
         title: "Success",
         description: "Notification marked as read",
@@ -88,7 +96,7 @@ export function VenueOwnerHeader() {
 
   const handleDelete = async (notificationId: string) => {
     try {
-      await deleteNotification({ notificationId }).unwrap();
+      await deleteNotification({ id: notificationId }).unwrap();
       toast({
         title: "Success",
         description: "Notification deleted successfully",
@@ -103,8 +111,9 @@ export function VenueOwnerHeader() {
     }
   };
 
-  const unreadNotifications = notifications.filter((n: any) => !n.isRead);
-  const readNotifications = notifications.filter((n: any) => n.isRead);
+  // Ensure notifications is an array before filtering
+  const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead) : [];
+  const readNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => n.isRead) : [];
 
   const initials = user.fullName
     ? `${user.fullName.split(" ")[0][0]}${
@@ -148,60 +157,98 @@ export function VenueOwnerHeader() {
             />
           </div>
           <ThemeToggle />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                {unreadNotifications.length > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
-                    {unreadNotifications.length}
-                  </Badge>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[350px]">
-              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {isLoading ? (
-                <div className="p-4 text-center text-sm text-muted-foreground">
-                  Loading notifications...
-                </div>
-              ) : notifications.length === 0 ? (
-                <div className="p-4 text-center text-sm text-muted-foreground">
-                  No notifications found.
-                </div>
-              ) : (
-                <div className="max-h-[400px] overflow-y-auto">
+          {mounted && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Bell className="h-5 w-5" />
                   {unreadNotifications.length > 0 && (
-                    <div className="space-y-2 p-2">
-                      {unreadNotifications.map((notification: any) => (
-                        <div
-                          key={notification.notificationId}
-                          className="p-3 bg-muted rounded-lg space-y-2">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <p className="font-medium">
-                                {notification.title}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {notification.message}
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {format(
-                                  new Date(notification.createdAt),
-                                  "PPp"
-                                )}
-                              </p>
+                    <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
+                      {unreadNotifications.length}
+                    </Badge>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[350px]">
+                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {isLoading ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    Loading notifications...
+                  </div>
+                ) : notifications.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    No notifications found.
+                  </div>
+                ) : (
+                  <div className="max-h-[400px] overflow-y-auto">
+                    {unreadNotifications.length > 0 && (
+                      <div className="space-y-2 p-2">
+                        {unreadNotifications.map((notification: any) => (
+                          <div
+                            key={notification.notificationId}
+                            className="p-3 bg-muted rounded-lg space-y-2">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="font-medium">
+                                  {notification.title}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {notification.message}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {format(
+                                    new Date(notification.createdAt),
+                                    "PPp"
+                                  )}
+                                </p>
+                              </div>
+                              <div className="flex gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() =>
+                                    handleMarkAsRead(
+                                      notification.notificationId
+                                    )
+                                  }>
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() =>
+                                    handleDelete(notification.notificationId)
+                                  }>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
-                            <div className="flex gap-1">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() =>
-                                  handleMarkAsRead(notification.notificationId)
-                                }>
-                                <Check className="h-4 w-4" />
-                              </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {readNotifications.length > 0 && (
+                      <div className="space-y-2 p-2">
+                        {readNotifications.map((notification: any) => (
+                          <div
+                            key={notification.notificationId}
+                            className="p-3 border rounded-lg space-y-2">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="font-medium">
+                                  {notification.title}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {notification.message}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {format(
+                                    new Date(notification.createdAt),
+                                    "PPp"
+                                  )}
+                                </p>
+                              </div>
                               <Button
                                 size="sm"
                                 variant="ghost"
@@ -212,48 +259,14 @@ export function VenueOwnerHeader() {
                               </Button>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {readNotifications.length > 0 && (
-                    <div className="space-y-2 p-2">
-                      {readNotifications.map((notification: any) => (
-                        <div
-                          key={notification.notificationId}
-                          className="p-3 border rounded-lg space-y-2">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <p className="font-medium">
-                                {notification.title}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {notification.message}
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {format(
-                                  new Date(notification.createdAt),
-                                  "PPp"
-                                )}
-                              </p>
-                            </div>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() =>
-                                handleDelete(notification.notificationId)
-                              }>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
