@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useAppSelector, useAppDispatch } from "@/hooks/redux"
-import { useLogoutMutation } from "@/redux/services/authApi"
-import { logout } from "@/redux/features/authSlice"
-import { useToast } from "@/components/ui/use-toast"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAppSelector, useAppDispatch } from "@/hooks/redux";
+import { useLogoutMutation } from "@/redux/services/authApi";
+import { logout } from "@/redux/features/authSlice";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,42 +14,112 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Bell, Menu, User, LogOut, Settings, Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Bell,
+  Menu,
+  User,
+  LogOut,
+  Settings,
+  Search,
+  Check,
+  Trash2,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import {
+  useGetNotificationsQuery,
+  useMarkAsReadMutation,
+  useDeleteNotificationMutation,
+} from "@/redux/api/notifications/notificationsApi";
+import { useState, useEffect } from "react";
 
 export function VenueOwnerHeader() {
-  const { user } = useAppSelector((state) => state.auth)
-  const dispatch = useAppDispatch()
-  const router = useRouter()
-  const { toast } = useToast()
-  const [logoutApi] = useLogoutMutation()
+  const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [logoutApi] = useLogoutMutation();
+  const [mounted, setMounted] = useState(false);
+
+  const {
+    data: notifications = [],
+    isLoading,
+    refetch,
+  } = useGetNotificationsQuery(undefined, {
+    skip: !mounted,
+  });
+
+  const [markAsRead] = useMarkAsReadMutation();
+  const [deleteNotification] = useDeleteNotificationMutation();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = async () => {
     try {
-      await logoutApi().unwrap()
-      dispatch(logout())
+      await logoutApi().unwrap();
+      dispatch(logout());
       toast({
         title: "Logged out",
-        description: "You have been logged out successfully",
-        variant: "success",
-      })
-      router.push("/login")
+        description: "You have been logged out successfully"
+      });
+      router.push("/login");
     } catch (error) {
-      console.error("Logout failed:", error)
-      // Still logout from the client side even if the API call fails
-      dispatch(logout())
-      router.push("/login")
+      console.error("Logout failed:", error);
+      dispatch(logout());
+      router.push("/login");
     }
-  }
+  };
+
+  const handleMarkAsRead = async (notificationId: string) => {
+    try {
+      await markAsRead({ id: notificationId }).unwrap();
+      toast({
+        title: "Success",
+        description: "Notification marked as read",
+      });
+      refetch();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to mark notification as read",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDelete = async (notificationId: string) => {
+    try {
+      await deleteNotification({ id: notificationId }).unwrap();
+      toast({
+        title: "Success",
+        description: "Notification deleted successfully",
+      });
+      refetch();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete notification",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Ensure notifications is an array before filtering
+  const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead) : [];
+  const readNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => n.isRead) : [];
 
   const initials = user.fullName
-    ? `${user.fullName.split(" ")[0][0]}${user.fullName.split(" ")[1]?.[0] || ""}`
-    : user.userName?.[0] || "V"
+    ? `${user.fullName.split(" ")[0][0]}${
+        user.fullName.split(" ")[1]?.[0] || ""
+      }`
+    : user.userName?.[0] || "V";
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background dark:border-border/50">
@@ -63,7 +133,9 @@ export function VenueOwnerHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[240px] sm:w-[300px]">
-              <nav className="flex flex-col gap-4 mt-8">{/* Mobile sidebar content will go here */}</nav>
+              <nav className="flex flex-col gap-4 mt-8">
+                {/* Mobile sidebar content will go here */}
+              </nav>
             </SheetContent>
           </Sheet>
           <Link href="/venue-owner" className="flex items-center gap-2">
@@ -85,28 +157,141 @@ export function VenueOwnerHeader() {
             />
           </div>
           <ThemeToggle />
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
-              3
-            </Badge>
-          </Button>
+          {mounted && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Bell className="h-5 w-5" />
+                  {unreadNotifications.length > 0 && (
+                    <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
+                      {unreadNotifications.length}
+                    </Badge>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[350px]">
+                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {isLoading ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    Loading notifications...
+                  </div>
+                ) : notifications.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    No notifications found.
+                  </div>
+                ) : (
+                  <div className="max-h-[400px] overflow-y-auto">
+                    {unreadNotifications.length > 0 && (
+                      <div className="space-y-2 p-2">
+                        {unreadNotifications.map((notification: any) => (
+                          <div
+                            key={notification.notificationId}
+                            className="p-3 bg-muted rounded-lg space-y-2">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="font-medium">
+                                  {notification.title}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {notification.message}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {format(
+                                    new Date(notification.createdAt),
+                                    "PPp"
+                                  )}
+                                </p>
+                              </div>
+                              <div className="flex gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() =>
+                                    handleMarkAsRead(
+                                      notification.notificationId
+                                    )
+                                  }>
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() =>
+                                    handleDelete(notification.notificationId)
+                                  }>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {readNotifications.length > 0 && (
+                      <div className="space-y-2 p-2">
+                        {readNotifications.map((notification: any) => (
+                          <div
+                            key={notification.notificationId}
+                            className="p-3 border rounded-lg space-y-2">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="font-medium">
+                                  {notification.title}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {notification.message}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {format(
+                                    new Date(notification.createdAt),
+                                    "PPp"
+                                  )}
+                                </p>
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() =>
+                                  handleDelete(notification.notificationId)
+                                }>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                 <Avatar className="h-9 w-9">
                   {user.profileImage ? (
-                    <AvatarImage src={user.profileImage || "/placeholder.svg"} alt={user.fullName || user.userName} />
+                    <AvatarImage
+                      src={user.profileImage || "/placeholder.svg"}
+                      alt={user.fullName || user.userName}
+                    />
                   ) : null}
-                  <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {initials}
+                  </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user.fullName || user.userName}</p>
-                  <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                  <p className="text-sm font-medium leading-none">
+                    {user.fullName || user.userName}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user.email}
+                  </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -123,7 +308,9 @@ export function VenueOwnerHeader() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="cursor-pointer">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
               </DropdownMenuItem>
@@ -132,5 +319,5 @@ export function VenueOwnerHeader() {
         </div>
       </div>
     </header>
-  )
+  );
 }

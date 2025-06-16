@@ -5,9 +5,45 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Calendar, CreditCard, MapPin, Trophy, ArrowUpRight, Heart, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useGetBookingsQuery } from '@/redux/api/bookings/bookingsApi'
+import React from "react";
+
+interface DashboardStatCardProps {
+  title: string;
+  icon: React.ReactNode;
+  value: React.ReactNode;
+  description?: React.ReactNode;
+}
+
+function DashboardStatCard({ title, icon, value, description }: DashboardStatCardProps) {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        {icon}
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+        {description && (
+          <div className="flex items-center text-xs text-muted-foreground">{description}</div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function DashboardPage() {
   const { user } = useAppSelector((state) => state.auth)
+  const { data: bookingsData, isLoading: isBookingsLoading, isError: isBookingsError } = useGetBookingsQuery({ limit: 1000 });
+
+  // Filter bookings for this user
+  const userBookings = (bookingsData?.data || []).filter(b => b.userEmail === user?.email);
+  const totalBookings = userBookings.length;
+  const totalSpent = userBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
+  const upcomingBookings = userBookings
+    .filter(b => ["CONFIRMED", "PENDING"].includes(b.status) && new Date(b.bookingDate) >= new Date())
+    .sort((a, b) => new Date(a.bookingDate).getTime() - new Date(b.bookingDate).getTime())
+    .slice(0, 3);
 
   return (
     <div className="space-y-6">
@@ -25,57 +61,45 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <div className="flex items-center text-xs text-muted-foreground">
+        <DashboardStatCard
+          title="Total Bookings"
+          icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
+          value={isBookingsLoading ? '...' : totalBookings}
+          description={
+            <>
               <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-500 font-medium">+2</span> from last month
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
-            <Trophy className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">3</div>
-            <div className="flex items-center text-xs text-muted-foreground">
+              <span className="text-green-500 font-medium">{isBookingsLoading ? '' : `+${totalBookings}`}</span> total
+            </>
+          }
+        />
+        <DashboardStatCard
+          title="Upcoming Events"
+          icon={<Trophy className="h-4 w-4 text-muted-foreground" />}
+          value={3}
+          description={
+            <>
               <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
               <span className="text-green-500 font-medium">+1</span> new event this week
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Favorite Venues</CardTitle>
-            <Heart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">5</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <span>Across 3 sports</span>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹4,550</div>
-            <div className="flex items-center text-xs text-muted-foreground">
+            </>
+          }
+        />
+        <DashboardStatCard
+          title="Favorite Venues"
+          icon={<Heart className="h-4 w-4 text-muted-foreground" />}
+          value={5}
+          description={<span>Across 3 sports</span>}
+        />
+        <DashboardStatCard
+          title="Total Spent"
+          icon={<CreditCard className="h-4 w-4 text-muted-foreground" />}
+          value={isBookingsLoading ? '...' : `Rs. ${totalSpent}`}
+          description={
+            <>
               <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-500 font-medium">+₹1,200</span> from last month
-            </div>
-          </CardContent>
-        </Card>
+              <span className="text-green-500 font-medium">{isBookingsLoading ? '' : `+Rs. ${totalSpent}`}</span> total
+            </>
+          }
+        />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
@@ -86,18 +110,24 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-4 rounded-lg border p-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                    <Calendar className="h-5 w-5 text-primary" />
+              {isBookingsLoading ? (
+                <div>Loading...</div>
+              ) : upcomingBookings.length === 0 ? (
+                <div className="text-muted-foreground">No upcoming bookings.</div>
+              ) : (
+                upcomingBookings.map((booking) => (
+                  <div key={booking.bookingId} className="flex items-center gap-4 rounded-lg border p-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                      <Calendar className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium">{booking.court?.venueName} - {booking.court?.courtName}</p>
+                      <p className="text-xs text-muted-foreground">{booking.bookingDate} • {booking.startTime} - {booking.endTime}</p>
+                    </div>
+                    <div className="text-sm font-medium">Rs.{booking.totalAmount}</div>
                   </div>
-                  <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">Green Field Futsal - Court A</p>
-                    <p className="text-xs text-muted-foreground">May {15 + i}, 2025 • 6:00 PM - 7:00 PM</p>
-                  </div>
-                  <div className="text-sm font-medium">₹{1200 + i * 100}</div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
@@ -122,7 +152,7 @@ export default function DashboardPage() {
                   <CreditCard className="h-4 w-4 text-blue-600" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm">Payment of ₹1,200 completed</p>
+                  <p className="text-sm">Payment of Rs.1,200 completed</p>
                   <p className="text-xs text-muted-foreground">2 days ago</p>
                 </div>
               </div>

@@ -106,7 +106,7 @@ const handleApiResponse = <T,>(
 export const bookingsApi = createApi({
   reducerPath: 'bookingsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${getBaseUrl()}/web/api/v1/adminapp`,
+    baseUrl: `${getBaseUrl()}/web/api/v1/venue`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
       if (token) {
@@ -162,11 +162,14 @@ export const bookingsApi = createApi({
 
     // Get booking by ID
     getBookingById: builder.query<Booking, string>({
-      query: (bookingId) => `bookings/${bookingId}`,
+      query: (bookingId) => ({
+        url: `GetBookingById`,
+        params: { bookingId },
+      }),
       providesTags: (result, error, bookingId) => [
         { type: BOOKINGS_TAG, id: bookingId },
       ],
-      transformResponse: (response: ApiResponse<Booking>) => 
+      transformResponse: (response: ApiResponse<Booking>) =>
         handleApiResponse(response, {} as Booking)
     }),
 
@@ -192,9 +195,9 @@ export const bookingsApi = createApi({
     // Update booking status
     updateBookingStatus: builder.mutation<BookingResponse, UpdateBookingStatusRequest>({
       query: ({ id, status, cancellationReason }) => ({
-        url: `bookings/${id}/status`,
-        method: 'PATCH',
-        body: { status, cancellationReason },
+        url: `UpdateBookingStatus`,
+        method: 'POST',
+        body: { bookingId: id, status, cancellationReason },
       }),
       invalidatesTags: (result, error, { id }) => [
         { type: BOOKINGS_TAG, id },
@@ -202,7 +205,7 @@ export const bookingsApi = createApi({
         { type: BOOKINGS_TAG, id: 'UPCOMING' },
         { type: BOOKINGS_TAG, id: 'PAST' },
       ],
-      transformResponse: (response: ApiResponse<BookingResponse>) => 
+      transformResponse: (response: ApiResponse<BookingResponse>) =>
         handleApiResponse(response, { message: 'Booking status updated successfully' }),
       transformErrorResponse: (response: FetchBaseQueryError) => {
         console.error('Update booking status error:', response);
@@ -295,6 +298,30 @@ export const bookingsApi = createApi({
       transformResponse: (response: ApiResponse<BookingsResponse>) =>
         handleApiResponse(response, { data: [], total: 0, page: 1, limit: 10, totalPages: 0 }),
     }),
+
+    // Get all bookings for a court with date range
+    getBookingsForCourt: builder.query<BookingsResponse, {
+      courtId: string;
+      startDate: string;
+      endDate: string;
+    }>({
+      query: ({ courtId, startDate, endDate }) => ({
+        url: `GetBooking`,
+        params: { courtId, startDate, endDate },
+      }),
+      providesTags: (result) => {
+        const tags: BookingTag[] = [{ type: BOOKINGS_TAG, id: 'LIST' }];
+        if (result?.data) {
+          result.data.forEach(booking => {
+            tags.push({ type: BOOKINGS_TAG, id: booking.bookingId });
+            tags.push({ type: BOOKINGS_TAG, id: booking.status });
+          });
+        }
+        return tags;
+      },
+      transformResponse: (response: ApiResponse<BookingsResponse>) =>
+        handleApiResponse(response, { data: [], total: 0, page: 1, limit: 10, totalPages: 0 })
+    }),
   }),
 });
 
@@ -306,6 +333,7 @@ export const {
   useUpdateBookingStatusMutation,
   useGetMyBookingsQuery,
   useGetVenueBookingsQuery,
+  useGetBookingsForCourtQuery,
 } = bookingsApi;
 
 /**

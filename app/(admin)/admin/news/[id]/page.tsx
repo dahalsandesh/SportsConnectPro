@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { NewsForm } from '@/components/admin/news/news-form'
 import { Button } from '@/components/ui/button'
-import { toast } from 'react-hot-toast'
+import { toast } from '@/components/ui/use-toast'
 
 export default function NewsDetailPage() {
   const params = useParams()
@@ -23,7 +23,7 @@ export default function NewsDetailPage() {
         setNews(data)
       } catch (error) {
         console.error('Error fetching news:', error)
-        toast.error('Failed to load news')
+        toast({ title: 'Failed to load news', variant: 'destructive' })
       } finally {
         setLoading(false)
       }

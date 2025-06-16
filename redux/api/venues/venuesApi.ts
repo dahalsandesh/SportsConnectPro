@@ -35,7 +35,7 @@ export interface UpdateVenueStatusRequest {
 const api = createApi({
   reducerPath: 'venuesApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${getBaseUrl()}/web/api/v1/adminapp`,
+    baseUrl: `${getBaseUrl()}/web/api/v1/venue`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token
       if (token) {
@@ -46,19 +46,25 @@ const api = createApi({
   }),
   tagTypes: ['Venues'],
   endpoints: (builder) => ({
-    // Get all venues with pagination
-    getVenues: builder.query<Venue[], { page?: number; limit?: number }>({
-      query: (params = {}) => ({
-        url: "/GetVenue",
-        params: {
-          page: params.page || 1,
-          limit: params.limit || 10,
-        },
+    // Get all venues for the owner
+    getVenues: builder.query<Venue[], void>({
+      query: () => ({
+        url: "/GetVenueDetails",
       }),
-      providesTags: (result = []) => [
-        ...result.map(({ venueId }) => ({ type: 'Venues' as const, id: venueId })),
-        { type: 'Venues', id: 'LIST' },
-      ],
+      providesTags: (result) => {
+        if (!result) return [{ type: 'Venues', id: 'LIST' }];
+        if (Array.isArray(result)) {
+          return [
+            ...result.map(({ venueId }) => ({ type: 'Venues' as const, id: venueId })),
+            { type: 'Venues', id: 'LIST' },
+          ];
+        }
+        // If result is a single object
+        return [
+          { type: 'Venues' as const, id: result.venueId },
+          { type: 'Venues', id: 'LIST' },
+        ];
+      },
     }),
 
     // Get venue by ID

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { toast } from 'react-hot-toast'
+import { toast } from '@/components/ui/use-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -92,12 +92,18 @@ export const NewsForm: React.FC<NewsFormProps> = ({ initialData }) => {
       }
 
       const result = await response.json()
-      toast.success(`News ${initialData ? 'updated' : 'created'} successfully`)
+      toast({
+  title: `News ${initialData ? 'updated' : 'created'} successfully`,
+  variant: 'default'
+})
       router.push('/admin/news')
       router.refresh()
     } catch (error) {
       console.error('Error saving news:', error)
-      toast.error('Something went wrong')
+      toast({
+  title: 'Something went wrong',
+  variant: 'destructive'
+})
     } finally {
       setLoading(false)
     }

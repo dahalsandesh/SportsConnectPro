@@ -16,49 +16,8 @@ import {
 import { MoreHorizontal, Edit, Trash, UserCog, Ban, CheckCircle } from "lucide-react"
 import type { UserType } from "@/types/auth"
 
-// Mock data for users - replace with actual API call
-const mockUsers = [
-  {
-    id: "1",
-    userName: "johndoe",
-    email: "john@example.com",
-    fullName: "John Doe",
-    phoneNumber: "1234567890",
-    userType: "NormalUsers" as UserType,
-    isVerified: true,
-    createdAt: "2023-01-01",
-  },
-  {
-    id: "2",
-    userName: "janedoe",
-    email: "jane@example.com",
-    fullName: "Jane Doe",
-    phoneNumber: "0987654321",
-    userType: "VenueOwner" as UserType,
-    isVerified: true,
-    createdAt: "2023-01-02",
-  },
-  {
-    id: "3",
-    userName: "admin",
-    email: "admin@example.com",
-    fullName: "Admin User",
-    phoneNumber: "1122334455",
-    userType: "Admin" as UserType,
-    isVerified: true,
-    createdAt: "2023-01-03",
-  },
-  {
-    id: "4",
-    userName: "sarahsmith",
-    email: "sarah@example.com",
-    fullName: "Sarah Smith",
-    phoneNumber: "5566778899",
-    userType: "NormalUsers" as UserType,
-    isVerified: false,
-    createdAt: "2023-01-04",
-  },
-]
+import { useGetAllUsersQuery, useDeleteUserMutation, useBlockUserMutation, useUnblockUserMutation, User } from "@/redux/api/usersApi";
+import { useToast } from "@/components/ui/use-toast";
 
 interface UsersTableProps {
   userType: "all" | UserType
@@ -66,28 +25,65 @@ interface UsersTableProps {
 }
 
 export function UsersTable({ userType, searchQuery }: UsersTableProps) {
-  const [users, setUsers] = useState(mockUsers)
+  const { data: users = [], isLoading, isError, refetch } = useGetAllUsersQuery();
+  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+  const [blockUser, { isLoading: isBlocking }] = useBlockUserMutation();
+  const [unblockUser, { isLoading: isUnblocking }] = useUnblockUserMutation();
+  const { toast } = useToast();
 
   // Filter users based on userType and searchQuery
-  const filteredUsers = users.filter((user) => {
-    // Filter by user type
+  const filteredUsers = users.filter((user: User) => {
     if (userType !== "all" && user.userType !== userType) {
-      return false
+      return false;
     }
-
-    // Filter by search query
     if (searchQuery) {
-      const query = searchQuery.toLowerCase()
+      const query = searchQuery.toLowerCase();
       return (
         user.userName.toLowerCase().includes(query) ||
         user.email.toLowerCase().includes(query) ||
         user.fullName.toLowerCase().includes(query) ||
         user.phoneNumber.includes(query)
-      )
+      );
     }
+    return true;
+  });
 
-    return true
-  })
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteUser({ id }).unwrap();
+      toast({ title: "User deleted" });
+      refetch();
+    } catch (error: any) {
+      toast({ title: "Delete failed", description: error?.data?.message || "Error deleting user", variant: "destructive" });
+    }
+  };
+
+  const handleBlock = async (id: string) => {
+    try {
+      await blockUser({ id }).unwrap();
+      toast({ title: "User suspended" });
+      refetch();
+    } catch (error: any) {
+      toast({ title: "Suspend failed", description: error?.data?.message || "Error suspending user", variant: "destructive" });
+    }
+  };
+
+  const handleUnblock = async (id: string) => {
+    try {
+      await unblockUser({ id }).unwrap();
+      toast({ title: "User verified" });
+      refetch();
+    } catch (error: any) {
+      toast({ title: "Verify failed", description: error?.data?.message || "Error verifying user", variant: "destructive" });
+    }
+  };
+
+  if (isLoading) {
+    return <div className="p-8 text-center">Loading users...</div>;
+  }
+  if (isError) {
+    return <div className="p-8 text-center text-red-600">Failed to load users.</div>;
+  }
 
   const getUserTypeColor = (type: UserType) => {
     switch (type) {
@@ -124,7 +120,7 @@ export function UsersTable({ userType, searchQuery }: UsersTableProps) {
               </TableCell>
             </TableRow>
           ) : (
-            filteredUsers.map((user) => (
+            filteredUsers.map((user: User) => (
               <TableRow key={user.id}>
                 <TableCell className="font-medium">{user.id}</TableCell>
                 <TableCell>
@@ -134,7 +130,7 @@ export function UsersTable({ userType, searchQuery }: UsersTableProps) {
                       <AvatarFallback>
                         {user.fullName
                           .split(" ")
-                          .map((n) => n[0])
+                          .map((n: string) => n[0])
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
@@ -186,15 +182,15 @@ export function UsersTable({ userType, searchQuery }: UsersTableProps) {
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       {user.isVerified ? (
-                        <DropdownMenuItem className="text-amber-600">
+                        <DropdownMenuItem className="text-amber-600" onClick={() => handleBlock(user.id)} disabled={isBlocking}>
                           <Ban className="mr-2 h-4 w-4" /> Suspend
                         </DropdownMenuItem>
                       ) : (
-                        <DropdownMenuItem className="text-green-600">
+                        <DropdownMenuItem className="text-green-600" onClick={() => handleUnblock(user.id)} disabled={isUnblocking}>
                           <CheckCircle className="mr-2 h-4 w-4" /> Verify
                         </DropdownMenuItem>
                       )}
-                      <DropdownMenuItem className="text-red-600">
+                      <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(user.id)} disabled={isDeleting}>
                         <Trash className="mr-2 h-4 w-4" /> Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>

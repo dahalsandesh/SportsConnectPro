@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
@@ -8,14 +7,14 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { getToken } = auth()
-    const token = await getToken()
+    // const { getToken } = auth()
+    // const token = await getToken()
 
     const response = await fetch(
       `${API_BASE_URL}/web/api/v1/adminapp/GetPostDetails?postId=${params.id}`,
       {
         headers: {
-          'Authorization': `token ${token}`,
+          // 'Authorization': `token ${token}`,
           'Content-Type': 'application/json',
         },
       }
@@ -38,8 +37,8 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { getToken } = auth()
-    const token = await getToken()
+    // const { getToken } = auth()
+    // const token = await getToken()
     const body = await request.json()
 
     const response = await fetch(
@@ -47,7 +46,7 @@ export async function PATCH(
       {
         method: 'POST',
         headers: {
-          'Authorization': `token ${token}`,
+          // 'Authorization': `token ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -74,15 +73,15 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { getToken } = auth()
-    const token = await getToken()
+    // const { getToken } = auth()
+    // const token = await getToken()
 
     const response = await fetch(
       `${API_BASE_URL}/web/api/v1/adminapp/DelPost`,
       {
         method: 'POST',
         headers: {
-          'Authorization': `token ${token}`,
+          // 'Authorization': `token ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

@@ -74,7 +74,7 @@ export function DashboardStats() {
           <CreditCard className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">₹{data.total_income.toLocaleString()}</div>
+          <div className="text-2xl font-bold">Rs.{data.total_income.toLocaleString()}</div>
           <div className="text-xs text-muted-foreground mt-1">From all bookings and services</div>
         </CardContent>
       </Card>
