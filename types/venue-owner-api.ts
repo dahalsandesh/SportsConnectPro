@@ -31,3 +31,3535 @@ export interface VenueNotificationsResponse {
   count: number;
   notifications: VenueNotification[];
 }
+
+export interface VenueTicket {
+  ticketId: string;
+  title: string;
+  description: string;
+  price: number;
+  quantity: number;
+  available: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateVenueTicketRequest {
+  title: string;
+  description: string;
+  price: number;
+  quantity: number;
+}
+
+export interface UpdateVenueTicketRequest {
+  ticketId: string;
+  title?: string;
+  description?: string;
+  price?: number;
+  quantity?: number;
+  available?: boolean;
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}

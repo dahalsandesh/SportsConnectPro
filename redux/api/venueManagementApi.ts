@@ -223,6 +223,73 @@ export const venueManagementApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["VenuePosts"],
     }),
+
+    deleteCourt: builder.mutation<ApiResponse<null>, { courtId: string }>({
+      query: ({ courtId }) => ({
+        url: "/web/api/v1/venue/DeleteCourt",
+        method: "POST",
+        body: { courtId },
+      }),
+      invalidatesTags: ["Courts"],
+    }),
+
+    // Sports Events
+    createSportsEvent: builder.mutation<ApiResponse<null>, FormData>({
+      query: (formData) => ({
+        url: "/web/api/v1/venue/CreateEvent",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["SportsEvents"],
+    }),
+    getSportsEvents: builder.query<any[], { venueId: string }>({
+      query: ({ venueId }) => ({
+        url: "/web/api/v1/venue/GetEvents",
+        params: { venueId },
+      }),
+      providesTags: ["VenueEvents"],
+    }),
+    updateSportsEvent: builder.mutation<ApiResponse<null>, FormData>({
+      query: (formData) => ({
+        url: "/web/api/v1/venue/UpdateEvent",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["VenueEvents"],
+    }),
+    deleteSportsEvent: builder.mutation<ApiResponse<null>, { eventId: string }>({
+      query: ({ eventId }) => ({
+        url: "/web/api/v1/venue/DeleteEvent",
+        method: "POST",
+        body: { eventId },
+      }),
+      invalidatesTags: ["VenueEvents"],
+    }),
+
+    // Venue Application
+    createVenueApplication: builder.mutation<ApiResponse<null>, FormData>({
+      query: (formData) => ({
+        url: "/web/api/v1/venue/CreateVenueApplication",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["VenueApplications"],
+    }),
+
+    // Venue Images
+    getVenueImages: builder.query<VenueImage[], void>({
+      query: () => "/web/api/v1/venue/GetVenueImages",
+      providesTags: ["VenueImages"],
+    }),
+
+    deleteVenueImage: builder.mutation<ApiResponse<null>, { imageId: string }>({
+      query: ({ imageId }) => ({
+        url: "/web/api/v1/venue/DeleteVenueImage",
+        method: "POST",
+        body: { imageId },
+      }),
+      invalidatesTags: ["VenueImages"],
+    }),
   }),
 })
 
@@ -246,4 +313,12 @@ export const {
   useGetVenuePostDetailsQuery,
   useUpdateVenuePostMutation,
   useDeleteVenuePostMutation,
+  useDeleteCourtMutation,
+  useCreateSportsEventMutation,
+  useGetSportsEventsQuery,
+  useUpdateSportsEventMutation,
+  useDeleteSportsEventMutation,
+  useCreateVenueApplicationMutation,
+  useGetVenueImagesQuery,
+  useDeleteVenueImageMutation,
 } = venueManagementApi
