@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useGetVenuesQuery, type Venue } from "@/redux/api/venues/venuesApi"
+import { useGetVenuesQuery, type Venue } from "@/redux/api/admin/venueApi"
 import type { VenueResponse } from "@/types/admin"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -15,6 +15,9 @@ import { CreateVenueDialog } from "./create-venue-dialog"
 export default function VenuesClient() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  
+  // For admin, we might want to fetch all venues or use a specific admin endpoint
+  // For now, we'll pass an empty object to get all venues
   const { data: response, error, isLoading } = useGetVenuesQuery({})
   // Map the API response to match the expected VenueResponse type
   const venues: VenueResponse[] = (response?.data || []).map((venue: Venue) => ({

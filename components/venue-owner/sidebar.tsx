@@ -20,7 +20,7 @@ import {
   Trophy,
   Bell,
 } from "lucide-react";
-import { useGetVenuesQuery } from "@/redux/api/venues/venuesApi";
+import { useGetVenuesQuery } from "@/redux/api/venue-owner/venueApi";
 import { useState } from "react";
 
 const sidebarItems = [
@@ -30,7 +30,7 @@ const sidebarItems = [
     icon: <LayoutDashboard className="h-5 w-5" />,
   },
   {
-    title: "Venues",
+    title: "My Venue",
     href: "/venue-owner/venues",
     icon: <MapPin className="h-5 w-5" />,
   },
@@ -40,7 +40,7 @@ const sidebarItems = [
     icon: <Calendar className="h-5 w-5" />,
   },
   {
-    title: "Availability",
+    title: "Time Slots",
     href: "/venue-owner/availability",
     icon: <Clock className="h-5 w-5" />,
   },
@@ -64,25 +64,32 @@ const sidebarItems = [
     href: "/venue-owner/media",
     icon: <Activity className="h-5 w-5" />,
   },
-  {
-    title: "Messages",
-    href: "/venue-owner/messages",
-    icon: <MessageSquare className="h-5 w-5" />,
-  },
-  {
-    title: "Settings",
-    href: "/venue-owner/settings",
-    icon: <Settings className="h-5 w-5" />,
-  },
-  {
-    title: "Help",
-    href: "/venue-owner/help",
-    icon: <HelpCircle className="h-5 w-5" />,
-  },
+  // {
+  //   title: "Messages",
+  //   href: "/venue-owner/messages",
+  //   icon: <MessageSquare className="h-5 w-5" />,
+  // },
+  // {
+  //   title: "Settings",
+  //   href: "/venue-owner/settings",
+  //   icon: <Settings className="h-5 w-5" />,
+  // },
+  // {
+  //   title: "Help",
+  //   href: "/venue-owner/help",
+  //   icon: <HelpCircle className="h-5 w-5" />,
+  // },
 ];
 
 export function VenueOwnerSidebarContent() {
-  const { data: venuesData, isLoading, isError } = useGetVenuesQuery();
+  // Get the current user's ID from your auth state or context
+  // This is a placeholder - replace with actual auth state
+  const currentUserId = '4d575496-38ef-4ed1-91be-a7a77ab87b49'; // Replace with actual user ID from auth
+  
+  const { data: venuesData, isLoading, isError } = useGetVenuesQuery(
+    { userId: currentUserId },
+    { skip: !currentUserId } // Skip query if no user ID is available
+  );
   const [openVenueId, setOpenVenueId] = useState<string | null>(null);
   const pathname = usePathname();
 
@@ -92,12 +99,12 @@ export function VenueOwnerSidebarContent() {
   return (
     <>
       <div className="px-4 py-2">
-        <Button className="w-full justify-start" asChild>
+        {/* <Button className="w-full justify-start" asChild>
           <Link href="/venue-owner/venues/new">
             <Plus className="mr-2 h-4 w-4" />
             Add New Venue
           </Link>
-        </Button>
+        </Button> */}
       </div>
       <nav className="grid gap-1 px-2">
         {sidebarItems.map((item) => (

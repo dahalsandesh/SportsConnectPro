@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useGetCourtsQuery } from "@/redux/api/venueManagementApi"
-import { SlotManagement } from "./SlotManagement"
+import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi"
+import { SlotManagement } from "@/app/(venue-owner)/venue-owner/SlotManagement"
 import { useState } from "react"
 
 type Venue = {

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Calendar, CreditCard, MapPin, Trophy, ArrowUpRight, Heart, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { useGetBookingsQuery } from '@/redux/api/bookings/bookingsApi'
+import { useGetBookingsQuery } from '@/redux/api/user/bookingsApi'
 import React from "react";
 
 interface DashboardStatCardProps {

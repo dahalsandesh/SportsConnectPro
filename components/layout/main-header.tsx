@@ -33,7 +33,7 @@ import {
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { useLogoutMutation } from "@/redux/services/authApi"
+import { useLogoutMutation } from "@/redux/api/common/authApi"
 import { logout } from "@/redux/features/authSlice"
 import { useAppDispatch } from "@/hooks/redux"
 import { useToast } from "@/components/ui/use-toast"

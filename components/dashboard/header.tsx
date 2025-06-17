@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAppSelector, useAppDispatch } from "@/hooks/redux"
-import { useLogoutMutation } from "@/redux/services/authApi"
+import { useLogoutMutation } from "@/redux/api/common/authApi"
 import { logout } from "@/redux/features/authSlice"
 import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"

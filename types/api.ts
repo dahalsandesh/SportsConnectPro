@@ -1,4 +1,280 @@
 // Common types
+
+// ========== Profile API Types ==========
+export interface UserDetails {
+  firstName: string;
+  lastName: string;
+  profileImage: string;
+  email: string;
+  userName: string;
+  phoneNumber: string;
+}
+
+export interface UpdateUserDetailsRequest {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  userName: string;
+  phoneNumber: string;
+}
+
+// ========== Venue Management API Types ==========
+
+export interface Venue {
+  venueId: string
+  name: string
+  address: string
+  cityId: string
+  cityName: string
+  phoneNumber: string
+  email: string
+  ownerEmail: string
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateVenueRequest {
+  ownerEmail: string
+  name: string
+  address: string
+  cityId: string
+  phoneNumber: string
+  email: string
+}
+
+export interface UpdateVenueStatusRequest {
+  venueId: string
+  isActive: 0 | 1
+}
+
+export interface VenueDetails {
+  venueId: string
+  venueName: string
+  address: string
+  cityId: string;
+  cityName: string;
+  latitude: string | null
+  longitude: string | null
+  phoneNumber: string
+  email: string
+  desc: string
+  openingTime: string | null
+  closingTime: string | null
+  isActive: boolean
+  venueImage: VenueImage[]
+}
+
+export interface VenueImage {
+  imageId: string
+  imageUrl: string
+}
+
+export interface UpdateVenueDetailsRequest {
+  venueId: string
+  venueName: string
+  address: string
+  cityId: string
+  latitude: string | null
+  longitude: string | null
+  phoneNumber: string
+  email: string
+  desc: string
+  openingTime: string | null
+  closingTime: string | null
+  isActive: boolean
+}
+
+// ========== Court Management API Types ==========
+
+export interface Court {
+  courtId: string
+  courtName: string
+  courtCategory: string
+  hourlyRate: number
+  capacity: number
+  surfaceType: string
+  desc: string
+  isActive: boolean
+}
+
+export interface CreateCourtRequest {
+  courtName: string
+  courtCategoryId: string
+  hourlyRate: string
+  capacity: string
+  surfaceType: string
+  desc: string
+}
+
+export interface UpdateCourtRequest extends CreateCourtRequest {
+  courtId: string
+  isActive: string
+}
+
+// ========== Venue Dashboard API Types ==========
+
+export interface VenueDashboardData {
+  totalBookings: number
+  totalRevenue: number
+  activeCourts: number
+  pendingBookings: number
+}
+
+// ========== Venue Booking API Types ==========
+export interface VenueBooking {
+  bookingId: string;
+  BookerName: string;
+  status: string;
+  paymentMethod: string;
+  totalPrice: number;
+  bookDate: string;
+  timeSlot: string;
+}
+
+export interface VenueBookingDetails {
+    bookingId: string;
+    BookerName: string;
+    status: string;
+    paymentMethod: string;
+    totalPrice: number | null;
+    bookDate: string;
+    startTime: string;
+    endTime: string;
+}
+
+export interface UpdateVenueBookingStatusRequest {
+  statusId: string;
+  bookingId: string;
+}
+
+// ========== Venue Notification API Types ==========
+export interface VenueNotification {
+  id: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface VenueNotificationsResponse {
+  count: number;
+  notifications: VenueNotification[];
+}
+
+// ========== Admin Notification API Types ==========
+export interface AdminNotification {
+  id: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface AdminNotificationsResponse {
+  count: number;
+  notifications: AdminNotification[];
+}
+
+// ========== Post API Types ==========
+export interface Post {
+  postID: string
+  title: string
+  description: string
+  category: string
+  date: string
+  time: string
+  postImage: string
+}
+
+export interface UpdatePostRequest {
+  postId: string;
+  title: string;
+  description: string;
+  categoryId: string;
+  date: string;
+  time: string;
+  postImage?: string;
+}
+
+export interface DeletePostRequest {
+  postId: string;
+}
+
+
+// ========== Reel API Types ==========
+export interface Reel {
+    reelId: string;
+    title: string;
+    description: string;
+    category: string;
+    date: string;
+    time: string;
+    video: string;
+}
+
+export interface ReelDetails {
+    postID: string; // API response shows postID, but it should be reelId
+    title: string;
+    description: string;
+    category: string;
+    date: string;
+    time: string;
+    postImage: string; // API response shows postImage, but it should be video
+}
+
+export interface UpdateReelRequest {
+  reelId: string;
+  title: string;
+  description: string;
+  categoryId: string;
+  video?: File;
+}
+
+export interface DeleteReelRequest {
+  reelId: string;
+}
+
+// ========== Ticket/Time Slot API Types for Venue ==========
+export interface VenueTicket {
+    id: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    isActive: boolean;
+    rate: number;
+}
+
+export interface CreateTicketRequest {
+    courtId: string;
+    date: string;
+    ticketList: {
+        startTime: string;
+        endTime: string;
+        specialPrice: string | null;
+    }[];
+}
+
+export interface UpdateTicketRequest {
+    courtId: string;
+    ticketId: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    rate: string;
+    isActive: 0 | 1;
+}
+
+// ========== Event API Types ==========
+export interface SportsEvent {
+    eventId: string;
+    title: string;
+    description: string;
+    category: string;
+    date: string;
+    time: string;
+    eventImage: string;
+}
 export interface ApiResponse<T> {
   data: T
   message?: string

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import * as React from 'react'
 import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,7 @@ import { DataTable } from "@/components/ui/data-table"
 import { useNewsColumns } from "./columns"
 import { useToast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useGetAdminPostsQuery } from "@/redux/api/admin/postsApi"
 
 type NewsItem = {
   id: string
@@ -22,35 +23,21 @@ type NewsItem = {
 export const NewsClient = () => {
   const router = useRouter()
   const { toast } = useToast()
-  const [loading, setLoading] = useState(true)
-  const [news, setNews] = useState<NewsItem[]>([])
+  const { data: news = [], isLoading, error } = useGetAdminPostsQuery()
   const columns = useNewsColumns()
 
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const response = await fetch('/api/admin/news')
-        if (!response.ok) {
-          throw new Error('Failed to fetch news')
-        }
-        const data = await response.json()
-        setNews(data)
-      } catch (error) {
-        console.error('Error fetching news:', error)
-        toast({
-          title: "Error",
-          description: "Failed to fetch news",
-          variant: "destructive"
-        })
-      } finally {
-        setLoading(false)
-      }
+  React.useEffect(() => {
+    if (error) {
+      console.error('Error fetching news:', error)
+      toast({
+        title: "Error",
+        description: "Failed to fetch news",
+        variant: "destructive"
+      })
     }
+  }, [error, toast])
 
-    fetchNews()
-  }, [toast])
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">

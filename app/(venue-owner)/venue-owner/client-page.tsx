@@ -19,9 +19,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useGetVenuesQuery } from "@/redux/api/venues/venuesApi";
+import { useGetVenuesQuery } from "@/redux/api/venue-owner/venueApi";
 import { useAppSelector } from "@/redux/store/hooks";
-import { useGetCourtsQuery } from "@/redux/api/venueManagementApi";
+import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
 import SlotManagement from "./SlotManagement";
 import React from "react";
 import VenueNewsMedia from "./VenueNewsMedia";
@@ -29,16 +29,23 @@ import VenueApplication from "./components/VenueApplication";
 import CourtManagement from "./components/CourtManagement";
 import VenueImageManagement from "./components/VenueImageManagement";
 import SportsEventManagement from "./components/SportsEventManagement";
-import { useGetVenueDashboardDataQuery } from "@/redux/api/venueManagementApi";
-import { useGetBookingsQuery } from "@/redux/api/bookings/bookingsApi";
-import { useGetPaymentsQuery } from "@/redux/api/payments/paymentsApi";
+import { useGetVenueDashboardDataQuery } from "@/redux/api/venue-owner/venueApi";
+import { useGetBookingsQuery } from "@/redux/api/user/bookingsApi";
+import { useGetPaymentsQuery } from "@/redux/api/user/paymentsApi";
 import { BookingChart } from "@/components/admin/dashboard/booking-chart";
 import { RevenueChart } from "@/components/admin/dashboard/revenue-chart";
 import { subMonths, startOfMonth, format } from "date-fns";
 
 export default function VenueOwnerDashboard() {
   const { user } = useAppSelector((state) => state.auth);
-  const { data: venuesResponse, isLoading, isError } = useGetVenuesQuery({});
+  // Get the current user's ID from your auth state or context
+  // This is a placeholder - replace with actual auth state
+  const currentUserId = '4d575496-38ef-4ed1-91be-a7a77ab87b49'; // Replace with actual user ID from auth
+  
+  const { data: venuesResponse, isLoading, isError } = useGetVenuesQuery(
+    { userId: currentUserId },
+    { skip: !currentUserId } // Skip query if no user ID is available
+  );
   const venues = Array.isArray(venuesResponse?.data) ? venuesResponse.data : [];
   const ownerVenues = venues.filter(
     (venue) => venue.ownerEmail === user?.email

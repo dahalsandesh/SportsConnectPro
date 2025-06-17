@@ -61,4 +61,5 @@ export enum UserType {
   VenueOwner = "VenueOwner",
   VenueUsers = "VenueUsers",
   Admin = "Admin",
+  SuperUsers = "SuperUsers",
 }

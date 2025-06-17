@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, Edit, Trash, Eye, Ban, CheckCircle } from "lucide-react"
-import { useUpdateVenueStatusMutation } from "@/redux/api/venues/venuesApi"
+import { useUpdateVenueStatusMutation } from "@/redux/api/admin/venueApi"
 import { useToast } from "@/components/ui/use-toast"
 import {
   AlertDialog,

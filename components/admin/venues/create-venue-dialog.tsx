@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { useCreateVenueMutation } from "@/redux/api/venues/venuesApi"
+import { useCreateVenueMutation } from "@/redux/api/admin/venueApi"
 import { useGetAllCitiesQuery } from "@/redux/api/cities/citiesApi"
 import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"

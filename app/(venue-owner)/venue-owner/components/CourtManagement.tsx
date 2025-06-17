@@ -6,7 +6,7 @@ import {
   useCreateCourtMutation,
   useUpdateCourtMutation,
   useDeleteCourtMutation,
-} from "@/redux/api/venueManagementApi";
+} from "@/redux/api/venue-owner/courtApi";
 import {
   Card,
   CardContent,

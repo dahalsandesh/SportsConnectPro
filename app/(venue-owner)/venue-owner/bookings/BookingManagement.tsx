@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useGetVenueBookingsQuery } from "@/redux/api/venueManagementApi";
+import { useGetVenueBookingsQuery } from "@/redux/api/user/bookingsApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, User, Check, X } from "lucide-react";

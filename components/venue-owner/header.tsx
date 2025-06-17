@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
-import { useLogoutMutation } from "@/redux/services/authApi";
+import { useLogoutMutation } from "@/redux/api/common/authApi";
 import { logout } from "@/redux/features/authSlice";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ import {
   useGetNotificationsQuery,
   useMarkAsReadMutation,
   useDeleteNotificationMutation,
-} from "@/redux/api/notifications/notificationsApi";
+} from "@/redux/api/venue-owner/notificationsApi";
 import { useState, useEffect } from "react";
 
 export function VenueOwnerHeader() {
@@ -139,12 +139,12 @@ export function VenueOwnerHeader() {
             </SheetContent>
           </Sheet>
           <Link href="/venue-owner" className="flex items-center gap-2">
-            <span className="text-xl font-bold">Venue Owner</span>
+            <span className="text-xl font-bold">SportConnect Pro</span>
           </Link>
         </div>
         <div className="hidden lg:flex lg:items-center lg:gap-2">
           <Link href="/venue-owner" className="flex items-center gap-2">
-            <span className="text-xl font-bold">Venue Management</span>
+            <span className="text-xl font-bold">SportConnect Pro</span>
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end gap-4">

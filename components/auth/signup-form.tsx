@@ -12,7 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useSignupMutation } from "@/redux/services/authApi"
+import { useSignupMutation } from "@/redux/api/common/authApi"
 import { Loader2, AlertCircle, Eye, EyeOff } from "lucide-react"
 
 const signupSchema = z

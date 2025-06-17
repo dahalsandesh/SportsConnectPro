@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useGetVenueDetailsQuery } from "@/redux/api/venueManagementApi";
+import { useGetVenueDetailsQuery } from "@/redux/api/venue-owner/venueApi";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -13,7 +13,15 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 
 export default function AvailabilityManagement() {
-  const { data, isLoading, error } = useGetVenueDetailsQuery();
+  // Get the current user's ID from your auth state or context
+  // This is a placeholder - replace with actual auth state
+  const currentUserId = '4d575496-38ef-4ed1-91be-a7a77ab87b49'; // Replace with actual user ID from auth
+  
+  const { data, isLoading, error } = useGetVenueDetailsQuery(
+    { userId: currentUserId },
+    { skip: !currentUserId } // Skip query if no user ID is available
+  );
+  
   const venues = Array.isArray(data) ? data : data ? [data] : [];
   const [selectedVenue, setSelectedVenue] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -21,7 +29,7 @@ export default function AvailabilityManagement() {
   );
 
   if (isLoading) return <div>Loading venues...</div>;
-  if (error) return <div>Error loading venues.</div>;
+  if (error) return <div>Error loading venues: {error.toString()}</div>;
 
   return (
     <div className="space-y-6">

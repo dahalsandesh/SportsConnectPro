@@ -5,7 +5,7 @@ import {
   useGetVenueImagesQuery,
   useUploadVenueImageMutation,
   useDeleteVenueImageMutation,
-} from "@/redux/api/venueManagementApi";
+} from "@/redux/api/venue-owner/venueApi";
 import {
   Card,
   CardContent,

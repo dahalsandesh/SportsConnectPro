@@ -6,7 +6,7 @@ import {
   useCreateSportsEventMutation,
   useUpdateSportsEventMutation,
   useDeleteSportsEventMutation,
-} from "@/redux/api/venueManagementApi";
+} from "@/redux/api/venue-owner/sportsEventsApi";
 import {
   Card,
   CardContent,
