@@ -42,12 +42,10 @@ import { useGetAdminNotificationsQuery } from "@/redux/api/admin/notificationsAp
 
 export function NotificationBell() {
   const { data, isLoading, error } = useGetAdminNotificationsQuery();
-  const [open, setOpen] = useState(false);
   const unreadCount = data?.notifications.filter((n) => !n.isRead).length || 0;
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
@@ -58,44 +56,44 @@ export function NotificationBell() {
             </Badge>
           )}
         </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Notifications</DialogTitle>
-        </DialogHeader>
-        <div className="max-h-80 overflow-y-auto">
-          {isLoading && <div className="p-4">Loading...</div>}
-          {error && (
-            <div className="p-4 text-red-500">Error fetching notifications</div>
-          )}
-          {data?.notifications.length === 0 && (
-            <div className="p-4 text-muted-foreground">No notifications</div>
-          )}
-          {data?.notifications.map((notification) => (
-            <div
-              key={notification.id}
-              className="flex items-start gap-2 p-2 border-b last:border-b-0">
-              <div className="flex-shrink-0 mt-1">
-                {!notification.isRead ? (
-                  <Bell className="h-4 w-4 text-primary" />
-                ) : (
-                  <Check className="h-4 w-4 text-muted-foreground" />
-                )}
-              </div>
-              <div className="flex-grow">
-                <p className="font-semibold">{notification.title}</p>
-                <p className="text-sm text-muted-foreground">
-                  {notification.message}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(notification.createdAt).toLocaleString()}
-                </p>
-              </div>
-            </div>
-          ))}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="w-80 max-h-96 overflow-y-auto p-0">
+        <div className="p-4 border-b">
+          <span className="font-semibold">Notifications</span>
         </div>
-      </DialogContent>
-    </Dialog>
+        {isLoading && <div className="p-4">Loading...</div>}
+        {error && (
+          <div className="p-4 text-red-500">Error fetching notifications</div>
+        )}
+        {data?.notifications.length === 0 && !isLoading && !error && (
+          <div className="p-4 text-muted-foreground">No notifications</div>
+        )}
+        {data?.notifications.map((notification) => (
+          <div
+            key={notification.id}
+            className="flex items-start gap-2 p-3 border-b last:border-b-0 bg-background hover:bg-accent/50 transition-colors">
+            <div className="flex-shrink-0 mt-1">
+              {!notification.isRead ? (
+                <Bell className="h-4 w-4 text-primary" />
+              ) : (
+                <Check className="h-4 w-4 text-muted-foreground" />
+              )}
+            </div>
+            <div className="flex-grow">
+              <p className="font-semibold">{notification.title}</p>
+              <p className="text-sm text-muted-foreground">
+                {notification.message}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {new Date(notification.createdAt).toLocaleString()}
+              </p>
+            </div>
+          </div>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
