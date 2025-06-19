@@ -18,12 +18,12 @@ export const courtApi = baseApi.injectEndpoints({
           ? [...result.map(({ courtId }) => ({ type: 'Courts' as const, id: courtId })), { type: 'Courts', id: 'LIST' }]
           : [{ type: 'Courts', id: 'LIST' }],
     }),
-    getCourtById: builder.query<Court, string>({
-      query: (courtId) => ({
+    getCourtById: builder.query<Court, { courtId: string }>({
+      query: ({ courtId }) => ({
         url: "/web/api/v1/venue/GetCourtById",
         params: { courtId },
       }),
-      providesTags: (result, error, id) => [{ type: "Courts", id }],
+      providesTags: (result, error, { courtId }) => [{ type: "Courts", id: courtId }],
     }),
     updateCourt: builder.mutation<ApiResponse<null>, UpdateCourtRequest>({
       query: (data) => ({

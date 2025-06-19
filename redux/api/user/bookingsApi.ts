@@ -80,13 +80,15 @@ export interface BookingResponse {
   data?: Booking;
 }
 
-// Extend the base PaginatedResponse to include totalPages
-export interface BookingsResponse extends PaginatedResponse<Booking> {
-  data: Booking[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+// Venue owner booking interface
+export interface VenueOwnerBooking {
+  bookingId: string;
+  BookerName: string;
+  status: string;
+  paymentMethod: string;
+  totalPrice: number | null;
+  bookDate: string;
+  timeSlot: string;
 }
 
 // Helper function to handle API responses
@@ -106,7 +108,7 @@ const handleApiResponse = <T,>(
 export const bookingsApi = createApi({
   reducerPath: 'bookingsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${getBaseUrl()}/web/api/v1/venue`,
+    baseUrl: getBaseUrl(),
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
       if (token) {
@@ -117,79 +119,34 @@ export const bookingsApi = createApi({
   }),
   tagTypes: [BOOKINGS_TAG],
   endpoints: (builder) => ({
-    // Get all bookings with optional filters
-    getBookings: builder.query<BookingsResponse, { 
-      page?: number; 
-      limit?: number; 
-      status?: 'PENDING' | 'CANCELLED' | 'CONFIRMED' | 'COMPLETED' | 'REJECTED';
-      sortBy?: 'bookingDate' | 'createdAt' | 'totalAmount';
-      sortOrder?: 'asc' | 'desc';
-      search?: string;
-      fromDate?: string;
-      toDate?: string;
-    }>({
-      query: (params = {}) => {
-        const queryParams = new URLSearchParams();
-        
-        if (params.page) queryParams.append('page', params.page.toString());
-        if (params.limit) queryParams.append('limit', params.limit.toString());
-        if (params.status) queryParams.append('status', params.status);
-        if (params.sortBy) queryParams.append('sortBy', params.sortBy);
-        if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
-        if (params.search) queryParams.append('search', params.search);
-        if (params.fromDate) queryParams.append('fromDate', params.fromDate);
-        if (params.toDate) queryParams.append('toDate', params.toDate);
-        
-        return {
-          url: `bookings?${queryParams.toString()}`,
-        };
-      },
-      providesTags: (result) => {
-        const tags: BookingTag[] = [{ type: BOOKINGS_TAG, id: 'LIST' }];
-        
-        if (result?.data) {
-          result.data.forEach(booking => {
-            tags.push({ type: BOOKINGS_TAG, id: booking.bookingId });
-            tags.push({ type: BOOKINGS_TAG, id: booking.status });
-          });
-        }
-        
-        return tags;
-      },
-      transformResponse: (response: ApiResponse<BookingsResponse>) => 
-        handleApiResponse(response, { data: [], total: 0, page: 1, limit: 10, totalPages: 0 })
+    // Get bookings for a specific court and date range (Venue Owner)
+    getVenueCourtBookings: builder.query<VenueOwnerBooking[], { courtId: string; startDate: string; endDate: string }>({
+      query: ({ courtId, startDate, endDate }) => ({
+        url: '/web/api/v1/venue/GetBooking',
+        params: { courtId, startDate, endDate },
+      }),
+      providesTags: (result = []) => [
+        ...(result?.map(({ bookingId }) => ({ type: BOOKINGS_TAG, id: bookingId } as const)) || []),
+        { type: BOOKINGS_TAG, id: 'VENUE_COURT' },
+      ],
+      transformResponse: (response: any) => response || []
     }),
 
     // Get booking by ID
     getBookingById: builder.query<Booking, string>({
       query: (bookingId) => ({
-        url: `GetBookingById`,
+        url: '/web/api/v1/venue/GetBookingById',
         params: { bookingId },
       }),
       providesTags: (result, error, bookingId) => [
         { type: BOOKINGS_TAG, id: bookingId },
-      ],
-      transformResponse: (response: ApiResponse<Booking>) =>
-        handleApiResponse(response, {} as Booking)
+      ]
     }),
 
-    // Create a new booking
-    createBooking: builder.mutation<BookingResponse, CreateBookingRequest>({
-      query: (bookingData) => ({
-        url: 'bookings',
-        method: 'POST',
-        body: bookingData,
-      }),
-      invalidatesTags: (result, error, booking) => [
-        { type: BOOKINGS_TAG, id: 'LIST' },
-        { type: BOOKINGS_TAG, id: 'UPCOMING' },
-      ],
-      transformResponse: (response: ApiResponse<BookingResponse>) => 
-        handleApiResponse(response, { message: 'Booking created successfully' }),
-      transformErrorResponse: (response: FetchBaseQueryError) => {
-        console.error('Create booking error:', response);
-        return response;
-      },
+    // Create a new booking (Not available in venue owner API)
+    createBooking: builder.mutation<{ success: boolean }, any>({
+      query: () => ({ url: '', method: 'POST' }),
+      invalidatesTags: [{ type: BOOKINGS_TAG, id: 'LIST' }],
     }),
 
     // Update booking status
@@ -327,13 +284,11 @@ export const bookingsApi = createApi({
 
 // Export hooks for usage in components
 export const {
-  useGetBookingsQuery,
+  useGetMyBookingsQuery,
   useGetBookingByIdQuery,
   useCreateBookingMutation,
   useUpdateBookingStatusMutation,
-  useGetMyBookingsQuery,
-  useGetVenueBookingsQuery,
-  useGetBookingsForCourtQuery,
+  useGetVenueCourtBookingsQuery,
 } = bookingsApi;
 
 /**

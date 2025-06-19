@@ -1,25 +1,37 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useGetAllVenueApplicationsQuery } from "@/redux/api/venue-applications/venueApplicationsApi"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { ApplicationsTable } from "./applications-table"
-import { Search } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useState } from "react";
+import { useGetAllVenueApplicationsQuery } from "@/redux/api/admin/venueApplicationsApi";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { ApplicationsTable } from "./applications-table";
+import { Search } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function VenueApplicationsClient() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const { data: applications, error, isLoading } = useGetAllVenueApplicationsQuery()
+  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    data: applications,
+    error,
+    isLoading,
+  } = useGetAllVenueApplicationsQuery();
 
   if (error) {
     return (
       <Alert variant="destructive">
         <AlertTitle>Error</AlertTitle>
-        <AlertDescription>Failed to load venue applications. Please try again later.</AlertDescription>
+        <AlertDescription>
+          Failed to load venue applications. Please try again later.
+        </AlertDescription>
       </Alert>
-    )
+    );
   }
 
   return (
@@ -67,7 +79,9 @@ export default function VenueApplicationsClient() {
           <Card>
             <CardHeader>
               <CardTitle>Pending Applications</CardTitle>
-              <CardDescription>Manage pending venue applications</CardDescription>
+              <CardDescription>
+                Manage pending venue applications
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ApplicationsTable
@@ -84,7 +98,9 @@ export default function VenueApplicationsClient() {
           <Card>
             <CardHeader>
               <CardTitle>Approved Applications</CardTitle>
-              <CardDescription>Manage approved venue applications</CardDescription>
+              <CardDescription>
+                Manage approved venue applications
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ApplicationsTable
@@ -101,7 +117,9 @@ export default function VenueApplicationsClient() {
           <Card>
             <CardHeader>
               <CardTitle>Rejected Applications</CardTitle>
-              <CardDescription>Manage rejected venue applications</CardDescription>
+              <CardDescription>
+                Manage rejected venue applications
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ApplicationsTable
@@ -115,5 +133,5 @@ export default function VenueApplicationsClient() {
         </TabsContent>
       </Tabs>
     </>
-  )
+  );
 }

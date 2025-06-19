@@ -1,11 +1,9 @@
 import { baseApi } from "../baseApi"
 import type { 
   ApiResponse, 
-  TimeSlot, 
-  CreateTimeSlotRequest, 
-  UpdateTimeSlotRequest, 
-  DeleteTimeSlotRequest,
-  TimeSlotQueryParams
+  VenueTicket, 
+  CreateTicketRequest, 
+  UpdateTicketRequest
 } from "@/types/api"
 
 // Define the tag type for this API
@@ -16,64 +14,46 @@ type TagArray<T> = Array<T | { type: T; id: string | number }>
 
 export const timeSlotsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Get time slots with filters
-    getTimeSlots: builder.query<TimeSlot[], TimeSlotQueryParams | void>({
-      query: (params) => {
-        const queryParams = params || {};
-        return {
-          url: "/web/api/v1/time-slots",
-          params: queryParams as Record<string, any>,
-        };
-      },
-      providesTags: (result = []): TagArray<'TimeSlots'> => [
-        { type: 'TimeSlots', id: 'LIST' },
-        ...result.map<TimeSlotTag>(({ id }) => ({ type: 'TimeSlots', id: String(id) })),
-      ],
+    // Get time slots by date for a specific court
+    getTimeSlots: builder.query<VenueTicket[], { courtId: string; date: string }>({
+      query: ({ courtId, date }) => ({
+        url: "/web/api/v1/venue/GetTicket",
+        params: { courtId, date },
+      }),
+      providesTags: (result) =>
+        result
+          ? [...result.map(({ id }) => ({ type: 'TimeSlots' as const, id })), { type: 'TimeSlots', id: 'LIST' }]
+          : [{ type: 'TimeSlots', id: 'LIST' }],
     }),
 
     // Get time slot by ID
-    getTimeSlotById: builder.query<TimeSlot, string>({
-      query: (timeSlotId) => ({
-        url: `/web/api/v1/time-slots/${timeSlotId}`,
+    getTimeSlotById: builder.query<VenueTicket, { ticketId: string }>({
+      query: ({ ticketId }) => ({
+        url: "/web/api/v1/venue/GetTicketById",
+        params: { ticketId },
       }),
-      providesTags: (result, error, id): TagArray<'TimeSlots'> => [
-        { type: 'TimeSlots', id: String(id) }
-      ],
+      providesTags: (result, error, { ticketId }) => [{ type: 'TimeSlots', id: ticketId }],
     }),
 
-    // Create a new time slot
-    createTimeSlot: builder.mutation<ApiResponse<TimeSlot>, CreateTimeSlotRequest>({
+    // Create time slots for a specific date
+    createTimeSlots: builder.mutation<ApiResponse<null>, CreateTicketRequest>({
       query: (data) => ({
-        url: "/web/api/v1/time-slots",
+        url: "/web/api/v1/venue/CreateTicket",
         method: "POST",
         body: data,
       }),
-      invalidatesTags: (): TagArray<'TimeSlots'> => [
-        { type: 'TimeSlots', id: 'LIST' }
-      ],
+      invalidatesTags: [{ type: 'TimeSlots', id: 'LIST' }],
     }),
 
     // Update a time slot
-    updateTimeSlot: builder.mutation<ApiResponse<TimeSlot>, UpdateTimeSlotRequest & { id: string }>({
-      query: ({ id, ...data }) => ({
-        url: `/web/api/v1/time-slots/${id}`,
-        method: "PUT",
+    updateTimeSlot: builder.mutation<ApiResponse<null>, UpdateTicketRequest>({
+      query: (data) => ({
+        url: "/web/api/v1/venue/UpdateTicket",
+        method: "POST",
         body: data,
       }),
-      invalidatesTags: (result, error, { id }): TagArray<'TimeSlots'> => [
-        { type: 'TimeSlots', id: String(id) },
-        { type: 'TimeSlots', id: 'LIST' },
-      ],
-    }),
-
-    // Delete a time slot
-    deleteTimeSlot: builder.mutation<ApiResponse<null>, DeleteTimeSlotRequest>({
-      query: ({ id }) => ({
-        url: `/web/api/v1/time-slots/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: (result, error, { id }): TagArray<'TimeSlots'> => [
-        { type: 'TimeSlots', id: String(id) },
+      invalidatesTags: (result, error, { ticketId }) => [
+        { type: 'TimeSlots', id: ticketId },
         { type: 'TimeSlots', id: 'LIST' },
       ],
     }),
@@ -85,9 +65,8 @@ export const timeSlotsApi = baseApi.injectEndpoints({
 export const {
   useGetTimeSlotsQuery,
   useGetTimeSlotByIdQuery,
-  useCreateTimeSlotMutation,
+  useCreateTimeSlotsMutation,
   useUpdateTimeSlotMutation,
-  useDeleteTimeSlotMutation,
 } = timeSlotsApi
 
 // Export endpoints for use in other parts of the application

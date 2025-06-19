@@ -1,11 +1,11 @@
-"use client"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { useCreateVenueMutation } from "@/redux/api/admin/venueApi"
-import { useGetAllCitiesQuery } from "@/redux/api/cities/citiesApi"
-import { useToast } from "@/components/ui/use-toast"
-import { Button } from "@/components/ui/button"
+"use client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useCreateVenueMutation } from "@/redux/api/admin/venueApi";
+import { useGetCitiesQuery } from "@/redux/api/admin/citiesApi";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,11 +13,24 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Loader2 } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   ownerEmail: z.string().email({
@@ -38,17 +51,20 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-})
+});
 
 interface CreateVenueDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function CreateVenueDialog({ open, onOpenChange }: CreateVenueDialogProps) {
-  const { toast } = useToast()
-  const [createVenue, { isLoading }] = useCreateVenueMutation()
-  const { data: cities, isLoading: isLoadingCities } = useGetAllCitiesQuery()
+export function CreateVenueDialog({
+  open,
+  onOpenChange,
+}: CreateVenueDialogProps) {
+  const { toast } = useToast();
+  const [createVenue, { isLoading }] = useCreateVenueMutation();
+  const { data: cities, isLoading: isLoadingCities } = useGetCitiesQuery();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,32 +76,34 @@ export function CreateVenueDialog({ open, onOpenChange }: CreateVenueDialogProps
       phoneNumber: "",
       email: "",
     },
-  })
+  });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await createVenue(values).unwrap()
+      await createVenue(values).unwrap();
       toast({
         title: "Venue created",
         description: `Venue "${values.name}" has been created successfully.`,
-      })
-      form.reset()
-      onOpenChange(false)
+      });
+      form.reset();
+      onOpenChange(false);
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to create venue. Please try again.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Create Venue</DialogTitle>
-          <DialogDescription>Add a new venue to the system. Click save when you're done.</DialogDescription>
+          <DialogDescription>
+            Add a new venue to the system. Click save when you're done.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -134,7 +152,9 @@ export function CreateVenueDialog({ open, onOpenChange }: CreateVenueDialogProps
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>City</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a city" />
@@ -189,7 +209,10 @@ export function CreateVenueDialog({ open, onOpenChange }: CreateVenueDialogProps
               )}
             />
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
@@ -201,5 +224,5 @@ export function CreateVenueDialog({ open, onOpenChange }: CreateVenueDialogProps
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

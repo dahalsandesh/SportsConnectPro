@@ -1,8 +1,13 @@
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { CheckCircle, ArrowRight, HelpCircle } from "lucide-react"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, ArrowRight, HelpCircle } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default function HowItWorksPage() {
   return (
@@ -10,9 +15,12 @@ export default function HowItWorksPage() {
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <div className="text-center mb-16 animate-fade-in-up">
-          <h1 className="text-4xl font-bold mb-4 text-foreground">How FutsalConnectPro Works</h1>
+          <h1 className="text-4xl font-bold mb-4 text-foreground">
+            How FutsalConnectPro Works
+          </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            We've made booking futsal courts simple and hassle-free. Follow these easy steps to get started.
+            We've made booking futsal courts simple and hassle-free. Follow
+            these easy steps to get started.
           </p>
         </div>
 
@@ -25,32 +33,45 @@ export default function HowItWorksPage() {
                 <div className="bg-green-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4 shadow-lg">
                   1
                 </div>
-                <h2 className="text-2xl font-bold text-foreground">Find a Venue</h2>
+                <h2 className="text-2xl font-bold text-foreground">
+                  Find a Venue
+                </h2>
               </div>
               <p className="text-muted-foreground mb-6">
-                Search for futsal venues near you or by name. Filter by surface type, capacity, and price to find the
-                perfect court for your game.
+                Search for futsal venues near you or by name. Filter by surface
+                type, capacity, and price to find the perfect court for your
+                game.
               </p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Browse venues by location</span>
+                  <span className="text-foreground">
+                    Browse venues by location
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Filter by surface type (artificial grass, concrete, wood)</span>
+                  <span className="text-foreground">
+                    Filter by surface type (artificial grass, concrete, wood)
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Compare prices and facilities</span>
+                  <span className="text-foreground">
+                    Compare prices and facilities
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Read reviews from other players</span>
+                  <span className="text-foreground">
+                    Read reviews from other players
+                  </span>
                 </li>
               </ul>
               <Link href="/venues">
-                <Button className="bg-green-600 hover:bg-green-700 text-white shadow-lg">Find Venues Now</Button>
+                <Button className="bg-green-600 hover:bg-green-700 text-white shadow-lg">
+                  Find Venues Now
+                </Button>
               </Link>
             </div>
           </div>
@@ -88,31 +109,43 @@ export default function HowItWorksPage() {
                 <div className="bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4 shadow-lg">
                   2
                 </div>
-                <h2 className="text-2xl font-bold text-foreground">Book a Slot</h2>
+                <h2 className="text-2xl font-bold text-foreground">
+                  Book a Slot
+                </h2>
               </div>
               <p className="text-muted-foreground mb-6">
-                Select your preferred date and time slot. Check real-time availability to ensure the court is free when
-                you want to play.
+                Select your preferred date and time slot. Check real-time
+                availability to ensure the court is free when you want to play.
               </p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">View real-time availability calendar</span>
+                  <span className="text-foreground">
+                    View real-time availability calendar
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Choose your preferred date and time</span>
+                  <span className="text-foreground">
+                    Choose your preferred date and time
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Select booking duration</span>
+                  <span className="text-foreground">
+                    Select booking duration
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Add special requests or notes</span>
+                  <span className="text-foreground">
+                    Add special requests or notes
+                  </span>
                 </li>
               </ul>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">Learn More</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
+                Learn More
+              </Button>
             </div>
           </div>
         </div>
@@ -125,30 +158,43 @@ export default function HowItWorksPage() {
                 <div className="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4 shadow-lg">
                   3
                 </div>
-                <h2 className="text-2xl font-bold text-foreground">Make Payment</h2>
+                <h2 className="text-2xl font-bold text-foreground">
+                  Make Payment
+                </h2>
               </div>
               <p className="text-muted-foreground mb-6">
-                Secure payment through Khalti or other payment methods. Get instant confirmation of your booking.
+                Secure payment through Khalti or other payment methods. Get
+                instant confirmation of your booking.
               </p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Multiple payment options</span>
+                  <span className="text-foreground">
+                    Multiple payment options
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Secure transaction processing</span>
+                  <span className="text-foreground">
+                    Secure transaction processing
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Instant booking confirmation</span>
+                  <span className="text-foreground">
+                    Instant booking confirmation
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Email receipt and booking details</span>
+                  <span className="text-foreground">
+                    Email receipt and booking details
+                  </span>
                 </li>
               </ul>
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white shadow-lg">View Payment Options</Button>
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white shadow-lg">
+                View Payment Options
+              </Button>
             </div>
           </div>
           <div className="order-1 md:order-2 flex items-center justify-center animate-slide-in-right">
@@ -185,87 +231,120 @@ export default function HowItWorksPage() {
                 <div className="bg-amber-600 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4 shadow-lg">
                   4
                 </div>
-                <h2 className="text-2xl font-bold text-foreground">Play & Enjoy</h2>
+                <h2 className="text-2xl font-bold text-foreground">
+                  Play & Enjoy
+                </h2>
               </div>
               <p className="text-muted-foreground mb-6">
-                Show up at the venue, play your game, and have fun with friends and teammates. Don't forget to leave a
-                review!
+                Show up at the venue, play your game, and have fun with friends
+                and teammates. Don't forget to leave a review!
               </p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Show your booking confirmation at the venue</span>
+                  <span className="text-foreground">
+                    Show your booking confirmation at the venue
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Enjoy your game with no hassle</span>
+                  <span className="text-foreground">
+                    Enjoy your game with no hassle
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Rate your experience and leave a review</span>
+                  <span className="text-foreground">
+                    Rate your experience and leave a review
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Book again for your next game</span>
+                  <span className="text-foreground">
+                    Book again for your next game
+                  </span>
                 </li>
               </ul>
-              <Button className="bg-amber-600 hover:bg-amber-700 text-white shadow-lg">Book Your First Game</Button>
+              <Button className="bg-amber-600 hover:bg-amber-700 text-white shadow-lg">
+                Book Your First Game
+              </Button>
             </div>
           </div>
         </div>
 
         {/* FAQ Section */}
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 rounded-xl p-8 mb-20 border border-gray-200 dark:border-gray-700/50 animate-fade-in-up">
-          <h2 className="text-3xl font-bold mb-8 text-center text-foreground">Frequently Asked Questions</h2>
+          <h2 className="text-3xl font-bold mb-8 text-center text-foreground">
+            Frequently Asked Questions
+          </h2>
           <Accordion type="single" collapsible className="max-w-3xl mx-auto">
-            <AccordionItem value="item-1" className="border-gray-200 dark:border-gray-700">
+            <AccordionItem
+              value="item-1"
+              className="border-gray-200 dark:border-gray-700">
               <AccordionTrigger className="text-foreground hover:text-primary">
                 How do I cancel a booking?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                You can cancel a booking through your account dashboard. Go to "My Bookings", find the booking you want
-                to cancel, and click the "Cancel" button. Please note that cancellation policies vary by venue, and some
-                may charge a cancellation fee depending on how close to the booking time you cancel.
+                You can cancel a booking through your account dashboard. Go to
+                "My Bookings", find the booking you want to cancel, and click
+                the "Cancel" button. Please note that cancellation policies vary
+                by venue, and some may charge a cancellation fee depending on
+                how close to the booking time you cancel.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-2" className="border-gray-200 dark:border-gray-700">
+            <AccordionItem
+              value="item-2"
+              className="border-gray-200 dark:border-gray-700">
               <AccordionTrigger className="text-foreground hover:text-primary">
                 Can I modify my booking time?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Yes, you can modify your booking time if the new time slot is available. Go to "My Bookings" in your
-                account dashboard, find the booking you want to modify, and click "Change Time". If the new time slot is
-                available, you can confirm the change. Some venues may charge a small fee for modifications.
+                Yes, you can modify your booking time if the new time slot is
+                available. Go to "My Bookings" in your account dashboard, find
+                the booking you want to modify, and click "Change Time". If the
+                new time slot is available, you can confirm the change. Some
+                venues may charge a small fee for modifications.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-3" className="border-gray-200 dark:border-gray-700">
+            <AccordionItem
+              value="item-3"
+              className="border-gray-200 dark:border-gray-700">
               <AccordionTrigger className="text-foreground hover:text-primary">
                 What payment methods are accepted?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                We accept various payment methods including Khalti, credit/debit cards, and bank transfers. The
-                available payment options will be displayed during the checkout process. All payments are processed
-                securely through our payment partners.
+                We accept various payment methods including Khalti, credit/debit
+                cards, and bank transfers. The available payment options will be
+                displayed during the checkout process. All payments are
+                processed securely through our payment partners.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-4" className="border-gray-200 dark:border-gray-700">
+            <AccordionItem
+              value="item-4"
+              className="border-gray-200 dark:border-gray-700">
               <AccordionTrigger className="text-foreground hover:text-primary">
                 Do I need to create an account to book a court?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Yes, you need to create an account to book a court. This helps us manage your bookings, send
-                confirmations, and provide a better experience. Creating an account is free and only takes a minute. You
-                can sign up using your email or social media accounts.
+                Yes, you need to create an account to book a court. This helps
+                us manage your bookings, send confirmations, and provide a
+                better experience. Creating an account is free and only takes a
+                minute. You can sign up using your email or social media
+                accounts.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-5" className="border-gray-200 dark:border-gray-700">
+            <AccordionItem
+              value="item-5"
+              className="border-gray-200 dark:border-gray-700">
               <AccordionTrigger className="text-foreground hover:text-primary">
                 What if the venue is closed when I arrive?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                If you arrive at the venue and find it closed during your booked time, please contact our customer
-                support immediately. We'll help resolve the issue and process a refund if necessary. We recommend taking
-                a photo of the closed venue as evidence to support your claim.
+                If you arrive at the venue and find it closed during your booked
+                time, please contact our customer support immediately. We'll
+                help resolve the issue and process a refund if necessary. We
+                recommend taking a photo of the closed venue as evidence to
+                support your claim.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -273,8 +352,7 @@ export default function HowItWorksPage() {
             <Link href="/faq">
               <Button
                 variant="outline"
-                className="gap-2 border-gray-300 dark:border-gray-600 text-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
+                className="gap-2 border-gray-300 dark:border-gray-600 text-foreground hover:bg-gray-100 dark:hover:bg-gray-800">
                 View All FAQs <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -285,19 +363,25 @@ export default function HowItWorksPage() {
         <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-8 text-white mb-20 shadow-2xl animate-scale-in">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-4 text-white">For Venue Owners</h2>
+              <h2 className="text-3xl font-bold mb-4 text-white">
+                For Venue Owners
+              </h2>
               <p className="text-lg mb-6 text-green-50">
-                Own a futsal venue? Join FutsalConnectPro to increase your bookings, manage your venue efficiently, and
-                grow your business.
+                Own a futsal venue? Join FutsalConnectPro to increase your
+                bookings, manage your venue efficiently, and grow your business.
               </p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 mr-2 mt-0.5 text-green-200 flex-shrink-0" />
-                  <span className="text-green-50">Increase visibility and reach more players</span>
+                  <span className="text-green-50">
+                    Increase visibility and reach more players
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 mr-2 mt-0.5 text-green-200 flex-shrink-0" />
-                  <span className="text-green-50">Manage bookings and availability easily</span>
+                  <span className="text-green-50">
+                    Manage bookings and availability easily
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 mr-2 mt-0.5 text-green-200 flex-shrink-0" />
@@ -305,7 +389,9 @@ export default function HowItWorksPage() {
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 mr-2 mt-0.5 text-green-200 flex-shrink-0" />
-                  <span className="text-green-50">Analytics and reporting tools</span>
+                  <span className="text-green-50">
+                    Analytics and reporting tools
+                  </span>
                 </li>
               </ul>
               <Link href="/register-venue">
@@ -333,13 +419,18 @@ export default function HowItWorksPage() {
           <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-4 inline-flex mb-4">
             <HelpCircle className="h-16 w-16 text-green-600" />
           </div>
-          <h2 className="text-3xl font-bold mb-4 text-foreground">Need More Help?</h2>
+          <h2 className="text-3xl font-bold mb-4 text-foreground">
+            Need More Help?
+          </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Our support team is always ready to assist you with any questions or issues.
+            Our support team is always ready to assist you with any questions or
+            issues.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/contact">
-              <Button size="lg" className="bg-green-600 hover:bg-green-700 px-8 text-white shadow-lg">
+              <Button
+                size="lg"
+                className="bg-green-600 hover:bg-green-700 px-8 text-white shadow-lg">
                 Contact Support
               </Button>
             </Link>
@@ -347,8 +438,7 @@ export default function HowItWorksPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="px-8 border-gray-300 dark:border-gray-600 text-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
+                className="px-8 border-gray-300 dark:border-gray-600 text-foreground hover:bg-gray-100 dark:hover:bg-gray-800">
                 Browse FAQs
               </Button>
             </Link>
@@ -356,5 +446,5 @@ export default function HowItWorksPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

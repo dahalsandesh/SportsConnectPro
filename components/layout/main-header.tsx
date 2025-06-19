@@ -55,6 +55,7 @@ const mainNavItems = [
     href: "/events",
     icon: <Trophy className="h-4 w-4 mr-2" />,
   },
+
   {
     title: "How It Works",
     href: "/how-it-works",
@@ -64,6 +65,22 @@ const mainNavItems = [
     title: "List Your Venue",
     href: "/register-venue",
     icon: <Building2 className="h-4 w-4 mr-2" />,
+  },
+  {
+    title: "News & Media",
+    href: "/public-posts",
+    // icon: <Building2 className="h-4 w-4 mr-2" />,
+    // dropdown: [
+    //   {
+    //     title: "Posts / News",
+    //     href: "/public-posts",
+    //   },
+    // ],
+  },
+  {
+    title: "Reels",
+    href: "/public-reels",
+    // icon: <Building2 className="h-4 w-4 mr-2" />,
   },
 ]
 
@@ -155,17 +172,44 @@ export function MainHeader() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
             {mainNavItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary focus-ring rounded-md px-3 py-2",
-                  pathname === item.href ? "text-primary font-semibold" : "text-foreground/70 hover:text-primary",
-                )}
-                style={{ visibility: "visible", opacity: 1 }}
-              >
-                {item.title}
-              </Link>
+              item.dropdown ? (
+                <DropdownMenu key={item.title}>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className={cn(
+                        "text-sm font-medium transition-colors hover:text-primary focus-ring rounded-md px-3 py-2 flex items-center gap-1",
+                        "text-foreground/70 hover:text-primary",
+                        pathname.startsWith('/public-posts') || pathname.startsWith('/public-reels') ? "text-primary font-semibold" : ""
+                      )}
+                    >
+                      {item.icon}
+                      {item.title}
+                      <ChevronDown className="h-4 w-4 ml-1" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="bg-background border-border text-foreground shadow-lg rounded-md">
+                    {item.dropdown.map((sub) => (
+                      <DropdownMenuItem asChild key={sub.href} className="hover:bg-accent hover:text-primary focus:bg-accent focus:text-primary">
+                        <Link href={sub.href} className="block w-full px-4 py-2 text-sm">
+                          {sub.title}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "text-sm font-medium transition-colors hover:text-primary focus-ring rounded-md px-3 py-2",
+                    pathname === item.href ? "text-primary font-semibold" : "text-foreground/70 hover:text-primary",
+                  )}
+                  style={{ visibility: "visible", opacity: 1 }}
+                >
+                  {item.title}
+                </Link>
+              )
             ))}
           </nav>
 
@@ -177,12 +221,12 @@ export function MainHeader() {
               <div className="h-9 w-9" />
             ) : isAuthenticated ? (
               <>
-                <Button variant="ghost" size="icon" className="relative h-9 w-9">
+                {/* <Button variant="ghost" size="icon" className="relative h-9 w-9">
                   <Bell className="h-4 w-4" />
                   <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px] bg-primary text-primary-foreground">
                     3
                   </Badge>
-                </Button>
+                </Button> */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="flex items-center gap-2 h-9 px-2 focus-ring">
@@ -247,7 +291,7 @@ export function MainHeader() {
                 </Link>
                 <Link 
                   href="/signup" 
-                  className={buttonVariants({ className: 'h-9' })}
+                  className={buttonVariants({ className: 'h-9 text-white' })}
                 >
                   <User className="mr-2 h-4 w-4" />
                   Sign up

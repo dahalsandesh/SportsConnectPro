@@ -1,14 +1,20 @@
-import type { Metadata } from "next"
-import { Search, Filter, MapPin } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import VenueList from "@/components/venue-list"
+import type { Metadata } from "next";
+import { Search, Filter, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import VenueList from "@/components/venue-list";
 
 export const metadata: Metadata = {
   title: "Find Venues | FutsalBook",
   description: "Search and browse futsal venues near you",
-}
+};
 
 export default function VenuesPage() {
   return (
@@ -20,7 +26,11 @@ export default function VenuesPage() {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-grow">
             <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <Input type="text" placeholder="Search by venue name" className="pl-10" />
+            <Input
+              type="text"
+              placeholder="Search by venue name"
+              className="pl-10"
+            />
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -41,7 +51,9 @@ export default function VenuesPage() {
                 <SelectValue placeholder="Surface Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="artificial-grass">Artificial Grass</SelectItem>
+                <SelectItem value="artificial-grass">
+                  Artificial Grass
+                </SelectItem>
                 <SelectItem value="concrete">Concrete</SelectItem>
                 <SelectItem value="wood">Wood</SelectItem>
               </SelectContent>
@@ -72,7 +84,10 @@ export default function VenuesPage() {
           <Button variant="outline" size="icon" disabled>
             &lt;
           </Button>
-          <Button variant="outline" size="sm" className="bg-green-600 text-white hover:bg-green-700">
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-green-600 text-white hover:bg-green-700">
             1
           </Button>
           <Button variant="outline" size="sm">
@@ -87,5 +102,5 @@ export default function VenuesPage() {
         </nav>
       </div>
     </div>
-  )
+  );
 }

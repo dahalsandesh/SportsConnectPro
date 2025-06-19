@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  useGetNotificationsQuery,
-  useMarkAsReadMutation,
-  useDeleteNotificationMutation,
-} from "@/redux/api/notifications/notificationsApi";
+import { useGetNotificationsQuery } from "@/redux/api/venue-owner/notificationsApi";
 import {
   Card,
   CardContent,
@@ -21,19 +17,23 @@ import { format } from "date-fns";
 export default function NotificationManagement() {
   const { toast } = useToast();
   const {
-    data: notifications = [],
+    data: notificationsData,
     isLoading,
     refetch,
   } = useGetNotificationsQuery();
-  const [markAsRead] = useMarkAsReadMutation();
-  const [deleteNotification] = useDeleteNotificationMutation();
+
+  // Extract notifications from the response structure
+  const notifications = notificationsData?.notifications || [];
+  const unreadCount = notificationsData?.count || 0;
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
-      await markAsRead({ notificationId }).unwrap();
+      // Note: Venue notifications API doesn't have markAsRead endpoint
+      // This would need to be implemented if the API supports it
       toast({
-        title: "Success",
-        description: "Notification marked as read",
+        title: "Info",
+        description:
+          "Mark as read functionality not available for venue notifications",
       });
       refetch();
     } catch (error) {
@@ -48,10 +48,12 @@ export default function NotificationManagement() {
   const handleDelete = async (notificationId: string) => {
     if (window.confirm("Are you sure you want to delete this notification?")) {
       try {
-        await deleteNotification({ notificationId }).unwrap();
+        // Note: Venue notifications API doesn't have delete endpoint
+        // This would need to be implemented if the API supports it
         toast({
-          title: "Success",
-          description: "Notification deleted successfully",
+          title: "Info",
+          description:
+            "Delete functionality not available for venue notifications",
         });
         refetch();
       } catch (error) {
@@ -74,7 +76,9 @@ export default function NotificationManagement() {
           <Bell className="h-5 w-5" />
           <div>
             <CardTitle>Notifications</CardTitle>
-            <CardDescription>Manage your notifications</CardDescription>
+            <CardDescription>
+              Manage your notifications ({unreadCount} unread)
+            </CardDescription>
           </div>
         </div>
       </CardHeader>

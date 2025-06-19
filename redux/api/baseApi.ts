@@ -60,6 +60,8 @@ export const baseApi = createApi({
     "Statuses",
     "SportCategories",
     "Genders",
+    "Events",
+    "AdminNotifications",
     
     // Business domains
     "Dashboard",

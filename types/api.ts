@@ -21,17 +21,36 @@ export interface UpdateUserDetailsRequest {
 // ========== Venue Management API Types ==========
 
 export interface Venue {
-  venueId: string
+  venueID: string
+  ownerEmail: string
   name: string
   address: string
-  cityId: string
-  cityName: string
   phoneNumber: string
-  email: string
-  ownerEmail: string
   isActive: boolean
-  createdAt: string
-  updatedAt: string
+  city: string
+}
+
+export interface VenueDetails extends BaseEntity {
+  venueID: string;
+  name: string;
+  address: string;
+  city: string;
+  latitude: string | null;
+  longitude: string | null;
+  phoneNumber: string;
+  email: string;
+  description: string;
+  openingTime: string | null;
+  closingTime: string | null;
+  isActive: boolean;
+  createdAt: string;
+  owner: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  venueImages: VenueImage[];
+  courts: Court[];
 }
 
 export interface CreateVenueRequest {
@@ -46,23 +65,6 @@ export interface CreateVenueRequest {
 export interface UpdateVenueStatusRequest {
   venueId: string
   isActive: 0 | 1
-}
-
-export interface VenueDetails {
-  venueId: string
-  venueName: string
-  address: string
-  cityId: string;
-  cityName: string;
-  latitude: string | null
-  longitude: string | null
-  phoneNumber: string
-  email: string
-  desc: string
-  openingTime: string | null
-  closingTime: string | null
-  isActive: boolean
-  venueImage: VenueImage[]
 }
 
 export interface VenueImage {
@@ -653,4 +655,32 @@ export interface BookingFilterParams {
   endDate?: string
   page?: number
   limit?: number
+}
+
+// ========== Venue Application API Types ==========
+export interface VenueApplication {
+  ID: string
+  Applicant_id: string
+  VenueName: string
+  Address: string
+  City_id: string
+  PhoneNumber: string
+  Email: string
+  PanNumber: string
+  Status: string
+  AdminRemark: string
+  IsActive: boolean
+  CreatedAt: string
+  reviewed_at: string | null
+  document?: VenueApplicationDocument[]
+}
+
+export interface VenueApplicationDocument {
+  file: string
+  docType: string
+}
+
+export interface UpdateVenueApplicationStatusRequest {
+  applicationId: string
+  status: "Pending" | "Under Review" | "Approved" | "Rejected"
 }

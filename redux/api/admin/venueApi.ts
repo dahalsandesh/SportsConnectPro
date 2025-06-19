@@ -1,15 +1,21 @@
 import { baseApi } from "../baseApi";
-import type { ApiResponse, Venue, CreateVenueRequest, UpdateVenueStatusRequest } from '@/types/api';
+import type { ApiResponse, Venue, CreateVenueRequest, UpdateVenueStatusRequest, VenueDetails } from '@/types/api';
 
 export const venueApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getVenues: builder.query<ApiResponse<Venue[]>, void>({ 
-      query: () => "/web/api/v1/adminapp/GetAllVenues",
+    getVenues: builder.query<Venue[], void>({ 
+      query: () => "/web/api/v1/adminapp/GetVenue",
       providesTags: (result) =>
-        result && result.data
-          ? [...result.data.map(({ venueId }) => ({ type: 'Venues' as const, id: venueId })), { type: 'Venues', id: 'LIST' }]
+        result
+          ? [...result.map(({ venueID }) => ({ type: 'Venues' as const, id: venueID })), { type: 'Venues', id: 'LIST' }]
           : [{ type: 'Venues', id: 'LIST' }],
     }),
+    
+    getVenueDetails: builder.query<VenueDetails, string>({
+      query: (venueId) => `/web/api/v1/adminapp/GetVenueDetails?venueId=${venueId}`,
+      providesTags: (result, error, id) => [{ type: 'Venues', id }],
+    }),
+    
     createVenue: builder.mutation<ApiResponse<null>, CreateVenueRequest>({
       query: (data) => ({
         url: "/web/api/v1/adminapp/CreateVenue",
@@ -18,6 +24,7 @@ export const venueApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'Venues', id: 'LIST' }],
     }),
+    
     updateVenueStatus: builder.mutation<ApiResponse<null>, UpdateVenueStatusRequest>({
       query: (data) => ({
         url: "/web/api/v1/adminapp/UpdateVenueStatus",
@@ -31,6 +38,7 @@ export const venueApi = baseApi.injectEndpoints({
 
 export const {
     useGetVenuesQuery,
+    useGetVenueDetailsQuery,
     useCreateVenueMutation,
     useUpdateVenueStatusMutation,
 } = venueApi;

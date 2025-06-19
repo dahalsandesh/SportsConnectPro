@@ -1,4 +1,4 @@
-import { baseApi } from "./baseApi";
+import { baseApi } from "../baseApi";
 import type { UserType } from "@/types/auth";
 
 export interface User {

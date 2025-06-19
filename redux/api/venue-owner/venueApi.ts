@@ -10,6 +10,15 @@ export const venueApi = baseApi.injectEndpoints({
       }),
       providesTags: (result) => 
         result ? [{ type: 'Venues' as const, id: result.venueId }] : ['Venues'],
+      // Add error handling
+      async onQueryStarted(arg, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          console.log('Venue details fetched successfully:', data);
+        } catch (error) {
+          console.error('Error fetching venue details:', error);
+        }
+      },
     }),
     updateVenueDetails: builder.mutation<ApiResponse<null>, UpdateVenueDetailsRequest>({ 
       query: (data) => ({
@@ -39,14 +48,17 @@ export const venueApi = baseApi.injectEndpoints({
       query: () => "/web/api/v1/venue/GetDashboardData",
       providesTags: ["Dashboard"],
     }),
-    getVenues: builder.query<ApiResponse<Venue[]>, { userId: string }>({
+    getVenues: builder.query<VenueDetails[], { userId: string }>({
       query: ({ userId }) => ({
-        url: `/web/api/v1/venue/GetVenuesByOwner`,
+        url: `/web/api/v1/venue/GetVenueDetails`,
         params: { userId },
       }),
       providesTags: (result) =>
-        result && result.data
-          ? [...result.data.map(({ venueId }) => ({ type: 'Venues' as const, id: venueId })), { type: 'Venues', id: 'LIST' }]
+        result 
+          ? [
+              ...result.map(({ venueId }) => ({ type: 'Venues' as const, id: venueId })),
+              { type: 'Venues', id: 'LIST' }
+            ]
           : [{ type: 'Venues', id: 'LIST' }],
     }),
     getVenueImages: builder.query<VenueImage[], { venueId: string }>({

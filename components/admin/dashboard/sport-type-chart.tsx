@@ -1,17 +1,28 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts"
-import { useGetSportCategoriesQuery } from "@/redux/api/sportCategoryApi"
-import type { SportCategory } from "@/types/api"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
+import { useGetSportCategoriesQuery } from "@/redux/api/admin/sportCategoriesApi";
+import type { SportCategory } from "@/types/api";
 
 interface ChartData {
-  name: string
-  value: number
+  name: string;
+  value: number;
 }
 
 export function SportTypeChart() {
-  const { data: sportCategories, isLoading, isError } = useGetSportCategoriesQuery()
+  const {
+    data: sportCategories,
+    isLoading,
+    isError,
+  } = useGetSportCategoriesQuery();
 
   if (isLoading) {
     return (
@@ -23,7 +34,7 @@ export function SportTypeChart() {
           <div>Loading...</div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (isError || !sportCategories || sportCategories.length === 0) {
@@ -36,16 +47,25 @@ export function SportTypeChart() {
           No sport categories available
         </CardContent>
       </Card>
-    )
+    );
   }
 
   // Transform the data for the chart
-  const chartData: ChartData[] = sportCategories.map((category: SportCategory) => ({
-    name: category.sportCategory,
-    value: 1 // Default value since count isn't part of the SportCategory type
-  }))
+  const chartData: ChartData[] = sportCategories.map(
+    (category: SportCategory) => ({
+      name: category.sportCategory,
+      value: 1, // Default value since count isn't part of the SportCategory type
+    })
+  );
 
-  const COLORS = ["#3b82f6", "#f43f5e", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899"]
+  const COLORS = [
+    "#3b82f6",
+    "#f43f5e",
+    "#10b981",
+    "#f59e0b",
+    "#8b5cf6",
+    "#ec4899",
+  ];
 
   return (
     <Card>
@@ -65,8 +85,7 @@ export function SportTypeChart() {
                 fill="#8884d8"
                 paddingAngle={5}
                 dataKey="value"
-                label={({ name }) => name}
-              >
+                label={({ name }) => name}>
                 {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
@@ -74,12 +93,14 @@ export function SportTypeChart() {
                   />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`${value} occurrence`, "Count"]} />
+              <Tooltip
+                formatter={(value) => [`${value} occurrence`, "Count"]}
+              />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

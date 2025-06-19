@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useGetVenueDetailsQuery } from "@/redux/api/venue-owner/venueApi";
+import { useState, useEffect } from "react";
+import { useGetVenuesQuery } from "@/redux/api/venue-owner/venueApi";
+import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
+import { useGetTimeSlotsQuery } from "@/redux/api/venue-owner/timeSlotsApi";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -11,52 +13,89 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 export default function AvailabilityManagement() {
-  // Get the current user's ID from your auth state or context
-  // This is a placeholder - replace with actual auth state
-  const currentUserId = '4d575496-38ef-4ed1-91be-a7a77ab87b49'; // Replace with actual user ID from auth
-  
-  const { data, isLoading, error } = useGetVenueDetailsQuery(
-    { userId: currentUserId },
-    { skip: !currentUserId } // Skip query if no user ID is available
-  );
-  
-  const venues = Array.isArray(data) ? data : data ? [data] : [];
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [selectedVenue, setSelectedVenue] = useState<string>("");
+  const [selectedCourt, setSelectedCourt] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     () => new Date()
   );
 
-  if (isLoading) return <div>Loading venues...</div>;
-  if (error) return <div>Error loading venues: {error.toString()}</div>;
+  // Get user ID from localStorage when component mounts
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          const userId = user?.id || user?.userId || user?.user_id || null;
+          setCurrentUserId(userId);
+        } catch (error) {
+          console.error("Error parsing user data from localStorage:", error);
+        }
+      }
+    }
+  }, []);
+
+  // Get venues for the current user
+  const { data: venuesData, isLoading: isLoadingVenues } = useGetVenuesQuery(
+    { userId: currentUserId || "" },
+    { skip: !currentUserId }
+  );
+
+  // Get courts for the selected venue
+  const { data: courts = [], isLoading: isLoadingCourts } = useGetCourtsQuery();
+
+  // Get time slots for the selected court and date
+  const { data: timeSlots = [], isLoading: isLoadingSlots } =
+    useGetTimeSlotsQuery(
+      {
+        courtId: selectedCourt,
+        date: selectedDate
+          ? format(selectedDate, "yyyy-MM-dd")
+          : format(new Date(), "yyyy-MM-dd"),
+      },
+      { skip: !selectedCourt || !selectedDate }
+    );
+
+  const venues = Array.isArray(venuesData)
+    ? venuesData
+    : venuesData
+    ? [venuesData]
+    : [];
+
+  if (isLoadingVenues) return <div>Loading venues...</div>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Availability Management</h2>
+          <h2 className="text-2xl font-bold">Time Slots Management</h2>
           <p className="text-muted-foreground">
             Manage court availability and schedules
           </p>
         </div>
       </div>
+
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Select Venue & Date</CardTitle>
+            <CardTitle>Select Court & Date</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Venue</label>
-              <Select value={selectedVenue} onValueChange={setSelectedVenue}>
+              <label className="text-sm font-medium">Court</label>
+              <Select value={selectedCourt} onValueChange={setSelectedCourt}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a venue" />
+                  <SelectValue placeholder="Select a court" />
                 </SelectTrigger>
                 <SelectContent>
-                  {venues.map((venue: any) => (
-                    <SelectItem key={venue.venueId} value={venue.venueId}>
-                      {venue.venueName}
+                  {courts.map((court: any) => (
+                    <SelectItem key={court.courtId} value={court.courtId}>
+                      {court.courtName}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -73,20 +112,52 @@ export default function AvailabilityManagement() {
             </div>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Time Slots</CardTitle>
           </CardHeader>
           <CardContent>
-            {selectedVenue && selectedDate ? (
+            {selectedCourt && selectedDate ? (
               <div className="space-y-4">
-                <div className="text-muted-foreground">
-                  (Time slots for the selected venue and date will appear here.)
-                </div>
+                {isLoadingSlots ? (
+                  <div>Loading time slots...</div>
+                ) : timeSlots.length === 0 ? (
+                  <div className="text-center text-muted-foreground">
+                    No time slots found for the selected court and date
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {timeSlots.map((slot: any) => (
+                      <div
+                        key={slot.id}
+                        className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <div className="font-medium">
+                            {slot.startTime} - {slot.endTime}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Rate: ${slot.rate}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              slot.isActive
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}>
+                            {slot.isActive ? "Active" : "Inactive"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-center text-muted-foreground">
-                Select a venue and date to view available time slots
+                Select a court and date to view time slots
               </div>
             )}
           </CardContent>

@@ -21,7 +21,7 @@ import {
   Bell,
 } from "lucide-react";
 import { useGetVenuesQuery } from "@/redux/api/venue-owner/venueApi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const sidebarItems = [
   {
@@ -82,13 +82,31 @@ const sidebarItems = [
 ];
 
 export function VenueOwnerSidebarContent() {
-  // Get the current user's ID from your auth state or context
-  // This is a placeholder - replace with actual auth state
-  const currentUserId = '4d575496-38ef-4ed1-91be-a7a77ab87b49'; // Replace with actual user ID from auth
-  
-  const { data: venuesData, isLoading, isError } = useGetVenuesQuery(
-    { userId: currentUserId },
-    { skip: !currentUserId } // Skip query if no user ID is available
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Get user ID from localStorage when component mounts
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          const userId = user?.id || user?.userId || user?.user_id || null;
+          setCurrentUserId(userId);
+        } catch (error) {
+          console.error("Error parsing user data from localStorage:", error);
+        }
+      }
+    }
+  }, []);
+
+  const {
+    data: venuesData,
+    isLoading,
+    isError,
+  } = useGetVenuesQuery(
+    { userId: currentUserId || "" },
+    { skip: !currentUserId }
   );
   const [openVenueId, setOpenVenueId] = useState<string | null>(null);
   const pathname = usePathname();

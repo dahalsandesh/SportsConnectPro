@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import Link from "next/link"
-import { useRouter, usePathname } from "next/navigation"
-import { useAppSelector, useAppDispatch } from "@/hooks/redux"
-import { useLogoutMutation } from "@/redux/api/common/authApi"
-import { logout } from "@/redux/features/authSlice"
-import { useToast } from "@/components/ui/use-toast"
-import { Button } from "@/components/ui/button"
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
+import { useAppSelector, useAppDispatch } from "@/hooks/redux";
+import { useLogoutMutation } from "@/redux/api/common/authApi";
+import { logout } from "@/redux/features/authSlice";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,53 +15,130 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Bell, Menu, User, LogOut, Settings, Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { Badge } from "@/components/ui/badge"
-import { sidebarItems } from "./sidebar"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Bell,
+  Menu,
+  User,
+  LogOut,
+  Settings,
+  Search,
+  Check,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Badge } from "@/components/ui/badge";
+import { sidebarItems } from "./sidebar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useGetAdminNotificationsQuery } from "@/redux/api/admin/notificationsApi";
+
+export function NotificationBell() {
+  const { data, isLoading, error } = useGetAdminNotificationsQuery();
+  const [open, setOpen] = useState(false);
+  const unreadCount = data?.notifications.filter((n) => !n.isRead).length || 0;
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon" className="relative">
+          <Bell className="h-5 w-5" />
+          {unreadCount > 0 && (
+            <Badge
+              variant="destructive"
+              className="absolute -top-1 -right-1 h-4 w-4 justify-center rounded-full p-0 text-xs">
+              {unreadCount}
+            </Badge>
+          )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Notifications</DialogTitle>
+        </DialogHeader>
+        <div className="max-h-80 overflow-y-auto">
+          {isLoading && <div className="p-4">Loading...</div>}
+          {error && (
+            <div className="p-4 text-red-500">Error fetching notifications</div>
+          )}
+          {data?.notifications.length === 0 && (
+            <div className="p-4 text-muted-foreground">No notifications</div>
+          )}
+          {data?.notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className="flex items-start gap-2 p-2 border-b last:border-b-0">
+              <div className="flex-shrink-0 mt-1">
+                {!notification.isRead ? (
+                  <Bell className="h-4 w-4 text-primary" />
+                ) : (
+                  <Check className="h-4 w-4 text-muted-foreground" />
+                )}
+              </div>
+              <div className="flex-grow">
+                <p className="font-semibold">{notification.title}</p>
+                <p className="text-sm text-muted-foreground">
+                  {notification.message}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {new Date(notification.createdAt).toLocaleString()}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export function AdminHeader() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const [mounted, setMounted] = useState(false)
-  const { user } = useAppSelector((state) => state.auth)
-  const dispatch = useAppDispatch()
-  const { toast } = useToast()
-  const [logoutApi] = useLogoutMutation()
+  const router = useRouter();
+  const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+  const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const { toast } = useToast();
+  const [logoutApi] = useLogoutMutation();
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   if (!mounted) {
-    return null
+    return null;
   }
 
   const handleLogout = async () => {
     try {
-      await logoutApi().unwrap()
-      dispatch(logout())
+      await logoutApi().unwrap();
+      dispatch(logout());
       toast({
         title: "Logged out",
         description: "You have been logged out successfully",
         variant: "success",
-      })
-      router.push("/login")
+      });
+      router.push("/login");
     } catch (error) {
-      console.error("Logout failed:", error)
-      // Still logout from the client side even if the API call fails
-      dispatch(logout())
-      router.push("/login")
+      console.error("Logout failed:", error);
+      dispatch(logout());
+      router.push("/login");
     }
-  }
+  };
 
   const initials = user.fullName
-    ? `${user.fullName.split(" ")[0][0]}${user.fullName.split(" ")[1]?.[0] || ""}`
-    : user.userName?.[0] || "A"
+    ? `${user.fullName.split(" ")[0][0]}${
+        user.fullName.split(" ")[1]?.[0] || ""
+      }`
+    : user.userName?.[0] || "A";
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -83,11 +160,12 @@ export function AdminHeader() {
                 </div>
                 <nav className="flex-1 space-y-1 p-4">
                   {sidebarItems.map((item) => {
-                    // Clone the icon element to ensure it has the correct className
-                    const Icon = () => item.icon && React.cloneElement(item.icon, { 
-                      className: 'mr-2 h-4 w-4' 
-                    });
-                    
+                    const Icon = () =>
+                      item.icon &&
+                      React.cloneElement(item.icon, {
+                        className: "mr-2 h-4 w-4",
+                      });
+
                     return (
                       <Link
                         key={item.href}
@@ -96,8 +174,7 @@ export function AdminHeader() {
                           pathname === item.href
                             ? "bg-accent text-accent-foreground"
                             : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                        }`}
-                      >
+                        }`}>
                         <Icon />
                         {item.title}
                       </Link>
@@ -121,29 +198,35 @@ export function AdminHeader() {
             />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              <span className="sr-only">Notifications</span>
-              <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
-                5
-              </Badge>
-            </Button>
+            <ThemeToggle />
+            <NotificationBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="relative h-9 w-9 rounded-full">
                   <Avatar className="h-9 w-9">
                     {user.profileImage ? (
-                      <AvatarImage src={user.profileImage || "/placeholder.svg"} alt={user.fullName || user.userName} />
+                      <AvatarImage
+                        src={user.profileImage || "/placeholder.svg"}
+                        alt={user.fullName || user.userName}
+                      />
                     ) : null}
-                    <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {initials}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.fullName || user.userName}</p>
-                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    <p className="text-sm font-medium leading-none">
+                      {user.fullName || user.userName}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -160,7 +243,9 @@ export function AdminHeader() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
@@ -170,5 +255,5 @@ export function AdminHeader() {
         </div>
       </div>
     </header>
-  )
+  );
 }

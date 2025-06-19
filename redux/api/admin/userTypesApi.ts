@@ -18,7 +18,7 @@ export const userTypesApi = baseApi.injectEndpoints({
 
     createUserType: builder.mutation<ApiResponse<null>, CreateUserTypeRequest>({
       query: (data) => ({
-        url: "/web/api/v1/adminapp/CreateUserType",
+        url: "/web/api/v1/adminapp/v1/CreateUserType",
         method: "POST",
         body: data,
       }),

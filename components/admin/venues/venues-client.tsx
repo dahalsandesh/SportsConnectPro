@@ -1,42 +1,37 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useGetVenuesQuery, type Venue } from "@/redux/api/admin/venueApi"
-import type { VenueResponse } from "@/types/admin"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { VenuesTable } from "./venues-table"
-import { PlusCircle, Search } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { CreateVenueDialog } from "./create-venue-dialog"
+import { useState } from "react";
+import { useGetVenuesQuery } from "@/redux/api/admin/venueApi";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { VenuesTable } from "./venues-table";
+import { PlusCircle, Search } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CreateVenueDialog } from "./create-venue-dialog";
 
 export default function VenuesClient() {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  
-  // For admin, we might want to fetch all venues or use a specific admin endpoint
-  // For now, we'll pass an empty object to get all venues
-  const { data: response, error, isLoading } = useGetVenuesQuery({})
-  // Map the API response to match the expected VenueResponse type
-  const venues: VenueResponse[] = (response?.data || []).map((venue: Venue) => ({
-    venueID: venue.venueId,
-    ownerEmail: venue.createdBy || '',
-    name: venue.venueName,
-    address: `${venue.address?.street || ''}, ${venue.address?.city || ''}, ${venue.address?.state || ''} ${venue.address?.zipCode || ''}`,
-    phoneNumber: venue.contactNumber,
-    isActive: venue.isActive,
-    city: venue.address?.city || ''
-  }))
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { data: venues, error, isLoading } = useGetVenuesQuery();
 
   if (error) {
     return (
       <Alert variant="destructive">
         <AlertTitle>Error</AlertTitle>
-        <AlertDescription>Failed to load venues. Please try again later.</AlertDescription>
+        <AlertDescription>
+          Failed to load venues. Please try again later.
+        </AlertDescription>
       </Alert>
-    )
+    );
   }
 
   return (
@@ -70,10 +65,17 @@ export default function VenuesClient() {
           <Card>
             <CardHeader>
               <CardTitle>All Venues</CardTitle>
-              <CardDescription>Manage all venues of the platform</CardDescription>
+              <CardDescription>
+                Manage all venues of the platform
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <VenuesTable venues={venues} isLoading={isLoading} searchQuery={searchQuery} filter="all" />
+              <VenuesTable
+                venues={venues || []}
+                isLoading={isLoading}
+                searchQuery={searchQuery}
+                filter="all"
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -82,10 +84,17 @@ export default function VenuesClient() {
           <Card>
             <CardHeader>
               <CardTitle>Active Venues</CardTitle>
-              <CardDescription>Manage active venues of the platform</CardDescription>
+              <CardDescription>
+                Manage active venues of the platform
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <VenuesTable venues={venues} isLoading={isLoading} searchQuery={searchQuery} filter="active" />
+              <VenuesTable
+                venues={venues || []}
+                isLoading={isLoading}
+                searchQuery={searchQuery}
+                filter="active"
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -94,16 +103,26 @@ export default function VenuesClient() {
           <Card>
             <CardHeader>
               <CardTitle>Inactive Venues</CardTitle>
-              <CardDescription>Manage inactive venues of the platform</CardDescription>
+              <CardDescription>
+                Manage inactive venues of the platform
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <VenuesTable venues={venues} isLoading={isLoading} searchQuery={searchQuery} filter="inactive" />
+              <VenuesTable
+                venues={venues || []}
+                isLoading={isLoading}
+                searchQuery={searchQuery}
+                filter="inactive"
+              />
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
 
-      <CreateVenueDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} />
+      <CreateVenueDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+      />
     </>
-  )
+  );
 }

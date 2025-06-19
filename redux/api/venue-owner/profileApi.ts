@@ -3,8 +3,12 @@ import type { ApiResponse, UserDetails, UpdateUserDetailsRequest } from '@/types
 
 export const profileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getVenueUserDetails: builder.query<UserDetails, void>({
-      query: () => "/web/api/v1/venue/GetUserDetails",
+    getVenueUserDetails: builder.query<UserDetails, { statusId: string }>({
+      query: (data) => ({
+        url: "/web/api/v1/venue/GetUserDetails",
+        method: "GET",
+        body: data,
+      }),
       providesTags: ["Profile"],
     }),
     updateVenueUserDetails: builder.mutation<ApiResponse<null>, UpdateUserDetailsRequest>({

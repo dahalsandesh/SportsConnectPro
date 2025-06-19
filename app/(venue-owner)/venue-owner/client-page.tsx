@@ -19,9 +19,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useGetVenuesQuery } from "@/redux/api/venue-owner/venueApi";
+import {
+  useGetVenuesQuery,
+  useGetVenueDashboardDataQuery,
+} from "@/redux/api/venue-owner/venueApi";
 import { useAppSelector } from "@/redux/store/hooks";
 import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
+import type { VenueDetails } from "@/types/api";
 import SlotManagement from "./SlotManagement";
 import React from "react";
 import VenueNewsMedia from "./VenueNewsMedia";
@@ -29,81 +33,78 @@ import VenueApplication from "./components/VenueApplication";
 import CourtManagement from "./components/CourtManagement";
 import VenueImageManagement from "./components/VenueImageManagement";
 import SportsEventManagement from "./components/SportsEventManagement";
-import { useGetVenueDashboardDataQuery } from "@/redux/api/venue-owner/venueApi";
-import { useGetBookingsQuery } from "@/redux/api/user/bookingsApi";
-import { useGetPaymentsQuery } from "@/redux/api/user/paymentsApi";
+import ReelsManagement from "./components/ReelsManagement";
 import { BookingChart } from "@/components/admin/dashboard/booking-chart";
 import { RevenueChart } from "@/components/admin/dashboard/revenue-chart";
 import { subMonths, startOfMonth, format } from "date-fns";
+import type { VenueDashboardData, Booking, Payment } from "@/types/api";
 
 export default function VenueOwnerDashboard() {
   const { user } = useAppSelector((state) => state.auth);
   // Get the current user's ID from your auth state or context
-  // This is a placeholder - replace with actual auth state
-  const currentUserId = '4d575496-38ef-4ed1-91be-a7a77ab87b49'; // Replace with actual user ID from auth
-  
-  const { data: venuesResponse, isLoading, isError } = useGetVenuesQuery(
+  // Type assertion for now - should update the User type in auth slice to include id
+  const currentUserId = (user as unknown as { id?: string })?.id || "";
+
+  const {
+    data: venuesResponse,
+    isLoading,
+    isError,
+  } = useGetVenuesQuery(
     { userId: currentUserId },
     { skip: !currentUserId } // Skip query if no user ID is available
   );
-  const venues = Array.isArray(venuesResponse?.data) ? venuesResponse.data : [];
-  const ownerVenues = venues.filter(
-    (venue) => venue.ownerEmail === user?.email
-  ) || [];
+
+  // Extract venues from the response
+  const venues = Array.isArray(venuesResponse) ? venuesResponse : [];
+  const ownerVenues =
+    venues.filter((venue: VenueDetails) => venue.ownerEmail === user?.email) ||
+    [];
+
+  // Get the first venue ID for components that need it
+  const firstVenueId = ownerVenues[0]?.venueId || "";
+
+  // Get dashboard data
   const {
     data: dashboardData,
     isLoading: isDashboardLoading,
     isError: isDashboardError,
   } = useGetVenueDashboardDataQuery();
 
-  // Fetch all bookings (could be paginated, but for charting we try to fetch all)
-  const {
-    data: bookingsData,
-    isLoading: isBookingsLoading,
-    isError: isBookingsError,
-  } = useGetBookingsQuery({ limit: 1000 });
-  // Fetch all payments (if revenue is based on payments)
-  const {
-    data: paymentsData,
-    isLoading: isPaymentsLoading,
-    isError: isPaymentsError,
-  } = useGetPaymentsQuery({});
-
-  // Filter bookings for owner venues
-  const ownerVenueIds = ownerVenues.map((v) => v.venueId);
-  const ownerBookings = (bookingsData?.data || []).filter(
-    (b) => b.court && ownerVenueIds.includes(b.court.venueId)
-  );
-
-  // Aggregate bookings by month for last 6 months
+  // Prepare data for charts
   const months: string[] = [];
   const now = new Date();
   for (let i = 5; i >= 0; i--) {
     const d = subMonths(startOfMonth(now), i);
     months.push(format(d, "yyyy-MM"));
   }
-  const bookingsByMonth = months.map((month) => {
-    const count = ownerBookings.filter((b) =>
-      b.bookingDate.startsWith(month)
-    ).length;
-    return { date: month + "-01", bookings: count };
-  });
 
-  // Filter payments for owner venues (if payment has venue/court info)
-  let ownerPayments = (paymentsData || []).filter((p: any) => {
-    // Try to match payment.venueId or payment.court.venueId
-    if (p.venueId && ownerVenueIds.includes(p.venueId)) return true;
-    if (p.court && ownerVenueIds.includes(p.court.venueId)) return true;
-    return false;
-  });
-  // Aggregate revenue by month for last 6 months
-  const revenueByMonth = months.map((month) => {
-    const revenue = ownerPayments
-      .filter((p: any) => p.createdAt && p.createdAt.startsWith(month))
-      .reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
-    // Target is a placeholder, could be improved
-    return { date: month + "-01", revenue, target: revenue * 1.1 };
-  });
+  // Mock data for charts since dashboardData doesn't have trends
+  const bookingsByMonth = months.map((month) => ({
+    date: `${month}-01`,
+    bookings: Math.floor(Math.random() * 50) + 10, // Random data for demo
+  }));
+
+  const revenueByMonth = months.map((month) => ({
+    date: `${month}-01`,
+    revenue: Math.floor(Math.random() * 10000) + 1000, // Random data for demo
+    target: Math.floor(Math.random() * 12000) + 1200, // Random target
+  }));
+
+  // Get data from dashboard response
+  const totalBookings = dashboardData?.totalBookings || 0;
+  const totalRevenue = dashboardData?.totalRevenue || 0;
+  const activeVenues = ownerVenues.length; // Use the actual count of owner's venues
+  const pendingBookings = 0; // Not available in VenueDashboardData
+
+  // Mock recent data since not in VenueDashboardData
+  const recentBookings: Booking[] = [];
+  const recentPayments: Payment[] = [];
+
+  const {
+    data: courts = [],
+    isLoading: isCourtsLoading,
+    isError: isCourtsError,
+  } = useGetCourtsQuery();
 
   return (
     <div className="space-y-6">
@@ -114,9 +115,7 @@ export default function VenueOwnerDashboard() {
             Manage your venues and bookings
           </p>
         </div>
-        <Button asChild>
-          <Link href="/venue-owner/venues/new">Add New Venue</Link>
-        </Button>
+    
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
@@ -126,6 +125,7 @@ export default function VenueOwnerDashboard() {
           <TabsTrigger value="courts">Courts</TabsTrigger>
           <TabsTrigger value="events">Events</TabsTrigger>
           <TabsTrigger value="media">Media</TabsTrigger>
+          <TabsTrigger value="reels">Reels</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -201,9 +201,7 @@ export default function VenueOwnerDashboard() {
                 ) : isDashboardError ? (
                   <div className="text-red-500">Error</div>
                 ) : (
-                  <div className="text-2xl font-bold">
-                    {dashboardData?.pendingBookings ?? 0}
-                  </div>
+                  <div className="text-2xl font-bold">{pendingBookings}</div>
                 )}
               </CardContent>
             </Card>
@@ -212,11 +210,11 @@ export default function VenueOwnerDashboard() {
           {/* Charts Section */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <div className="col-span-4">
-              {isBookingsLoading ? (
+              {isDashboardLoading ? (
                 <Card className="h-[300px] flex items-center justify-center">
                   <div>Loading bookings chart...</div>
                 </Card>
-              ) : isBookingsError ? (
+              ) : isDashboardError ? (
                 <Card className="h-[300px] flex items-center justify-center text-destructive">
                   <div>Error loading bookings chart</div>
                 </Card>
@@ -225,11 +223,11 @@ export default function VenueOwnerDashboard() {
               )}
             </div>
             <div className="col-span-3">
-              {isPaymentsLoading ? (
+              {isDashboardLoading ? (
                 <Card className="h-[300px] flex items-center justify-center">
                   <div>Loading revenue chart...</div>
                 </Card>
-              ) : isPaymentsError ? (
+              ) : isDashboardError ? (
                 <Card className="h-[300px] flex items-center justify-center text-destructive">
                   <div>Error loading revenue chart</div>
                 </Card>
@@ -240,31 +238,39 @@ export default function VenueOwnerDashboard() {
           </div>
 
           {/* Recent Activities */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Activities</CardTitle>
-              <CardDescription>Latest venue activities</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {ownerBookings.slice(0, 5).map((booking) => (
-                  <div
-                    key={booking.bookingId}
-                    className="flex items-center gap-4">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                      <Calendar className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">New booking created</p>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(booking.createdAt), "PPp")}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="col-span-4">
+              <CardHeader>
+                <CardTitle>Recent Bookings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {recentBookings.length > 0 ? (
+                    recentBookings.map((booking) => (
+                      <div key={booking.id} className="flex items-center gap-4">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                          <Calendar className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium">
+                            {booking.status === "PENDING" ? "New" : ""} Booking
+                            #{booking.id}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {booking.bookingDate} • {booking.startTime}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No recent bookings found
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="venues" className="space-y-4">
@@ -283,15 +289,43 @@ export default function VenueOwnerDashboard() {
         </TabsContent>
 
         <TabsContent value="courts">
-          <CourtManagement />
+          <CourtManagement venueId={firstVenueId} />
         </TabsContent>
 
         <TabsContent value="events">
-          <SportsEventManagement />
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Events</h2>
+            <p className="text-muted-foreground">
+              Select a court to manage events
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {courts.map((court: any) => (
+                <Card
+                  key={court.courtId}
+                  className="cursor-pointer hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <CardTitle>{court.courtName}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Button className="w-full" asChild>
+                      <Link
+                        href={`/venue-owner/events?courtId=${court.courtId}`}>
+                        Manage Events
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="media">
           <VenueNewsMedia />
+        </TabsContent>
+
+        <TabsContent value="reels">
+          <ReelsManagement />
         </TabsContent>
       </Tabs>
     </div>
@@ -299,12 +333,12 @@ export default function VenueOwnerDashboard() {
 }
 
 // Child component for venue card with courts
-function VenueCardWithCourts({ venue }: { venue: any }) {
+function VenueCardWithCourts({ venue }: { venue: VenueDetails }) {
   const {
     data: courts = [],
     isLoading: isCourtsLoading,
     isError: isCourtsError,
-  } = useGetCourtsQuery({ venueId: venue.venueId });
+  } = useGetCourtsQuery();
   const [openSlotCourtId, setOpenSlotCourtId] = React.useState<string | null>(
     null
   );

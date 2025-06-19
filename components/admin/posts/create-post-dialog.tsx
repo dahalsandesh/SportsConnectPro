@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { useCreatePostMutation } from "@/redux/api/postsApi"
-import { useToast } from "@/components/ui/use-toast"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useCreateAdminPostMutation } from "@/redux/api/admin/postsApi";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -16,13 +16,26 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Loader2, Upload, X } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, Upload, X } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const formSchema = z.object({
   title: z.string().min(3, {
@@ -34,19 +47,23 @@ const formSchema = z.object({
   categoryId: z.string().min(1, {
     message: "Please select a category.",
   }),
-})
+});
 
 interface CreatePostDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  categories: Array<{ sportCategoryId: string; sportCategory: string }>
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  categories: Array<{ sportCategoryId: string; sportCategory: string }>;
 }
 
-export function CreatePostDialog({ open, onOpenChange, categories }: CreatePostDialogProps) {
-  const { toast } = useToast()
-  const [createPost, { isLoading }] = useCreatePostMutation()
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+export function CreatePostDialog({
+  open,
+  onOpenChange,
+  categories,
+}: CreatePostDialogProps) {
+  const { toast } = useToast();
+  const [createPost, { isLoading }] = useCreateAdminPostMutation();
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,61 +72,63 @@ export function CreatePostDialog({ open, onOpenChange, categories }: CreatePostD
       description: "",
       categoryId: "",
     },
-  })
+  });
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
-      setSelectedImage(file)
-      const reader = new FileReader()
+      setSelectedImage(file);
+      const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreview(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   const removeImage = () => {
-    setSelectedImage(null)
-    setImagePreview(null)
-  }
+    setSelectedImage(null);
+    setImagePreview(null);
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const formData = new FormData()
-      formData.append("title", values.title)
-      formData.append("description", values.description)
-      formData.append("categoryId", values.categoryId)
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("description", values.description);
+      formData.append("categoryId", values.categoryId);
 
       if (selectedImage) {
-        formData.append("postImage", selectedImage)
+        formData.append("postImage", selectedImage);
       }
 
-      await createPost(formData).unwrap()
+      await createPost(formData).unwrap();
       toast({
         title: "Post created",
         description: "The post has been created successfully.",
         variant: "success",
-      })
-      form.reset()
-      setSelectedImage(null)
-      setImagePreview(null)
-      onOpenChange(false)
+      });
+      form.reset();
+      setSelectedImage(null);
+      setImagePreview(null);
+      onOpenChange(false);
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to create post. Please try again.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Create New Post</DialogTitle>
-          <DialogDescription>Create a new post or news article for your platform.</DialogDescription>
+          <DialogDescription>
+            Create a new post or news article for your platform.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -134,7 +153,11 @@ export function CreatePostDialog({ open, onOpenChange, categories }: CreatePostD
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Enter post description" className="min-h-[100px]" {...field} />
+                    <Textarea
+                      placeholder="Enter post description"
+                      className="min-h-[100px]"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -147,7 +170,9 @@ export function CreatePostDialog({ open, onOpenChange, categories }: CreatePostD
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
@@ -155,7 +180,9 @@ export function CreatePostDialog({ open, onOpenChange, categories }: CreatePostD
                     </FormControl>
                     <SelectContent>
                       {categories.map((category) => (
-                        <SelectItem key={category.sportCategoryId} value={category.sportCategoryId}>
+                        <SelectItem
+                          key={category.sportCategoryId}
+                          value={category.sportCategoryId}>
                           {category.sportCategory}
                         </SelectItem>
                       ))}
@@ -172,16 +199,20 @@ export function CreatePostDialog({ open, onOpenChange, categories }: CreatePostD
                 {imagePreview ? (
                   <div className="relative">
                     <Avatar className="h-20 w-20 rounded-md">
-                      <AvatarImage src={imagePreview || "/placeholder.svg"} alt="Preview" />
-                      <AvatarFallback className="rounded-md">IMG</AvatarFallback>
+                      <AvatarImage
+                        src={imagePreview || "/placeholder.svg"}
+                        alt="Preview"
+                      />
+                      <AvatarFallback className="rounded-md">
+                        IMG
+                      </AvatarFallback>
                     </Avatar>
                     <Button
                       type="button"
                       variant="destructive"
                       size="icon"
                       className="absolute -top-2 -right-2 h-6 w-6"
-                      onClick={removeImage}
-                    >
+                      onClick={removeImage}>
                       <X className="h-3 w-3" />
                     </Button>
                   </div>
@@ -191,14 +222,24 @@ export function CreatePostDialog({ open, onOpenChange, categories }: CreatePostD
                   </div>
                 )}
                 <div className="flex-1">
-                  <Input type="file" accept="image/*" onChange={handleImageChange} className="cursor-pointer" />
-                  <p className="text-xs text-muted-foreground mt-1">Upload an image for your post (optional)</p>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="cursor-pointer"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Upload an image for your post (optional)
+                  </p>
                 </div>
               </div>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
@@ -210,5 +251,5 @@ export function CreatePostDialog({ open, onOpenChange, categories }: CreatePostD
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

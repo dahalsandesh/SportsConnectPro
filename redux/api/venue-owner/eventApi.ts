@@ -11,15 +11,22 @@ export const eventApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [{type: "SportsEvents", id: 'LIST'}],
     }),
-    getSportsEvents: builder.query<SportsEvent[], { venueId: string }>({
-      query: ({ venueId }) => ({
-        url: "/web/api/v1/venue/GetEvents",
-        params: { venueId },
+    getSportsEvents: builder.query<SportsEvent[], { courtId: string }>({
+      query: ({ courtId }) => ({
+        url: "/web/api/v1/venue/GetEvent",
+        params: { courtId },
       }),
       providesTags: (result) =>
         result
           ? [...result.map(({ eventId }) => ({ type: 'SportsEvents' as const, id: eventId })), { type: 'SportsEvents', id: 'LIST' }]
           : [{ type: 'SportsEvents', id: 'LIST' }],
+    }),
+    getSportsEventById: builder.query<SportsEvent, { eventId: string }>({
+      query: ({ eventId }) => ({
+        url: "/web/api/v1/venue/GetEventById",
+        params: { eventId },
+      }),
+      providesTags: (result, error, { eventId }) => [{ type: 'SportsEvents', id: eventId }],
     }),
     updateSportsEvent: builder.mutation<ApiResponse<null>, FormData>({
       query: (formData) => ({
@@ -31,7 +38,7 @@ export const eventApi = baseApi.injectEndpoints({
     }),
     deleteSportsEvent: builder.mutation<ApiResponse<null>, { eventId: string }>({
       query: ({ eventId }) => ({
-        url: "/web/api/v1/venue/DeleteEvent",
+        url: "/web/api/v1/venue/DelEvent",
         method: "POST",
         body: { eventId },
       }),
@@ -43,6 +50,7 @@ export const eventApi = baseApi.injectEndpoints({
 export const {
     useCreateSportsEventMutation,
     useGetSportsEventsQuery,
+    useGetSportsEventByIdQuery,
     useUpdateSportsEventMutation,
     useDeleteSportsEventMutation,
 } = eventApi;

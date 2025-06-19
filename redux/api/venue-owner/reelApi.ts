@@ -31,7 +31,7 @@ export const reelApi = baseApi.injectEndpoints({
         method: "POST",
         body: formData,
       }),
-      invalidatesTags: (result, error, formData) => [{ type: 'Reels', id: formData.get('reelsId') as string }],
+      invalidatesTags: (result, error, formData) => [{ type: 'Reels', id: formData.get('reelId') as string }],
     }),
     deleteReel: builder.mutation<ApiResponse<null>, { reelId: string }>({
       query: ({ reelId }) => ({

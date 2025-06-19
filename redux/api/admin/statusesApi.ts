@@ -10,7 +10,7 @@ export const statusesApi = baseApi.injectEndpoints({
 
     getStatusById: builder.query<Status, string>({
       query: (statusId) => ({
-        url: "/web/api/v1/adminapp/GetStatusById",
+        url: "/web/api/v1/adminapp/v1/GetStatusById",
         params: { statusId },
       }),
       providesTags: (result, error, id) => [{ type: "Statuses", id }],

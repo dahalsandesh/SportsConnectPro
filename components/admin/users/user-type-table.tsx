@@ -1,8 +1,15 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,10 +17,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Edit, Trash } from "lucide-react"
-import { useDeleteUserTypeMutation } from "@/redux/api/user-types/userTypesApi"
-import { useToast } from "@/components/ui/use-toast"
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, Edit, Trash } from "lucide-react";
+import { useDeleteUserTypeMutation } from "@/redux/api/admin/userTypesApi";
+import { useToast } from "@/components/ui/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,41 +30,45 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import type { UserTypeResponse } from "@/types/admin"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "@/components/ui/alert-dialog";
+import type { UserType } from "@/types/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserTypeTableProps {
-  userTypes: UserTypeResponse[]
-  isLoading: boolean
+  userTypes: UserType[];
+  isLoading: boolean;
 }
 
 export function UserTypeTable({ userTypes, isLoading }: UserTypeTableProps) {
-  const { toast } = useToast()
-  const [deleteUserType] = useDeleteUserTypeMutation()
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [selectedUserType, setSelectedUserType] = useState<UserTypeResponse | null>(null)
+  const { toast } = useToast();
+  const [deleteUserType] = useDeleteUserTypeMutation();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedUserType, setSelectedUserType] = useState<UserType | null>(
+    null
+  );
 
   const handleDelete = async () => {
-    if (!selectedUserType) return
+    if (!selectedUserType) return;
 
     try {
-      await deleteUserType({ userTypeId: selectedUserType.userTypeId }).unwrap()
+      await deleteUserType({
+        userTypeId: selectedUserType.userTypeId,
+      }).unwrap();
       toast({
         title: "User type deleted",
         description: `User type "${selectedUserType.userType}" has been deleted successfully.`,
-      })
+      });
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to delete user type. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setDeleteDialogOpen(false)
-      setSelectedUserType(null)
+      setDeleteDialogOpen(false);
+      setSelectedUserType(null);
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -69,7 +80,7 @@ export function UserTypeTable({ userTypes, isLoading }: UserTypeTableProps) {
           </div>
         ))}
       </div>
-    )
+    );
   }
 
   return (
@@ -86,7 +97,9 @@ export function UserTypeTable({ userTypes, isLoading }: UserTypeTableProps) {
             {userTypes.length > 0 ? (
               userTypes.map((userType) => (
                 <TableRow key={userType.userTypeId}>
-                  <TableCell className="font-medium">{userType.userType}</TableCell>
+                  <TableCell className="font-medium">
+                    {userType.userType}
+                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -100,8 +113,7 @@ export function UserTypeTable({ userTypes, isLoading }: UserTypeTableProps) {
                         <DropdownMenuItem
                           onClick={() => {
                             // Handle edit
-                          }}
-                        >
+                          }}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
@@ -109,10 +121,9 @@ export function UserTypeTable({ userTypes, isLoading }: UserTypeTableProps) {
                         <DropdownMenuItem
                           className="text-red-600"
                           onClick={() => {
-                            setSelectedUserType(userType)
-                            setDeleteDialogOpen(true)
-                          }}
-                        >
+                            setSelectedUserType(userType);
+                            setDeleteDialogOpen(true);
+                          }}>
                           <Trash className="mr-2 h-4 w-4" />
                           Delete
                         </DropdownMenuItem>
@@ -137,18 +148,25 @@ export function UserTypeTable({ userTypes, isLoading }: UserTypeTableProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the user type
-              <span className="font-semibold"> {selectedUserType?.userType}</span> and remove it from our servers.
+              This action cannot be undone. This will permanently delete the
+              user type
+              <span className="font-semibold">
+                {" "}
+                {selectedUserType?.userType}
+              </span>{" "}
+              and remove it from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }

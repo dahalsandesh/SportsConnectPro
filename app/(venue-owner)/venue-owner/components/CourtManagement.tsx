@@ -32,11 +32,7 @@ interface CourtManagementProps {
 
 export default function CourtManagement({ venueId }: CourtManagementProps) {
   const { toast } = useToast();
-  const {
-    data: courts = [],
-    isLoading,
-    refetch,
-  } = useGetCourtsQuery({ venueId });
+  const { data: courts = [], isLoading, refetch } = useGetCourtsQuery();
   const [createCourt] = useCreateCourtMutation();
   const [updateCourt] = useUpdateCourtMutation();
   const [deleteCourt] = useDeleteCourtMutation();
@@ -45,10 +41,11 @@ export default function CourtManagement({ venueId }: CourtManagementProps) {
   const [editingCourt, setEditingCourt] = useState<any>(null);
   const [formData, setFormData] = useState({
     courtName: "",
+    courtCategoryId: "",
     surfaceType: "",
     capacity: "",
     hourlyRate: "",
-    description: "",
+    desc: "",
     courtImage: null as File | null,
   });
 
@@ -66,25 +63,34 @@ export default function CourtManagement({ venueId }: CourtManagementProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const formDataToSend = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null) {
-          formDataToSend.append(key, value);
-        }
-      });
-      formDataToSend.append("venueId", venueId);
-
       if (editingCourt) {
-        await updateCourt({
+        const updateData = {
           courtId: editingCourt.courtId,
-          ...formDataToSend,
-        }).unwrap();
+          courtName: formData.courtName,
+          courtCategoryId: formData.courtCategoryId,
+          hourlyRate: formData.hourlyRate,
+          capacity: formData.capacity,
+          surfaceType: formData.surfaceType,
+          desc: formData.desc,
+          isActive: "1",
+        };
+
+        await updateCourt(updateData).unwrap();
         toast({
           title: "Success",
           description: "Court updated successfully",
         });
       } else {
-        await createCourt(formDataToSend).unwrap();
+        const createData = {
+          courtName: formData.courtName,
+          courtCategoryId: formData.courtCategoryId,
+          hourlyRate: formData.hourlyRate,
+          capacity: formData.capacity,
+          surfaceType: formData.surfaceType,
+          desc: formData.desc,
+        };
+
+        await createCourt(createData).unwrap();
         toast({
           title: "Success",
           description: "Court created successfully",
@@ -95,10 +101,11 @@ export default function CourtManagement({ venueId }: CourtManagementProps) {
       setEditingCourt(null);
       setFormData({
         courtName: "",
+        courtCategoryId: "",
         surfaceType: "",
         capacity: "",
         hourlyRate: "",
-        description: "",
+        desc: "",
         courtImage: null,
       });
       refetch();
@@ -136,10 +143,11 @@ export default function CourtManagement({ venueId }: CourtManagementProps) {
     setEditingCourt(court);
     setFormData({
       courtName: court.courtName,
+      courtCategoryId: court.courtCategoryId || "",
       surfaceType: court.surfaceType,
       capacity: court.capacity.toString(),
       hourlyRate: court.hourlyRate.toString(),
-      description: court.description || "",
+      desc: court.desc || "",
       courtImage: null,
     });
     setIsAddingCourt(true);
@@ -171,6 +179,19 @@ export default function CourtManagement({ venueId }: CourtManagementProps) {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="courtCategoryId">Court Category ID</Label>
+                <Input
+                  id="courtCategoryId"
+                  name="courtCategoryId"
+                  value={formData.courtCategoryId}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
                 <Label htmlFor="surfaceType">Surface Type</Label>
                 <Select
                   value={formData.surfaceType}
@@ -181,16 +202,15 @@ export default function CourtManagement({ venueId }: CourtManagementProps) {
                     <SelectValue placeholder="Select surface type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="hard">Hard Court</SelectItem>
-                    <SelectItem value="clay">Clay Court</SelectItem>
-                    <SelectItem value="grass">Grass Court</SelectItem>
-                    <SelectItem value="synthetic">Synthetic Court</SelectItem>
+                    <SelectItem value="Artificial Grass">
+                      Artificial Grass
+                    </SelectItem>
+                    <SelectItem value="Wood">Wood</SelectItem>
+                    <SelectItem value="Concrete">Concrete</SelectItem>
+                    <SelectItem value="Clay">Clay</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="capacity">Capacity</Label>
                 <Input
@@ -202,8 +222,11 @@ export default function CourtManagement({ venueId }: CourtManagementProps) {
                   required
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="hourlyRate">Hourly Rate (Rs.)</Label>
+                <Label htmlFor="hourlyRate">Hourly Rate</Label>
                 <Input
                   id="hourlyRate"
                   name="hourlyRate"
@@ -213,16 +236,15 @@ export default function CourtManagement({ venueId }: CourtManagementProps) {
                   required
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Input
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="desc">Description</Label>
+                <Input
+                  id="desc"
+                  name="desc"
+                  value={formData.desc}
+                  onChange={handleInputChange}
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -238,7 +260,7 @@ export default function CourtManagement({ venueId }: CourtManagementProps) {
 
             <div className="flex gap-2">
               <Button type="submit">
-                {editingCourt ? "Update Court" : "Create Court"}
+                {editingCourt ? "Update" : "Create"} Court
               </Button>
               <Button
                 type="button"
@@ -248,10 +270,11 @@ export default function CourtManagement({ venueId }: CourtManagementProps) {
                   setEditingCourt(null);
                   setFormData({
                     courtName: "",
+                    courtCategoryId: "",
                     surfaceType: "",
                     capacity: "",
                     hourlyRate: "",
-                    description: "",
+                    desc: "",
                     courtImage: null,
                   });
                 }}>
@@ -260,59 +283,41 @@ export default function CourtManagement({ venueId }: CourtManagementProps) {
             </div>
           </form>
         ) : (
-          <div className="space-y-4">
-            {isLoading ? (
-              <div>Loading courts...</div>
-            ) : courts.length === 0 ? (
-              <div className="text-muted-foreground">
-                No courts found for this venue.
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {courts.map((court: any) => (
-                  <Card key={court.courtId}>
-                    <CardContent className="pt-6">
-                      {court.courtImageUrl && (
-                        <img
-                          src={court.courtImageUrl}
-                          alt={court.courtName}
-                          className="w-full h-48 object-cover rounded-md mb-4"
-                        />
-                      )}
-                      <h3 className="font-semibold text-lg">
-                        {court.courtName}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Surface: {court.surfaceType}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Capacity: {court.capacity} players
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Rate: Rs.{court.hourlyRate}/hr
-                      </p>
-                      {court.description && (
-                        <p className="text-sm mt-2">{court.description}</p>
-                      )}
-                      <div className="flex gap-2 mt-4">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(court)}>
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDelete(court.courtId)}>
-                          Delete
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {courts.map((court) => (
+              <Card key={court.courtId}>
+                <CardHeader>
+                  <CardTitle>{court.courtName}</CardTitle>
+                  <CardDescription>
+                    {court.surfaceType} • Capacity: {court.capacity}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Hourly Rate: ${court.hourlyRate}
+                  </p>
+                  {court.desc && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {court.desc}
+                    </p>
+                  )}
+                </CardContent>
+                <CardContent className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEdit(court)}>
+                    Edit
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDelete(court.courtId)}>
+                    Delete
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         )}
       </CardContent>

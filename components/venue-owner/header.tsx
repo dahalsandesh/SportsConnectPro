@@ -31,11 +31,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import {
-  useGetNotificationsQuery,
-  useMarkAsReadMutation,
-  useDeleteNotificationMutation,
-} from "@/redux/api/venue-owner/notificationsApi";
+import { useGetNotificationsQuery } from "@/redux/api/venue-owner/notificationsApi";
 import { useState, useEffect } from "react";
 
 export function VenueOwnerHeader() {
@@ -46,6 +42,12 @@ export function VenueOwnerHeader() {
   const [logoutApi] = useLogoutMutation();
   const [mounted, setMounted] = useState(false);
 
+  // Use mounted state to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Only fetch notifications on the client side
   const {
     data: notifications = [],
     isLoading,
@@ -54,12 +56,14 @@ export function VenueOwnerHeader() {
     skip: !mounted,
   });
 
-  const [markAsRead] = useMarkAsReadMutation();
-  const [deleteNotification] = useDeleteNotificationMutation();
+  // These functions are no longer needed as the API endpoints were removed
+  const handleMarkAsRead = async (notificationId: string) => {
+    // No-op as the endpoint was removed
+  };
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const handleDelete = async (notificationId: string) => {
+    // No-op as the endpoint was removed
+  };
 
   const handleLogout = async () => {
     try {
@@ -77,39 +81,7 @@ export function VenueOwnerHeader() {
     }
   };
 
-  const handleMarkAsRead = async (notificationId: string) => {
-    try {
-      await markAsRead({ id: notificationId }).unwrap();
-      toast({
-        title: "Success",
-        description: "Notification marked as read",
-      });
-      refetch();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to mark notification as read",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDelete = async (notificationId: string) => {
-    try {
-      await deleteNotification({ id: notificationId }).unwrap();
-      toast({
-        title: "Success",
-        description: "Notification deleted successfully",
-      });
-      refetch();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete notification",
-        variant: "destructive",
-      });
-    }
-  };
+  // Notification handlers are now no-op functions since the API endpoints were removed
 
   // Ensure notifications is an array before filtering
   const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead) : [];
@@ -120,6 +92,11 @@ export function VenueOwnerHeader() {
         user.fullName.split(" ")[1]?.[0] || ""
       }`
     : user.userName?.[0] || "V";
+
+  // Don't render anything on the server to prevent hydration mismatch
+  if (!mounted) {
+    return <header className="sticky top-0 z-40 border-b bg-background dark:border-border/50 h-16" />;
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background dark:border-border/50">
@@ -203,25 +180,8 @@ export function VenueOwnerHeader() {
                                   )}
                                 </p>
                               </div>
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() =>
-                                    handleMarkAsRead(
-                                      notification.notificationId
-                                    )
-                                  }>
-                                  <Check className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() =>
-                                    handleDelete(notification.notificationId)
-                                  }>
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                              <div className="text-xs text-muted-foreground">
+                                Unread
                               </div>
                             </div>
                           </div>
@@ -249,14 +209,9 @@ export function VenueOwnerHeader() {
                                   )}
                                 </p>
                               </div>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() =>
-                                  handleDelete(notification.notificationId)
-                                }>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              <div className="text-xs text-muted-foreground">
+                                Read
+                              </div>
                             </div>
                           </div>
                         ))}
