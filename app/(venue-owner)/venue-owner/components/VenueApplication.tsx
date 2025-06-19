@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useCreateVenueApplicationMutation } from "@/redux/api/venueManagementApi";
+import { useCreateVenueApplicationMutation } from "@/redux/api/venue-owner/venueApplicationsApi";
 import {
   Card,
   CardContent,

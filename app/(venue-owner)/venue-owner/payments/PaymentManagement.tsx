@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetPaymentsQuery } from "@/redux/api/payments/paymentsApi";
+import { useGetPaymentsQuery } from "@/redux/api/user/paymentsApi";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CreditCard, Calendar, User, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";

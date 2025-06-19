@@ -1,11 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from '@/components/ui/use-toast'
+import { 
+  useCreateAdminPostMutation, 
+  useUpdateAdminPostMutation 
+} from '@/redux/api/admin/postsApi'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -44,7 +47,10 @@ interface NewsFormProps {
 
 export const NewsForm: React.FC<NewsFormProps> = ({ initialData }) => {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const [createPost, { isLoading: isCreating }] = useCreateAdminPostMutation()
+  const [updatePost, { isLoading: isUpdating }] = useUpdateAdminPostMutation()
+  
+  const isLoading = isCreating || isUpdating
 
   const form = useForm<NewsFormValues>({
     resolver: zodResolver(formSchema),
@@ -61,7 +67,6 @@ export const NewsForm: React.FC<NewsFormProps> = ({ initialData }) => {
 
   const onSubmit = async (data: NewsFormValues) => {
     try {
-      setLoading(true)
       const formData = new FormData()
       
       // Append all form fields to FormData
@@ -71,41 +76,30 @@ export const NewsForm: React.FC<NewsFormProps> = ({ initialData }) => {
         }
       })
 
-      let response: Response
-      
       if (initialData) {
         // Update existing news
-        response = await fetch(`/api/admin/news/${initialData.id}`, {
-          method: 'PATCH',
-          body: formData,
-        })
+        await updatePost({
+          postId: initialData.id,
+          ...data
+        }).unwrap()
       } else {
         // Create new news
-        response = await fetch('/api/admin/news', {
-          method: 'POST',
-          body: formData,
-        })
+        await createPost(formData).unwrap()
       }
 
-      if (!response.ok) {
-        throw new Error('Failed to save news')
-      }
-
-      const result = await response.json()
       toast({
-  title: `News ${initialData ? 'updated' : 'created'} successfully`,
-  variant: 'default'
-})
+        title: `News ${initialData ? 'updated' : 'created'} successfully`,
+        variant: 'default'
+      })
       router.push('/admin/news')
       router.refresh()
     } catch (error) {
       console.error('Error saving news:', error)
       toast({
-  title: 'Something went wrong',
-  variant: 'destructive'
-})
-    } finally {
-      setLoading(false)
+        title: 'Error',
+        description: 'Failed to save news. Please try again.',
+        variant: 'destructive',
+      })
     }
   }
 

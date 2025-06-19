@@ -5,7 +5,7 @@ import {
   useGetVenuePostDetailsQuery,
   useUpdateVenuePostMutation,
   useDeleteVenuePostMutation,
-} from "@/redux/api/venueManagementApi";
+} from "@/redux/api/venue-owner/postApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -240,13 +240,14 @@ const VenueNewsMedia: React.FC = () => {
             <Image className="h-4 w-4 mr-2" />
             Posts
           </TabsTrigger>
-          <TabsTrigger value="reel">
-            <Video className="h-4 w-4 mr-2" />
-            Reels
-          </TabsTrigger>
+         
           <TabsTrigger value="news">
             <FileText className="h-4 w-4 mr-2" />
             News
+          </TabsTrigger>
+          <TabsTrigger value="reel">
+            <Video className="h-4 w-4 mr-2" />
+            Reels
           </TabsTrigger>
         </TabsList>
         <TabsContent value="post">{renderContent()}</TabsContent>

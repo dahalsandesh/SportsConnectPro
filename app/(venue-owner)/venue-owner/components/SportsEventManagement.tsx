@@ -6,11 +6,12 @@ import {
   useCreateSportsEventMutation,
   useUpdateSportsEventMutation,
   useDeleteSportsEventMutation,
-} from "@/redux/api/venueManagementApi";
+} from "@/redux/api/venue-owner/eventApi";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -26,379 +27,289 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface SportsEventManagementProps {
-  venueId: string;
+  courtId: string;
 }
 
 export default function SportsEventManagement({
-  venueId,
+  courtId,
 }: SportsEventManagementProps) {
   const { toast } = useToast();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<SportsEvent | null>(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    date: "",
+    time: "",
+    maxSeat: "",
+  });
+
   const {
-    data: events = [],
+    data: events,
     isLoading,
-    refetch,
-  } = useGetSportsEventsQuery({ venueId });
+    error,
+  } = useGetSportsEventsQuery({
+    courtId,
+  });
   const [createEvent] = useCreateSportsEventMutation();
   const [updateEvent] = useUpdateSportsEventMutation();
   const [deleteEvent] = useDeleteSportsEventMutation();
 
-  const [isAddingEvent, setIsAddingEvent] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<any>(null);
-  const [formData, setFormData] = useState({
-    eventName: "",
-    eventType: "",
-    startDate: "",
-    endDate: "",
-    startTime: "",
-    endTime: "",
-    maxParticipants: "",
-    registrationFee: "",
-    description: "",
-    eventImage: null as File | null,
-  });
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData((prev) => ({ ...prev, eventImage: e.target.files![0] }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreateEvent = async () => {
     try {
       const formDataToSend = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null) {
-          formDataToSend.append(key, value);
-        }
-      });
-      formDataToSend.append("venueId", venueId);
+      formDataToSend.append("courtId", courtId);
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("date", formData.date);
+      formDataToSend.append("time", formData.time);
+      formDataToSend.append("maxSeat", formData.maxSeat);
 
-      if (editingEvent) {
-        await updateEvent({
-          eventId: editingEvent.eventId,
-          ...formDataToSend,
-        }).unwrap();
-        toast({
-          title: "Success",
-          description: "Event updated successfully",
-        });
-      } else {
-        await createEvent(formDataToSend).unwrap();
-        toast({
-          title: "Success",
-          description: "Event created successfully",
-        });
-      }
-
-      setIsAddingEvent(false);
-      setEditingEvent(null);
-      setFormData({
-        eventName: "",
-        eventType: "",
-        startDate: "",
-        endDate: "",
-        startTime: "",
-        endTime: "",
-        maxParticipants: "",
-        registrationFee: "",
-        description: "",
-        eventImage: null,
+      await createEvent(formDataToSend).unwrap();
+      toast({
+        title: "Success",
+        description: "Event created successfully",
       });
-      refetch();
+      setIsCreateDialogOpen(false);
+      setFormData({ title: "", date: "", time: "", maxSeat: "" });
     } catch (error) {
       toast({
         title: "Error",
-        description: editingEvent
-          ? "Failed to update event"
-          : "Failed to create event",
+        description: "Failed to create event",
         variant: "destructive",
       });
     }
   };
 
-  const handleDelete = async (eventId: string) => {
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      try {
-        await deleteEvent({ eventId }).unwrap();
-        toast({
-          title: "Success",
-          description: "Event deleted successfully",
-        });
-        refetch();
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to delete event",
-          variant: "destructive",
-        });
-      }
+  const handleUpdateEvent = async () => {
+    if (!selectedEvent) return;
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("eventId", selectedEvent.eventId);
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("date", formData.date);
+      formDataToSend.append("time", formData.time);
+      formDataToSend.append("maxSeat", formData.maxSeat);
+
+      await updateEvent(formDataToSend).unwrap();
+      toast({
+        title: "Success",
+        description: "Event updated successfully",
+      });
+      setIsUpdateDialogOpen(false);
+      setSelectedEvent(null);
+      setFormData({ title: "", date: "", time: "", maxSeat: "" });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update event",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleEdit = (event: any) => {
-    setEditingEvent(event);
-    setFormData({
-      eventName: event.eventName,
-      eventType: event.eventType,
-      startDate: event.startDate,
-      endDate: event.endDate,
-      startTime: event.startTime,
-      endTime: event.endTime,
-      maxParticipants: event.maxParticipants.toString(),
-      registrationFee: event.registrationFee.toString(),
-      description: event.description || "",
-      eventImage: null,
-    });
-    setIsAddingEvent(true);
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      await deleteEvent({ eventId }).unwrap();
+      toast({
+        title: "Success",
+        description: "Event deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete event",
+        variant: "destructive",
+      });
+    }
   };
 
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading events</div>;
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle>Sports Events</CardTitle>
-            <CardDescription>
-              Manage sports events for your venue
-            </CardDescription>
-          </div>
-          <Button onClick={() => setIsAddingEvent(true)}>
-            Create New Event
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {isAddingEvent ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="eventName">Event Name</Label>
+    <>
+      <div className="flex justify-end mb-6">
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>Create Event</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create New Event</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="title" className="text-right">
+                  Title
+                </Label>
                 <Input
-                  id="eventName"
-                  name="eventName"
-                  value={formData.eventName}
-                  onChange={handleInputChange}
-                  required
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  className="col-span-3"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="eventType">Event Type</Label>
-                <Select
-                  value={formData.eventType}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, eventType: value }))
-                  }>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select event type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="tournament">Tournament</SelectItem>
-                    <SelectItem value="league">League</SelectItem>
-                    <SelectItem value="workshop">Workshop</SelectItem>
-                    <SelectItem value="exhibition">Exhibition Match</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="startDate">Start Date</Label>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="date" className="text-right">
+                  Date
+                </Label>
                 <Input
-                  id="startDate"
-                  name="startDate"
+                  id="date"
                   type="date"
-                  value={formData.startDate}
-                  onChange={handleInputChange}
-                  required
+                  value={formData.date}
+                  onChange={(e) =>
+                    setFormData({ ...formData, date: e.target.value })
+                  }
+                  className="col-span-3"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="endDate">End Date</Label>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="time" className="text-right">
+                  Time
+                </Label>
                 <Input
-                  id="endDate"
-                  name="endDate"
-                  type="date"
-                  value={formData.endDate}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="startTime">Start Time</Label>
-                <Input
-                  id="startTime"
-                  name="startTime"
+                  id="time"
                   type="time"
-                  value={formData.startTime}
-                  onChange={handleInputChange}
-                  required
+                  value={formData.time}
+                  onChange={(e) =>
+                    setFormData({ ...formData, time: e.target.value })
+                  }
+                  className="col-span-3"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="endTime">End Time</Label>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="maxSeat" className="text-right">
+                  Max Seats
+                </Label>
                 <Input
-                  id="endTime"
-                  name="endTime"
-                  type="time"
-                  value={formData.endTime}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="maxParticipants">Maximum Participants</Label>
-                <Input
-                  id="maxParticipants"
-                  name="maxParticipants"
+                  id="maxSeat"
                   type="number"
-                  value={formData.maxParticipants}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="registrationFee">Registration Fee (Rs.)</Label>
-                <Input
-                  id="registrationFee"
-                  name="registrationFee"
-                  type="number"
-                  value={formData.registrationFee}
-                  onChange={handleInputChange}
-                  required
+                  value={formData.maxSeat}
+                  onChange={(e) =>
+                    setFormData({ ...formData, maxSeat: e.target.value })
+                  }
+                  className="col-span-3"
                 />
               </div>
             </div>
+            <Button onClick={handleCreateEvent}>Create</Button>
+          </DialogContent>
+        </Dialog>
+      </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Event Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="eventImage">Event Image</Label>
-              <Input
-                id="eventImage"
-                name="eventImage"
-                type="file"
-                onChange={handleFileChange}
-                accept="image/*"
-              />
-            </div>
-
-            <div className="flex gap-2">
-              <Button type="submit">
-                {editingEvent ? "Update Event" : "Create Event"}
-              </Button>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {events?.map((event) => (
+          <Card key={event.eventId}>
+            <CardHeader>
+              <CardTitle>{event.title}</CardTitle>
+              <CardDescription>
+                Date: {event.date} | Time: {event.time}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Max Seats: {event.maxSeat}</p>
+            </CardContent>
+            <CardFooter className="flex justify-between">
               <Button
-                type="button"
                 variant="outline"
                 onClick={() => {
-                  setIsAddingEvent(false);
-                  setEditingEvent(null);
+                  setSelectedEvent(event);
                   setFormData({
-                    eventName: "",
-                    eventType: "",
-                    startDate: "",
-                    endDate: "",
-                    startTime: "",
-                    endTime: "",
-                    maxParticipants: "",
-                    registrationFee: "",
-                    description: "",
-                    eventImage: null,
+                    title: event.title,
+                    date: event.date,
+                    time: event.time,
+                    maxSeat: event.maxSeat.toString(),
                   });
+                  setIsUpdateDialogOpen(true);
                 }}>
-                Cancel
+                Edit
               </Button>
+              <Button
+                variant="destructive"
+                onClick={() => handleDeleteEvent(event.eventId)}>
+                Delete
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+
+      <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Event</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="update-title" className="text-right">
+                Title
+              </Label>
+              <Input
+                id="update-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                className="col-span-3"
+              />
             </div>
-          </form>
-        ) : (
-          <div className="space-y-4">
-            {isLoading ? (
-              <div>Loading events...</div>
-            ) : events.length === 0 ? (
-              <div className="text-muted-foreground">
-                No events found for this venue.
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {events.map((event: any) => (
-                  <Card key={event.eventId}>
-                    <CardContent className="pt-6">
-                      {event.eventImageUrl && (
-                        <img
-                          src={event.eventImageUrl}
-                          alt={event.eventName}
-                          className="w-full h-48 object-cover rounded-md mb-4"
-                        />
-                      )}
-                      <h3 className="font-semibold text-lg">
-                        {event.eventName}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Type: {event.eventType}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Date: {new Date(event.startDate).toLocaleDateString()} -{" "}
-                        {new Date(event.endDate).toLocaleDateString()}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Time: {event.startTime} - {event.endTime}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Max Participants: {event.maxParticipants}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Registration Fee: Rs.{event.registrationFee}
-                      </p>
-                      {event.description && (
-                        <p className="text-sm mt-2">{event.description}</p>
-                      )}
-                      <div className="flex gap-2 mt-4">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(event)}>
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDelete(event.eventId)}>
-                          Delete
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="update-date" className="text-right">
+                Date
+              </Label>
+              <Input
+                id="update-date"
+                type="date"
+                value={formData.date}
+                onChange={(e) =>
+                  setFormData({ ...formData, date: e.target.value })
+                }
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="update-time" className="text-right">
+                Time
+              </Label>
+              <Input
+                id="update-time"
+                type="time"
+                value={formData.time}
+                onChange={(e) =>
+                  setFormData({ ...formData, time: e.target.value })
+                }
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="update-maxSeat" className="text-right">
+                Max Seats
+              </Label>
+              <Input
+                id="update-maxSeat"
+                type="number"
+                value={formData.maxSeat}
+                onChange={(e) =>
+                  setFormData({ ...formData, maxSeat: e.target.value })
+                }
+                className="col-span-3"
+              />
+            </div>
           </div>
-        )}
-      </CardContent>
-    </Card>
+          <Button onClick={handleUpdateEvent}>Update</Button>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

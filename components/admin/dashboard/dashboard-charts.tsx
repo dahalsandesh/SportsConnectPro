@@ -1,6 +1,12 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   BarChart,
   Bar,
@@ -15,10 +21,14 @@ import {
   Pie,
   Cell,
   Legend,
-} from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { useGetSportCategoriesQuery } from "@/redux/api/sportCategoryApi"
-import { Loader2 } from "lucide-react"
+} from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { useGetSportCategoriesQuery } from "@/redux/api/admin/sportCategoriesApi";
+import { Loader2 } from "lucide-react";
 
 // Sample data for charts
 const bookingData = [
@@ -29,7 +39,7 @@ const bookingData = [
   { name: "May", bookings: 56 },
   { name: "Jun", bookings: 55 },
   { name: "Jul", bookings: 40 },
-]
+];
 
 const revenueData = [
   { name: "Jan", revenue: 4000 },
@@ -39,7 +49,7 @@ const revenueData = [
   { name: "May", revenue: 5890 },
   { name: "Jun", revenue: 6390 },
   { name: "Jul", revenue: 7490 },
-]
+];
 
 const sportTypeData = [
   { name: "Futsal", value: 45 },
@@ -47,9 +57,9 @@ const sportTypeData = [
   { name: "Tennis", value: 15 },
   { name: "Badminton", value: 10 },
   { name: "Others", value: 5 },
-]
+];
 
-const COLORS = ["#16a34a", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"]
+const COLORS = ["#16a34a", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 export function BookingChart() {
   return (
@@ -66,8 +76,7 @@ export function BookingChart() {
               color: "hsl(var(--chart-1))",
             },
           }}
-          className="h-[300px]"
-        >
+          className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={bookingData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -80,7 +89,7 @@ export function BookingChart() {
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export function RevenueChart() {
@@ -98,45 +107,51 @@ export function RevenueChart() {
               color: "hsl(var(--chart-2))",
             },
           }}
-          className="h-[300px]"
-        >
+          className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={revenueData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Line type="monotone" dataKey="revenue" stroke="var(--color-revenue)" strokeWidth={2} />
+              <Line
+                type="monotone"
+                dataKey="revenue"
+                stroke="var(--color-revenue)"
+                strokeWidth={2}
+              />
             </LineChart>
           </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-import type { SportCategory } from "@/types/api"
+import type { SportCategory } from "@/types/api";
 
 interface ChartData {
-  name: string
-  value: number
+  name: string;
+  value: number;
 }
 
 export function SportTypeChart() {
-  const { data, isLoading, isError } = useGetSportCategoriesQuery()
+  const { data, isLoading, isError } = useGetSportCategoriesQuery();
 
   if (isLoading) {
     return (
       <Card className="col-span-3">
         <CardHeader>
           <CardTitle>Sport Categories</CardTitle>
-          <CardDescription>Loading sport category distribution...</CardDescription>
+          <CardDescription>
+            Loading sport category distribution...
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-[300px]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (isError || !data) {
@@ -150,7 +165,7 @@ export function SportTypeChart() {
           Failed to load sport category data
         </CardContent>
       </Card>
-    )
+    );
   }
 
   // Transform the API response to match the chart data format
@@ -158,8 +173,8 @@ export function SportTypeChart() {
   // Using sportCategory as the name and a default count of 1 since count isn't provided
   const chartData: ChartData[] = data.map((category: SportCategory) => ({
     name: category.sportCategory,
-    value: 1 // Default value since count isn't part of the SportCategory type
-  }))
+    value: 1, // Default value since count isn't part of the SportCategory type
+  }));
 
   return (
     <Card className="col-span-3">
@@ -176,13 +191,17 @@ export function SportTypeChart() {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) =>
+                  `${name}: ${(percent * 100).toFixed(0)}%`
+                }
                 outerRadius={80}
                 fill="#8884d8"
-                dataKey="value"
-              >
+                dataKey="value">
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip formatter={(value) => [`${value} bookings`, "Count"]} />
@@ -192,5 +211,5 @@ export function SportTypeChart() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -35,6 +35,9 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
           case UserType.VenueUsers:
             router.replace("/venue-owner")
             break
+          case UserType.SuperUsers:
+            router.replace("http://localhost:8000/admin")
+            break
           default:
             router.replace("/dashboard")
         }

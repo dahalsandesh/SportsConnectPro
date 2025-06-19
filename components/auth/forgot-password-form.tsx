@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useForgotPasswordMutation } from "@/redux/services/authApi"
+import { useForgotPasswordMutation } from "@/redux/api/common/authApi"
 import { Loader2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react"
 
 const forgotPasswordSchema = z.object({

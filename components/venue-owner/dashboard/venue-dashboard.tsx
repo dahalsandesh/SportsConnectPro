@@ -1,6 +1,6 @@
 "use client"
 
-import { useGetVenueDashboardDataQuery } from "@/redux/api/venueManagementApi"
+import { useGetVenueDashboardDataQuery } from "@/redux/api/venue-owner/venueApi"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Calendar, DollarSign, MapPin, Clock } from "lucide-react"
 import { VenueDetailsCard } from "./venue-details-card"

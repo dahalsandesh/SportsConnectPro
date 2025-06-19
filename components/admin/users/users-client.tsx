@@ -1,40 +1,48 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useGetAllUserTypesQuery } from "@/redux/api/user-types/userTypesApi"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { UsersTable } from "./users-table"
-import { UserTypeTable } from "./user-type-table"
-import { PlusCircle, Search } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { CreateUserTypeDialog } from "./create-user-type-dialog"
+import { useState } from "react";
+import { useGetUserTypesQuery } from "@/redux/api/admin/userTypesApi";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { UsersTable } from "./users-table";
+import { UserTypeTable } from "./user-type-table";
+import { PlusCircle, Search } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CreateUserTypeDialog } from "./create-user-type-dialog";
 
 export default function UsersClient() {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  const { data: userTypes, error, isLoading } = useGetAllUserTypesQuery()
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { data: userTypes, error, isLoading } = useGetUserTypesQuery();
 
   if (error) {
     return (
       <Alert variant="destructive">
         <AlertTitle>Error</AlertTitle>
-        <AlertDescription>Failed to load user types. Please try again later.</AlertDescription>
+        <AlertDescription>
+          Failed to load user types. Please try again later.
+        </AlertDescription>
       </Alert>
-    )
+    );
   }
 
   return (
     <>
-      <Tabs defaultValue="all-users" className="space-y-4">
+      <Tabs defaultValue="user-types" className="space-y-4">
         <div className="flex items-center justify-between">
           <TabsList>
-            <TabsTrigger value="all-users">All Users</TabsTrigger>
+            {/* <TabsTrigger value="all-users">All Users</TabsTrigger>
             <TabsTrigger value="normal-users">Normal Users</TabsTrigger>
             <TabsTrigger value="venue-owners">Venue Owners</TabsTrigger>
-            <TabsTrigger value="admins">Admins</TabsTrigger>
+            <TabsTrigger value="admins">Admins</TabsTrigger> */}
             <TabsTrigger value="user-types">User Types</TabsTrigger>
           </TabsList>
           <div className="flex items-center gap-2">
@@ -59,7 +67,9 @@ export default function UsersClient() {
           <Card>
             <CardHeader>
               <CardTitle>All Users</CardTitle>
-              <CardDescription>Manage all users of the platform</CardDescription>
+              <CardDescription>
+                Manage all users of the platform
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <UsersTable userType="all" searchQuery={searchQuery} />
@@ -71,7 +81,9 @@ export default function UsersClient() {
           <Card>
             <CardHeader>
               <CardTitle>Normal Users</CardTitle>
-              <CardDescription>Manage normal users of the platform</CardDescription>
+              <CardDescription>
+                Manage normal users of the platform
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <UsersTable userType="NormalUsers" searchQuery={searchQuery} />
@@ -83,7 +95,9 @@ export default function UsersClient() {
           <Card>
             <CardHeader>
               <CardTitle>Venue Owners</CardTitle>
-              <CardDescription>Manage venue owners of the platform</CardDescription>
+              <CardDescription>
+                Manage venue owners of the platform
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <UsersTable userType="VenueOwner" searchQuery={searchQuery} />
@@ -95,7 +109,9 @@ export default function UsersClient() {
           <Card>
             <CardHeader>
               <CardTitle>Admins</CardTitle>
-              <CardDescription>Manage admin users of the platform</CardDescription>
+              <CardDescription>
+                Manage admin users of the platform
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <UsersTable userType="Admin" searchQuery={searchQuery} />
@@ -108,7 +124,9 @@ export default function UsersClient() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>User Types</CardTitle>
-                <CardDescription>Manage user types of the platform</CardDescription>
+                <CardDescription>
+                  Manage user types of the platform
+                </CardDescription>
               </div>
               <Button onClick={() => setIsCreateDialogOpen(true)}>
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -116,13 +134,19 @@ export default function UsersClient() {
               </Button>
             </CardHeader>
             <CardContent>
-              <UserTypeTable userTypes={userTypes || []} isLoading={isLoading} />
+              <UserTypeTable
+                userTypes={userTypes || []}
+                isLoading={isLoading}
+              />
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
 
-      <CreateUserTypeDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} />
+      <CreateUserTypeDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+      />
     </>
-  )
+  );
 }

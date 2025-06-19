@@ -1,62 +1,71 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const carouselItems = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1920&h=800&fit=crop&crop=center",
+    image:
+      "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1920&h=800&fit=crop&crop=center",
     title: "Book Your Perfect Futsal Court",
-    subtitle: "Find and reserve the best futsal courts in your area with instant confirmation",
+    subtitle:
+      "Find and reserve the best futsal courts in your area with instant confirmation",
     cta: "Book Now",
     link: "/venues",
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1920&h=800&fit=crop&crop=center",
+    image:
+      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1920&h=800&fit=crop&crop=center",
     title: "Join Tournaments & Events",
-    subtitle: "Participate in local tournaments and futsal events with players from your community",
+    subtitle:
+      "Participate in local tournaments and futsal events with players from your community",
     cta: "View Events",
     link: "/events",
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?w=1920&h=800&fit=crop&crop=center",
+    image:
+      "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?w=1920&h=800&fit=crop&crop=center",
     title: "Own a Futsal Venue?",
-    subtitle: "List your venue on our platform and increase your bookings by 300%",
+    subtitle:
+      "List your venue on our platform and increase your bookings by 300%",
     cta: "Register Venue",
     link: "/register-venue",
   },
-]
+];
 
 export default function HeaderCarousel() {
-  const [currentSlide, setCurrentSlide] = useState(0)
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === carouselItems.length - 1 ? 0 : prev + 1))
-  }
+    setCurrentSlide((prev) =>
+      prev === carouselItems.length - 1 ? 0 : prev + 1
+    );
+  };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? carouselItems.length - 1 : prev - 1))
-  }
+    setCurrentSlide((prev) =>
+      prev === 0 ? carouselItems.length - 1 : prev - 1
+    );
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      nextSlide()
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [])
+      nextSlide();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="relative h-[600px] overflow-hidden">
       {/* Carousel items */}
       <div
         className="flex h-full transition-transform duration-700 ease-in-out"
-        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-      >
+        style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
         {carouselItems.map((item) => (
           <div key={item.id} className="relative w-full h-full flex-shrink-0">
             <Image
@@ -71,12 +80,13 @@ export default function HeaderCarousel() {
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 max-w-4xl text-white drop-shadow-lg">
                 {item.title}
               </h1>
-              <p className="text-xl md:text-2xl mb-8 max-w-3xl text-white/90 drop-shadow-md">{item.subtitle}</p>
+              <p className="text-xl md:text-2xl mb-8 max-w-3xl text-white/90 drop-shadow-md">
+                {item.subtitle}
+              </p>
               <Button
                 size="lg"
                 className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                asChild
-              >
+                asChild>
                 <a href={item.link}>{item.cta}</a>
               </Button>
             </div>
@@ -89,16 +99,14 @@ export default function HeaderCarousel() {
         variant="outline"
         size="icon"
         className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 rounded-full h-12 w-12"
-        onClick={prevSlide}
-      >
+        onClick={prevSlide}>
         <ChevronLeft className="h-6 w-6" />
       </Button>
       <Button
         variant="outline"
         size="icon"
         className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 rounded-full h-12 w-12"
-        onClick={nextSlide}
-      >
+        onClick={nextSlide}>
         <ChevronRight className="h-6 w-6" />
       </Button>
 
@@ -115,5 +123,5 @@ export default function HeaderCarousel() {
         ))}
       </div>
     </div>
-  )
+  );
 }

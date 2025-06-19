@@ -19,12 +19,35 @@ export const baseApi = createApi({
     baseUrl: getBaseUrl(),
     prepareHeaders: (headers, { getState }) => {
       // Get token from state
-      const token = (getState() as RootState).auth.token
+      let token = (getState() as RootState).auth.token
+      
+      // If token is not in state, try to get it from localStorage
+      if (!token && typeof window !== 'undefined') {
+        token = localStorage.getItem('token')
+        console.log('Retrieved token from localStorage:', token ? 'Token exists' : 'No token found')
+      } else if (token) {
+        console.log('Using token from Redux state')
+      }
 
       // If token exists, add authorization header
       if (token) {
-        headers.set("authorization", `token ${token}`)
+        const authHeader = `token ${token}`
+        headers.set("Authorization", authHeader)
+        console.log('Authorization header set with token')
+      } else {
+        console.warn('No authentication token found')
       }
+
+      // Add required headers for CORS and content type
+      headers.set('Content-Type', 'application/json')
+      headers.set('Accept', 'application/json')
+
+      // Log final headers for debugging
+      console.log('Request headers:', {
+        'Content-Type': headers.get('Content-Type'),
+        'Accept': headers.get('Accept'),
+        'Authorization': headers.get('Authorization') ? 'token [REDACTED]' : 'Not set'
+      })
 
       return headers
     },
@@ -37,6 +60,8 @@ export const baseApi = createApi({
     "Statuses",
     "SportCategories",
     "Genders",
+    "Events",
+    "AdminNotifications",
     
     // Business domains
     "Dashboard",
@@ -54,7 +79,12 @@ export const baseApi = createApi({
     "Payments",
     "Notifications",
     "Users",
-    "VenuePosts"
+    "VenuePosts",
+    
+    // Additional tags for venue management
+    "SportsEvents",
+    "VenueEvents",
+    "VenueImages"
   ],
   endpoints: () => ({}),
 })

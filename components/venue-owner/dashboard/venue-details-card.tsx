@@ -1,17 +1,65 @@
 "use client"
 
-import { useState } from "react"
-import { useGetVenueDetailsQuery } from "@/redux/api/venueManagementApi"
+import { useState, useEffect } from "react"
+import { useAppSelector } from "@/redux/store/hooks"
+import { useGetVenueDetailsQuery } from "@/redux/api/venue/venueApi"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, Edit, MapPin, Phone, Mail, Clock, ImageIcon } from "lucide-react"
+import { Loader2, Edit, MapPin, Phone, Mail, Clock, ImageIcon, PlusCircle } from "lucide-react"
 import { EditVenueDialog } from "./edit-venue-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export function VenueDetailsCard() {
-  const { data: venueDetails, isLoading, isError } = useGetVenueDetailsQuery()
+  // Get the current user's ID from localStorage
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  
+  // Get user ID from localStorage when component mounts
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          console.log('User data from localStorage:', user);
+          // Try to get userId from different possible locations in the user object
+          const userId = user?.id || user?.userId || user?.user_id || null;
+          setCurrentUserId(userId);
+          console.log('Using userId from localStorage:', userId);
+        } catch (error) {
+          console.error('Error parsing user data from localStorage:', error);
+        }
+      } else {
+        console.log('No user data found in localStorage');
+      }
+    }
+  }, []);
+  
+  const { data: venueDetails, isLoading, isError, error } = useGetVenueDetailsQuery(
+    { userId: currentUserId || '' },
+    { 
+      skip: !currentUserId, // Skip query if no user ID is available
+      refetchOnMountOrArgChange: true,
+    }
+  )
+  
+  // Debug: Log the current state
+  useEffect(() => {
+    console.log('VenueDetailsCard state:', {
+      currentUserId,
+      isLoading,
+      isError,
+      error,
+      venueDetails,
+      localStorageUser: typeof window !== 'undefined' ? localStorage.getItem('user') : null
+    });
+  }, [currentUserId, isLoading, isError, error, venueDetails])
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
+  // Open edit dialog when edit button is clicked
+  const handleEditClick = () => {
+    setIsEditDialogOpen(true)
+  }
 
   if (isLoading) {
     return (
@@ -23,7 +71,7 @@ export function VenueDetailsCard() {
     )
   }
 
-  if (isError || !venueDetails) {
+  if (isError) {
     return (
       <Card>
         <CardContent className="flex justify-center items-center h-32">
@@ -33,14 +81,37 @@ export function VenueDetailsCard() {
     )
   }
 
+  // If no venue details are available yet, show a message
+  if (!venueDetails) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center h-32 space-y-2">
+          <p className="text-muted-foreground">No venue details available</p>
+          <Button variant="outline" size="sm" onClick={handleEditClick}>
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Add Venue Details
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Debug: Log the venue details to console
+  console.log('Venue details:', venueDetails)
+
   return (
     <>
-      <Card>
+      <Card className="relative">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-2xl font-bold">Venue Details</CardTitle>
-          <Button onClick={() => setIsEditDialogOpen(true)} variant="outline">
-            <Edit className="mr-2 h-4 w-4" />
-            Edit Details
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleEditClick}
+            disabled={!venueDetails}
+          >
+            <Edit className="h-4 w-4 mr-2" />
+            Edit
           </Button>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -112,7 +183,13 @@ export function VenueDetailsCard() {
         </CardContent>
       </Card>
 
-      <EditVenueDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} venueDetails={venueDetails} />
+      {venueDetails && (
+        <EditVenueDialog
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          venue={venueDetails}
+        />
+      )}
     </>
   )
 }

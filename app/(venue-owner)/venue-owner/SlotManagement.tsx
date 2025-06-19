@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useGetTimeSlotsQuery, useCreateTimeSlotMutation, useUpdateTimeSlotMutation } from "@/redux/api/time-slots/timeSlotsApi";
+import { useGetTimeSlotsQuery, useCreateTimeSlotMutation, useUpdateTimeSlotMutation } from "@/redux/api/venue-owner/timeSlotsApi";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -1,14 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useGetCitiesQuery, useDeleteCityMutation } from "@/redux/api/cityApi"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Trash, Edit, Plus, Loader2 } from "lucide-react"
-import { useToast } from "@/components/ui/use-toast"
-import { CityForm } from "./city-form"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { useState } from "react";
+import {
+  useGetCitiesQuery,
+  useDeleteCityMutation,
+} from "@/redux/api/admin/citiesApi";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Trash, Edit, Plus, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { CityForm } from "./city-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,63 +34,68 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
 export function CityList() {
-  const { data: cities, isLoading, isError } = useGetCitiesQuery()
-  const [deleteCity, { isLoading: isDeleting }] = useDeleteCityMutation()
-  const [editingCity, setEditingCity] = useState<{ cityId: string; cityName: string } | null>(null)
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [cityToDelete, setCityToDelete] = useState<string | null>(null)
-  const { toast } = useToast()
+  const { data: cities, isLoading, isError } = useGetCitiesQuery();
+  const [deleteCity, { isLoading: isDeleting }] = useDeleteCityMutation();
+  const [editingCity, setEditingCity] = useState<{
+    cityId: string;
+    cityName: string;
+  } | null>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [cityToDelete, setCityToDelete] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleEdit = (city: { cityId: string; cityName: string }) => {
-    setEditingCity(city)
-    setIsEditDialogOpen(true)
-  }
+    setEditingCity(city);
+    setIsEditDialogOpen(true);
+  };
 
   const handleDelete = async () => {
-    if (!cityToDelete) return
+    if (!cityToDelete) return;
 
     try {
-      await deleteCity({ cityId: cityToDelete }).unwrap()
+      await deleteCity({ cityId: cityToDelete }).unwrap();
       toast({
         title: "City deleted",
         description: "The city has been deleted successfully.",
         variant: "success",
-      })
-      setIsDeleteDialogOpen(false)
-      setCityToDelete(null)
+      });
+      setIsDeleteDialogOpen(false);
+      setCityToDelete(null);
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to delete the city. Please try again.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const confirmDelete = (cityId: string) => {
-    setCityToDelete(cityId)
-    setIsDeleteDialogOpen(true)
-  }
+    setCityToDelete(cityId);
+    setIsDeleteDialogOpen(true);
+  };
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
-    )
+    );
   }
 
   if (isError) {
     return (
       <div className="flex justify-center items-center h-64">
-        <p className="text-destructive">Error loading cities. Please try again.</p>
+        <p className="text-destructive">
+          Error loading cities. Please try again.
+        </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -110,15 +131,17 @@ export function CityList() {
                 <TableRow key={city.cityId}>
                   <TableCell>{city.cityName}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => handleEdit(city)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(city)}>
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => confirmDelete(city.cityId)}
-                      disabled={isDeleting}
-                    >
+                      disabled={isDeleting}>
                       <Trash className="h-4 w-4 text-destructive" />
                     </Button>
                   </TableCell>
@@ -144,8 +167,8 @@ export function CityList() {
               <CityForm
                 initialData={editingCity}
                 onSuccess={() => {
-                  setIsEditDialogOpen(false)
-                  setEditingCity(null)
+                  setIsEditDialogOpen(false);
+                  setEditingCity(null);
                 }}
               />
             )}
@@ -153,16 +176,21 @@ export function CityList() {
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
-        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the city.
+                This action cannot be undone. This will permanently delete the
+                city.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setCityToDelete(null)}>Cancel</AlertDialogCancel>
+              <AlertDialogCancel onClick={() => setCityToDelete(null)}>
+                Cancel
+              </AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
                 {isDeleting ? (
                   <>
@@ -178,5 +206,5 @@ export function CityList() {
         </AlertDialog>
       </CardContent>
     </Card>
-  )
+  );
 }

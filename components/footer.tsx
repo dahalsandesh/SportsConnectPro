@@ -1,8 +1,15 @@
-import Link from "next/link"
-import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from "lucide-react"
-import Logo from "@/components/logo"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import Link from "next/link";
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
+import Logo from "@/components/logo";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function Footer() {
   return (
@@ -12,16 +19,23 @@ export default function Footer() {
           <div>
             <Logo className="mb-4 text-white" />
             <p className="text-gray-400 mb-4">
-              The easiest way to find and book futsal courts near you. Play more, worry less.
+              The easiest way to find and book futsal courts near you. Play
+              more, worry less.
             </p>
             <div className="flex space-x-4">
-              <Link href="#" className="text-gray-400 hover:text-green-500 transition-colors">
+              <Link
+                href="#"
+                className="text-gray-400 hover:text-green-500 transition-colors">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-green-500 transition-colors">
+              <Link
+                href="#"
+                className="text-gray-400 hover:text-green-500 transition-colors">
                 <Twitter className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-green-500 transition-colors">
+              <Link
+                href="#"
+                className="text-gray-400 hover:text-green-500 transition-colors">
                 <Instagram className="h-5 w-5" />
               </Link>
             </div>
@@ -31,27 +45,37 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/venues" className="text-gray-400 hover:text-green-500 transition-colors">
+                <Link
+                  href="/venues"
+                  className="text-gray-400 hover:text-green-500 transition-colors">
                   Find Venues
                 </Link>
               </li>
               <li>
-                <Link href="/how-it-works" className="text-gray-400 hover:text-green-500 transition-colors">
+                <Link
+                  href="/how-it-works"
+                  className="text-gray-400 hover:text-green-500 transition-colors">
                   How It Works
                 </Link>
               </li>
               <li>
-                <Link href="/events" className="text-gray-400 hover:text-green-500 transition-colors">
+                <Link
+                  href="/events"
+                  className="text-gray-400 hover:text-green-500 transition-colors">
                   Events & Tournaments
                 </Link>
               </li>
               <li>
-                <Link href="/register-venue" className="text-gray-400 hover:text-green-500 transition-colors">
+                <Link
+                  href="/register-venue"
+                  className="text-gray-400 hover:text-green-500 transition-colors">
                   List Your Venue
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-gray-400 hover:text-green-500 transition-colors">
+                <Link
+                  href="/faq"
+                  className="text-gray-400 hover:text-green-500 transition-colors">
                   FAQs
                 </Link>
               </li>
@@ -62,22 +86,30 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/terms" className="text-gray-400 hover:text-green-500 transition-colors">
+                <Link
+                  href="/terms"
+                  className="text-gray-400 hover:text-green-500 transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-gray-400 hover:text-green-500 transition-colors">
+                <Link
+                  href="/privacy"
+                  className="text-gray-400 hover:text-green-500 transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/refund" className="text-gray-400 hover:text-green-500 transition-colors">
+                <Link
+                  href="/refund"
+                  className="text-gray-400 hover:text-green-500 transition-colors">
                   Refund Policy
                 </Link>
               </li>
               <li>
-                <Link href="/cookies" className="text-gray-400 hover:text-green-500 transition-colors">
+                <Link
+                  href="/cookies"
+                  className="text-gray-400 hover:text-green-500 transition-colors">
                   Cookie Policy
                 </Link>
               </li>
@@ -86,10 +118,18 @@ export default function Footer() {
 
           <div>
             <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
-            <p className="text-gray-400 mb-4">Subscribe to get updates on new venues and special offers.</p>
+            <p className="text-gray-400 mb-4">
+              Subscribe to get updates on new venues and special offers.
+            </p>
             <div className="flex flex-col space-y-2">
-              <Input type="email" placeholder="Your email address" className="bg-gray-800 border-gray-700 text-white" />
-              <Button className="bg-green-600 hover:bg-green-700">Subscribe</Button>
+              <Input
+                type="email"
+                placeholder="Your email address"
+                className="bg-gray-800 border-gray-700 text-white"
+              />
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                Subscribe
+              </Button>
             </div>
             <div className="mt-6 space-y-2">
               <div className="flex items-center text-gray-400">
@@ -109,10 +149,13 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
-          <p>&copy; {new Date().getFullYear()} FutsalConnectPro. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} FutsalConnectPro. All rights
+            reserved.
+          </p>
           <p className="mt-2">Designed with ❤️ for futsal lovers</p>
         </div>
       </div>
     </footer>
-  )
+  );
 }

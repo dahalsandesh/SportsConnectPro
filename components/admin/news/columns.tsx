@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/components/ui/use-toast"
+import { useDeleteAdminPostMutation } from "@/redux/api/admin/postsApi"
 
 export type NewsColumn = {
   id: string
@@ -27,6 +28,7 @@ export type NewsColumn = {
 
 export function useNewsColumns() {
   const { toast } = useToast()
+  const [deletePost, { isLoading: isDeleting }] = useDeleteAdminPostMutation()
 
   const columns: ColumnDef<NewsColumn>[] = [
     {
@@ -100,33 +102,31 @@ export function useNewsColumns() {
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
+                disabled={isDeleting}
                 onClick={async () => {
-                  try {
-                    const response = await fetch(`/api/admin/news/${news.id}`, {
-                      method: 'DELETE',
-                    })
-                    
-                    if (!response.ok) {
-                      throw new Error('Failed to delete news')
+                  if (window.confirm('Are you sure you want to delete this news item?')) {
+                    try {
+                      await deletePost({ postId: news.id }).unwrap()
+                      
+                      toast({
+                        title: "News deleted successfully",
+                        variant: "default"
+                      })
+
+                      // Refresh the page
+                      window.location.reload()
+                    } catch (error) {
+                      console.error('Error deleting news:', error)
+                      toast({
+                        title: "Error",
+                        description: "Failed to delete news. Please try again.",
+                        variant: "destructive"
+                      })
                     }
-                    
-                    toast({
-                      title: "Success",
-                      description: "News deleted successfully",
-                    })
-                    window.location.reload()
-                  } catch (error) {
-                    console.error('Error deleting news:', error)
-                    toast({
-                      title: "Error",
-                      description: "Something went wrong",
-                      variant: "destructive",
-                    })
                   }
                 }}
-                className="text-red-600"
               >
-                Delete
+                {isDeleting ? 'Deleting...' : 'Delete news'}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
