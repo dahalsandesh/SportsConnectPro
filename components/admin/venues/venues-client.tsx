@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useGetVenuesQuery } from "@/redux/api/admin/venueApi";
+import { useGetAdminVenuesQuery } from "@/redux/api/admin/venueApi";
 import {
   Card,
   CardContent,
@@ -21,7 +21,7 @@ export default function VenuesClient() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: venues, error, isLoading } = useGetVenuesQuery();
+  const { data: venues, error, isLoading } = useGetAdminVenuesQuery();
 
   if (error) {
     return (

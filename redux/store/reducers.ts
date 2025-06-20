@@ -3,6 +3,7 @@ import authReducer from "../features/authSlice";
 import { baseApi } from "../api/baseApi";
 import { bookingsApi } from "../api/user/bookingsApi";
 import { authApi } from "../api/common/authApi";
+import { publicApi } from "../api/publicApi";
 
 // Combine all reducers
 export const rootReducer = combineReducers({
@@ -10,6 +11,7 @@ export const rootReducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer,
   [bookingsApi.reducerPath]: bookingsApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
+  [publicApi.reducerPath]: publicApi.reducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>

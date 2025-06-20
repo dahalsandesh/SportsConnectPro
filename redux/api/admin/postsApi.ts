@@ -8,6 +8,7 @@ export const postsApi = baseApi.injectEndpoints({
         url: "/web/api/v1/adminapp/CreatePost",
         method: "POST",
         body: formData,
+     
       }),
       invalidatesTags: [{type: "Posts", id: 'LIST'}],
     }),

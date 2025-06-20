@@ -4,9 +4,9 @@ import type React from "react";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useCreateAdminPostMutation } from "@/redux/api/admin/postsApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useCreateAdminPostMutation } from "@/redux/api/admin/postsApi";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -91,31 +91,53 @@ export function CreatePostDialog({
     setImagePreview(null);
   };
 
+  const [createAdminPost, { isLoading: isCreating }] = useCreateAdminPostMutation();
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const formData = new FormData();
+      
+      // Append text fields with proper encoding
       formData.append("title", values.title);
       formData.append("description", values.description);
       formData.append("categoryId", values.categoryId);
 
+      // Append file if it exists
       if (selectedImage) {
-        formData.append("postImage", selectedImage);
+        formData.append("postImage", selectedImage, selectedImage.name);
       }
 
-      await createPost(formData).unwrap();
+      // Log form data for debugging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Submitting form data:');
+        for (let [key, value] of formData.entries()) {
+          console.log(key, value instanceof File ? `${value.name} (${value.size} bytes)` : value);
+        }
+      }
+
+      // Use the RTK Query mutation
+      await createAdminPost(formData).unwrap();
+      
+      // Reset form and state on success
+      form.reset({
+        title: "",
+        description: "",
+        categoryId: ""
+      });
+      setSelectedImage(null);
+      setImagePreview(null);
+      onOpenChange(false);
+      
       toast({
         title: "Post created",
         description: "The post has been created successfully.",
         variant: "success",
       });
-      form.reset();
-      setSelectedImage(null);
-      setImagePreview(null);
-      onOpenChange(false);
     } catch (error) {
+      console.error('Error creating post:', error);
       toast({
         title: "Error",
-        description: "Failed to create post. Please try again.",
+        description: error?.data?.message || "Failed to create post. Please try again.",
         variant: "destructive",
       });
     }

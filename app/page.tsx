@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import FeaturedVenues from "@/components/featured-venues"
+import FeaturedCourts from "@/components/featured-courts"
 import HowItWorks from "@/components/how-it-works"
 import Testimonials from "@/components/testimonials"
 import HeaderCarousel from "@/components/header-carousel"
@@ -79,6 +80,22 @@ export default function Home() {
             </Link>
           </div>
           <FeaturedVenues />
+        </div>
+      </section>
+
+      {/* Featured Courts */}
+      <section className="py-16 bg-secondary/30">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground">Featured Courts</h2>
+            <Link href="/courts">
+              <Button variant="outline" className="gap-2 border-border text-foreground hover:bg-accent">
+                View All Courts <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+          {/* Courts grid */}
+          <FeaturedCourts />
         </div>
       </section>
 
@@ -184,10 +201,10 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-green-600 to-green-700 text-white">
+      <section className="py-20 bg-gradient-to-r from-[#00E676] via-[#3E8E41] to-[#A7DC6F] text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Ready to Play?</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto text-white/90">
+          <h2 className="text-3xl md:text-4xl font-extrabold leading-relaxed tracking-[0.02em] mb-6 text-white">Ready to Play?</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-white">
             Join thousands of players who book futsal courts through FutsalConnectPro.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -197,7 +214,7 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="/register-venue">
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-green-800 px-8">
+              <Button size="lg" variant="outline" className="text-white border-white bg-green-900 hover:bg-green-800 px-8">
                 Register Your Venue
               </Button>
             </Link>

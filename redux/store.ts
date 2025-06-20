@@ -6,8 +6,28 @@ import { apiMiddlewares } from "./store/middleware"
 // Create the store
 const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(...apiMiddlewares),
+  middleware: (getDefaultMiddleware) => {
+    return getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore RTK Query actions and meta.baseQueryMeta
+        ignoredActions: [
+          'persist/PERSIST',
+          'persist/REHYDRATE',
+          'persist/PAUSE',
+          'persist/FLUSH',
+          'persist/PURGE',
+          'persist/REGISTER',
+          'api/executeQuery/fulfilled',
+          'api/executeQuery/rejected',
+          'api/executeMutation/fulfilled',
+          'api/executeMutation/rejected',
+          'api/executeMutation/pending', // Add pending to ignore FormData
+        ],
+        ignoredActionPaths: ['payload.timestamp', 'meta.baseQueryMeta', 'meta.arg.originalArgs'],
+        ignoredPaths: ['items.dates', 'meta.arg.originalArgs']
+      }
+    }).concat(apiMiddlewares)
+  },
   devTools: process.env.NODE_ENV !== 'production',
 })
 
@@ -16,6 +36,7 @@ setupListeners(store.dispatch)
 
 export type AppDispatch = typeof store.dispatch
 export type AppStore = typeof store
+export type AppState = ReturnType<typeof rootReducer>
 
 // Export the store and types
 export { store }

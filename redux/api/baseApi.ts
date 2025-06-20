@@ -39,7 +39,6 @@ export const baseApi = createApi({
       }
 
       // Add required headers for CORS and content type
-      headers.set('Content-Type', 'application/json')
       headers.set('Accept', 'application/json')
 
       // Log final headers for debugging
@@ -75,6 +74,7 @@ export const baseApi = createApi({
     // Newly added tags
     "Sports",
     "TimeSlots",
+    "Reels",
     "Reviews",
     "Payments",
     "Notifications",

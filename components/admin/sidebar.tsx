@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard as LayoutDashboardIcon } from "lucide-react"
+import { LayoutDashboard as LayoutDashboardIcon, Video } from "lucide-react"
 import {
   Users,
   MapPin,
@@ -66,20 +66,30 @@ export const sidebarItems = [
     icon: <BarChart className="h-5 w-5" />,
   },
   {
-    title: "Messages",
-    href: "/admin/messages",
-    icon: <MessageSquare className="h-5 w-5" />,
+    title:"Reels",
+    href:"/admin/reels",
+    icon:<Video className="h-5 w-5" />,
   },
-  {
-    title: "Settings",
-    href: "/admin/settings",
-    icon: <Settings className="h-5 w-5" />,
-  },
-  {
-    title: "Help",
-    href: "/admin/help",
-    icon: <HelpCircle className="h-5 w-5" />,
-  },
+  // {
+  //   title:"Posts",
+  //   href:"/admin/posts",
+  //   icon:<FileText className="h-5 w-5" />,
+  // },
+  // {
+  //   title: "Messages",
+  //   href: "/admin/messages",
+  //   icon: <MessageSquare className="h-5 w-5" />,
+  // },
+  // {
+  //   title: "Settings",
+  //   href: "/admin/settings",
+  //   icon: <Settings className="h-5 w-5" />,
+  // },
+  // {
+  //   title: "Help",
+  //   href: "/admin/help",
+  //   icon: <HelpCircle className="h-5 w-5" />,
+  // },
 ]
 
 export function AdminSidebar() {
