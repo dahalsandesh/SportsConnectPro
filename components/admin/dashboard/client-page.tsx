@@ -2,10 +2,12 @@ import { BookingChart } from "@/components/admin/dashboard/booking-chart"
 import { DashboardStats } from "@/components/admin/dashboard/dashboard-stats"
 import { RevenueChart } from "@/components/admin/dashboard/revenue-chart"
 import { SportTypeChart } from "@/components/admin/dashboard/sport-type-chart"
-import { CityList } from "@/components/admin/settings/city-list"
+import { CityList } from "@/components/admin/city/city-list"
 import { PostsManagement } from "@/components/admin/posts/posts-management"
 import { ApplicationsManagement } from "@/components/admin/venue-applications/applications-management"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Suspense } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function ClientPage() {
   return (
@@ -19,7 +21,7 @@ export default function ClientPage() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="posts">Posts & News</TabsTrigger>
           <TabsTrigger value="applications">Applications</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="cities">Cities</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -40,12 +42,15 @@ export default function ClientPage() {
           <ApplicationsManagement />
         </TabsContent>
 
-        <TabsContent value="settings">
-          {/* Existing settings components like CityList, etc. */}
-          <div className="grid gap-6">
+        <TabsContent value="cities" className="space-y-6">
+          <Suspense fallback={
+            <div className="space-y-4">
+              <Skeleton className="h-10 w-48" />
+              <Skeleton className="h-64 w-full" />
+            </div>
+          }>
             <CityList />
-            {/* Add other configuration components */}
-          </div>
+          </Suspense>
         </TabsContent>
       </Tabs>
     </div>
