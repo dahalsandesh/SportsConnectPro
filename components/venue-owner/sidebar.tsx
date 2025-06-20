@@ -199,6 +199,7 @@ export function VenueOwnerSidebarContent() {
                       className="text-xs hover:underline">
                       Media
                     </Link>
+                  
                   </div>
                 )}
               </div>
