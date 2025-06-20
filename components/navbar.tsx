@@ -67,6 +67,11 @@ export default function Navbar() {
               Find Venues
             </Link>
             <Link
+              href="/courts"
+              className="text-gray-700 hover:text-green-600 font-medium">
+              Courts
+            </Link>
+            <Link
               href="/how-it-works"
               className="text-gray-700 hover:text-green-600 font-medium">
               How It Works

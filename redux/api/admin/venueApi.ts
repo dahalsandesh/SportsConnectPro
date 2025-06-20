@@ -3,7 +3,7 @@ import type { ApiResponse, Venue, CreateVenueRequest, UpdateVenueStatusRequest, 
 
 export const venueApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getVenues: builder.query<Venue[], void>({ 
+    getAdminVenues: builder.query<Venue[], void>({ 
       query: () => "/web/api/v1/adminapp/GetVenue",
       providesTags: (result) =>
         result
@@ -37,7 +37,7 @@ export const venueApi = baseApi.injectEndpoints({
 });
 
 export const {
-    useGetVenuesQuery,
+    useGetAdminVenuesQuery,
     useGetVenueDetailsQuery,
     useCreateVenueMutation,
     useUpdateVenueStatusMutation,

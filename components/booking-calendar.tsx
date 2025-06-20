@@ -10,7 +10,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
-import { useGetVenueBookingsQuery, useCreateBookingMutation } from "@/redux/api/bookings/bookingsApi"
+import { useGetVenueBookingsQuery, useUpdateVenueBookingStatusMutation } from "@/redux/api/venue-owner/bookingApi"
+import { useCreateTimeSlotsMutation } from "@/redux/api/venue-owner/timeSlotsApi"
 
 // Generate time slots from 6 AM to 10 PM
 const generateTimeSlots = () => {
@@ -54,8 +55,8 @@ export default function BookingCalendar({ venueId, courts }: BookingCalendarProp
     { skip: !court || !formattedDate }
   )
 
-  // Create booking mutation
-  const [createBooking, { isLoading: isCreatingBooking }] = useCreateBookingMutation()
+  // Create time slot mutation
+  const [createTimeSlot, { isLoading: isCreatingBooking }] = useCreateTimeSlotsMutation()
 
   // Calculate available time slots based on existing bookings
   useEffect(() => {
@@ -143,22 +144,24 @@ export default function BookingCalendar({ venueId, courts }: BookingCalendarProp
       const endTime = new Date(startTime)
       endTime.setHours(endTime.getHours() + parseInt(duration))
       
-      // Create booking payload
-      const bookingData = {
+      // Create time slot payload
+      const timeSlotData = {
         courtId: court,
-        bookingDate: format(date, "yyyy-MM-dd"),
+        date: format(date, "yyyy-MM-dd"),
         startTime: format(startTime, "HH:mm:ss"),
         endTime: format(endTime, "HH:mm:ss"),
-        paymentMethod: "online", // Default payment method
+        status: "available",
+        price: courts.find(c => c.id === court)?.price || 0,
+        maxPlayers: 10 // Default value, adjust as needed
       }
       
       // Call the API
-      const result = await createBooking(bookingData).unwrap()
+      const result = await createTimeSlot(timeSlotData).unwrap()
       
       // Show success message
       toast({
-        title: "Booking successful!",
-        description: `Your booking for ${format(date, "PPP")} at ${timeSlot} has been confirmed.`,
+        title: "Time slot created!",
+        description: `Your time slot for ${format(date, "PPP")} at ${timeSlot} has been created.`,
         variant: "default",
       })
       
@@ -166,10 +169,10 @@ export default function BookingCalendar({ venueId, courts }: BookingCalendarProp
       setTimeSlot(undefined)
       
     } catch (err: any) {
-      console.error("Error creating booking:", err)
+      console.error("Error creating time slot:", err)
       toast({
-        title: "Booking failed",
-        description: err.data?.message || "Failed to create booking. Please try again.",
+        title: "Failed to create time slot",
+        description: err.data?.message || "Failed to create time slot. Please try again.",
         variant: "destructive",
       })
     }

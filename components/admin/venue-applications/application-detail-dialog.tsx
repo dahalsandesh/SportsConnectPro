@@ -31,7 +31,7 @@ export function ApplicationDetailDialog({ isOpen, onOpenChange, application }: A
               <h3 className="font-semibold">Application Details</h3>
               <div className="space-y-2">
                 <p><strong>Status:</strong> {application?.status}</p>
-                <p><strong>Applied On:</strong> {format(new Date(application?.createdAt), 'PPp')}</p>
+                <p><strong>Applied On:</strong> {application?.createdAt ? format(new Date(application.createdAt), 'PPp') : 'N/A'}</p>
               </div>
             </div>
           </div>

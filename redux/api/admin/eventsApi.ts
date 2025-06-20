@@ -4,12 +4,12 @@ import type { ApiResponse, SportsEvent } from "@/types/api";
 export const adminEventsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllEvents: builder.query<SportsEvent[], void>({
-      query: () => "/web/api/v1/adminapp/GetAllEvents", // Adjust endpoint as needed
+      query: () => "/web/api/v1/GetEvent",
       providesTags: ["Events"],
     }),
     getEventById: builder.query<SportsEvent, string>({
       query: (eventId) => ({
-        url: "/web/api/v1/adminapp/GetEventById",
+        url: "/web/api/v1/GetEventById",
         params: { eventId },
       }),
       providesTags: (result, error, id) => [{ type: "Events", id }],
