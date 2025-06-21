@@ -27,10 +27,17 @@ const publicApi = baseApi.injectEndpoints({
     }),
     // Get tickets (time slots) for a court and date (public)
     getTickets: builder.query<TimeSlot[], { courtId: string; date: string }>({
-      query: ({ courtId, date }) => ({
-        url: "/web/api/v1/GetTicket",
-        params: { courtId, date },
-      }),
+      query: ({ courtId, date }) => {
+        // Ensure courtId is properly encoded
+        const params = new URLSearchParams();
+        params.append('courtId', courtId);
+        params.append('date', date);
+        
+        return {
+          url: "/web/api/v1/venue/GetTicket",
+          params: Object.fromEntries(params),
+        };
+      },
       providesTags: (result) =>
         result
           ? [...result.map(({ id }) => ({ type: 'TimeSlots' as const, id })), { type: 'TimeSlots', id: 'LIST' }]
@@ -96,13 +103,18 @@ const publicApi = baseApi.injectEndpoints({
     }),
     
     // Create a new booking
-    createBooking: builder.mutation<{ success: boolean; bookingId: string }, { timeSlotIds: string[] }>({
+    createBooking: builder.mutation<{ success: boolean; bookingId: string }, { timeSlotId: string }>({
       query: (body) => ({
         url: "/web/api/v1/CreateBooking",
         method: "POST",
-        body,
+        body: {
+          timeSlotIds: [body.timeSlotId] // Match backend expected format
+        },
       }),
-      invalidatesTags: [{ type: 'TimeSlots', id: 'LIST' }],
+      invalidatesTags: (result, error, { timeSlotId }) => [
+        { type: 'TimeSlots', id: timeSlotId },
+        { type: 'TimeSlots', id: 'LIST' }
+      ],
     }),
   }),
 });

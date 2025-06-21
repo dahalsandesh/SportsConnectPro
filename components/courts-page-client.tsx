@@ -16,7 +16,12 @@ export default function CourtsPageClient() {
       {data && data.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {data.slice(0, 50).map((court: any) => (
-            <CourtCard key={court.courtID || court.id} court={court} fallbackImage={fallbackImage} />
+            <CourtCard 
+              key={court.courtID || court.id} 
+              court={court} 
+              fallbackImage={fallbackImage}
+              href={`/courts/${court.courtID || court.id}`}
+            />
           ))}
         </div>
       )}

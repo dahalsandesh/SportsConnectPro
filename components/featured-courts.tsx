@@ -44,7 +44,12 @@ export default function FeaturedCourts() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {featuredCourts.map((court: Court, idx: number) => (
-        <CourtCard key={court.courtID} court={court} fallbackImage={fallbackImages[idx % fallbackImages.length]} />
+        <CourtCard 
+          key={court.courtID} 
+          court={court} 
+          fallbackImage={fallbackImages[idx % fallbackImages.length]}
+          href={`/courts/${court.courtID || court.id}`}
+        />
       ))}
     </div>
   );

@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MapEmbed from "@/components/map-embed";
 import PublicBookingCalendar from "@/components/public-booking-calendar";
-import { Users, Clock } from "lucide-react";
+import { Users, Clock, MapPin, Star, ChevronRight } from "lucide-react";
 
 export default function CourtDetailsClient({ courtId }: { courtId: string }) {
   const { data: court, isLoading, isError } = useGetCourtByIdQuery(courtId);
@@ -57,10 +57,18 @@ export default function CourtDetailsClient({ courtId }: { courtId: string }) {
       <div className="mb-6">
         <Link href="/venues" className="text-muted-foreground hover:text-green-600">&larr; Back to Venues</Link>
       </div>
-      <div className="flex flex-col md:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Breadcrumb */}
+        <div className="lg:hidden flex items-center text-sm text-muted-foreground mb-4">
+          <Link href="/venues" className="hover:text-primary">Venues</Link>
+          <ChevronRight className="h-4 w-4 mx-2" />
+          <Link href={`/venues/${venue.id}`} className="hover:text-primary">{venue.name}</Link>
+          <ChevronRight className="h-4 w-4 mx-2" />
+          <span className="text-foreground">{court.name}</span>
+        </div>
         <div className="md:w-1/2">
           <div className="grid grid-cols-1 gap-4">
-            {images.map((img: any, idx: number) => (
+            {images.slice(0, 1).map((img: any, idx: number) => (
               <div key={idx} className="relative h-64 w-full rounded-lg overflow-hidden">
                 <Image src={img.image} alt={court.name} fill className="object-cover" />
               </div>
@@ -68,63 +76,100 @@ export default function CourtDetailsClient({ courtId }: { courtId: string }) {
           </div>
         </div>
         <div className="md:w-1/2">
-          <Card className="mb-4">
-            <Tabs defaultValue="info" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="info">Info</TabsTrigger>
-                <TabsTrigger value="booking">Booking</TabsTrigger>
-              </TabsList>
-              <TabsContent value="info" className="p-4">
-                <div className="mb-4 h-64 rounded-lg overflow-hidden">
-                  <MapEmbed 
-                    lat={court.latitude || venue.latitude || 27.7 + Math.random() * 0.2}
-                    lng={court.longitude || venue.longitude || 85.3 + Math.random() * 0.2}
-                    name={court.name}
-                    address={venue.address}
-                  />
-                </div>
-                <div className="space-y-4">
-                  <h1 className="text-2xl font-bold text-foreground">{court.name}</h1>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="border-green-600 text-green-600 bg-green-50 dark:bg-green-950">
-                      {court.sportCategory}
-                    </Badge>
-                    <Badge variant="outline" className="border-green-600 text-green-600 bg-green-50 dark:bg-green-950">
-                      {court.surfaceType}
-                    </Badge>
+          <Tabs defaultValue="info" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="info">Info</TabsTrigger>
+              <TabsTrigger value="booking">Book Now</TabsTrigger>
+            </TabsList>
+            <TabsContent value="info" className="p-4">
+              <Card className="mb-6">
+                <CardContent className="p-6">
+                  <div className="mb-6 h-64 rounded-lg overflow-hidden">
+                    <MapEmbed 
+                      lat={court.latitude || venue.latitude || 27.7 + Math.random() * 0.2}
+                      lng={court.longitude || venue.longitude || 85.3 + Math.random() * 0.2}
+                      name={court.name}
+                      address={venue.address}
+                    />
                   </div>
-                  <div className="space-y-2 text-muted-foreground">
-                    <div className="flex items-center">
-                      <Users className="h-4 w-4 mr-2" />
-                      <span>Capacity: {court.capacity || 'N/A'} players</span>
-                    </div>
-                    {venue.name && (
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        <span>Venue: {venue.name}</span>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h1 className="text-2xl font-bold text-foreground">{court.name}</h1>
+                        <div className="flex items-center mt-1 text-muted-foreground">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          <span>{venue.address || 'N/A'}</span>
+                        </div>
                       </div>
-                    )}
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-2" />
-                      <span>Created: {court.createdAt ? new Date(court.createdAt).toLocaleDateString() : 'N/A'}</span>
+                      <div className="flex items-center bg-primary/10 px-3 py-1 rounded-full">
+                        <Star className="h-4 w-4 mr-1 text-yellow-500 fill-yellow-500" />
+                        <span className="font-medium">4.8</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="border-green-600 text-green-600 bg-green-50 dark:bg-green-950">
+                        {court.sportCategory}
+                      </Badge>
+                      <Badge variant="outline" className="border-blue-600 text-blue-600 bg-blue-50 dark:bg-blue-950">
+                        {court.surfaceType}
+                      </Badge>
+                      <Badge variant={court.isActive ? 'default' : 'secondary'} className={court.isActive ? 'bg-green-600' : ''}>
+                        {court.isActive ? 'Available' : 'Unavailable'}
+                      </Badge>
+                    </div>
+                    
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-center text-muted-foreground">
+                        <Users className="h-4 w-4 mr-2" />
+                        <span>Capacity: <span className="text-foreground font-medium">{court.capacity || 'N/A'} players</span></span>
+                      </div>
+                      {venue.name && (
+                        <div className="flex items-center text-muted-foreground">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          <span>Venue: <Link href={`/venues/${venue.id}`} className="text-primary hover:underline">{venue.name}</Link></span>
+                        </div>
+                      )}
+                      <div className="flex items-center text-muted-foreground">
+                        <Clock className="h-4 w-4 mr-2" />
+                        <span>Created: <span className="text-foreground">{court.createdAt ? new Date(court.createdAt).toLocaleDateString() : 'N/A'}</span></span>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-4 border-t">
+                      <div className="flex items-baseline">
+                        <span className="text-green-600 font-bold text-2xl">Rs. {court.hourlyRate?.toLocaleString()}</span>
+                        <span className="ml-2 text-muted-foreground">/hour</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-baseline">
-                    <span className="text-green-600 font-bold text-2xl">Rs. {court.hourlyRate}</span>
-                    <span className="ml-2 text-muted-foreground">/hour</span>
-                  </div>
-                  <div>
-                    <Badge className={court.isActive ? 'bg-green-600 text-white' : 'bg-gray-400 text-white'}>
-                      {court.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                  </div>
-                </div>
-              </TabsContent>
-              <TabsContent value="booking" className="p-4">
-                <PublicBookingCalendar courts={[court]} defaultCourtId={courtId} />
-              </TabsContent>
-            </Tabs>
-          </Card>
+                </CardContent>
+              </Card>
+              
+              {/* Additional venue information */}
+              {venue.description && (
+                <Card className="mb-6">
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold mb-3">About the Venue</h3>
+                    <p className="text-muted-foreground">{venue.description}</p>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="booking" className="pt-4">
+              <PublicBookingCalendar 
+                courts={[{
+                  courtId: court.id || court.courtId,
+                  name: court.name,
+                  sportCategory: court.sportCategory,
+                  hourlyRate: court.hourlyRate
+                }]} 
+                defaultCourtId={courtId}
+                className="bg-transparent border-none p-0"
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

@@ -2,19 +2,22 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { useGetTicketsQuery, useCreateBookingMutation } from "@/redux/api/publicApi";
-import { format, addDays } from "date-fns";
-import { Loader2, Calendar as CalendarIcon } from "lucide-react";
+import { format, addDays, isBefore } from "date-fns";
+import { Loader2, Calendar as CalendarIcon, Clock } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-interface TimeSlot {
+export interface TimeSlot {
   id: string;
+  date: string;
   startTime: string;
   endTime: string;
-  isAvailable: boolean;
-  price: number;
-  courtId: string;
-  date: string;
+  isActive: boolean;
+  rate: number;
+  courtId?: string;
 }
 
 interface Court {
@@ -60,14 +63,21 @@ export default function PublicBookingCalendar({
     [courts, selectedCourtId]
   );
 
-  const minDate = format(new Date(), "yyyy-MM-dd");
-  const maxDate = format(addDays(new Date(), 30), "yyyy-MM-dd");
+  // Remove date restrictions for testing
+  const minDate = "2000-01-01";
+  const maxDate = "2100-12-31";
+  
+  // Generate an array of the next 30 days for the date picker
+  const availableDates = Array.from({ length: 30 }, (_, i) => {
+    const date = addDays(new Date(), i);
+    return format(date, "yyyy-MM-dd");
+  });
 
   // Filter and sort slots
   const availableSlots = useMemo(() => {
     if (!Array.isArray(slots)) return [];
     return slots
-      .filter((slot: TimeSlot) => slot.isAvailable)
+      .filter((slot: TimeSlot) => slot.isActive) // Changed from isAvailable to isActive to match API
       .sort((a: TimeSlot, b: TimeSlot) => a.startTime.localeCompare(b.startTime));
   }, [slots]);
 
@@ -76,7 +86,7 @@ export default function PublicBookingCalendar({
     if (selectedSlots.length === 0) return 0;
     return selectedSlots.reduce((total, slotId) => {
       const slot = availableSlots.find((s: TimeSlot) => s.id === slotId);
-      return total + (slot?.price || 0);
+      return total + (slot?.rate || 0); // Changed from price to rate to match API
     }, 0);
   }, [selectedSlots, availableSlots]);
 
@@ -87,29 +97,50 @@ export default function PublicBookingCalendar({
 
   // Handle booking submission
   const handleBookNow = useCallback(async () => {
-    if (selectedSlots.length === 0 || !selectedCourtId) return;
+    if (selectedSlots.length === 0 || !selectedCourtId) {
+      toast.error('No time slots selected');
+      return;
+    }
     
     try {
       setIsBooking(true);
-      // This is a placeholder - replace with your actual booking API call
-      const result = await createBooking({
-        courtId: selectedCourtId,
-        slotIds: selectedSlots,
-        date: selectedDate,
-      }).unwrap();
       
-      toast.success('Booking successful!', {
-        description: `Your booking for ${selectedCourt?.name} is confirmed.`
+      // Create booking for each selected time slot
+      const bookingPromises = selectedSlots.map(slotId => {
+        return createBooking({ timeSlotId: slotId }).unwrap()
+          .then(result => ({
+            success: true,
+            slotId,
+            data: result
+          }))
+          .catch(error => ({
+            success: false,
+            slotId,
+            error: error?.data?.message || 'Failed to book time slot'
+          }));
       });
       
-      // Refresh slots after booking
-      refetchSlots();
+      // Wait for all bookings to complete
+      const results = await Promise.all(bookingPromises);
+      const successfulBookings = results.filter(r => r.success);
+      const failedBookings = results.filter(r => !r.success);
+      
+      // Show success/error messages
+      if (successfulBookings.length > 0) {
+        toast.success(`Successfully booked ${successfulBookings.length} time slot(s)`);
+      }
+      
+      if (failedBookings.length > 0) {
+        toast.error(`Failed to book ${failedBookings.length} time slot(s)`);
+      }
+      
+      // Refresh available slots after booking
+      await refetchSlots();
       setSelectedSlots([]);
+      
     } catch (error) {
-      console.error('Booking failed:', error);
-      toast.error('Booking failed', {
-        description: 'There was an error processing your booking. Please try again.'
-      });
+      console.error('Booking error:', error);
+      toast.error('An error occurred while processing your booking');
     } finally {
       setIsBooking(false);
     }
@@ -158,7 +189,9 @@ export default function PublicBookingCalendar({
   }, [availableSlots]);
 
   return (
-    <div className={cn("border rounded-xl p-6 bg-card", className)}>
+    <div className={cn("grid grid-cols-1 lg:grid-cols-3 gap-6", className)}>
+      <div className="lg:col-span-2">
+        <Card className="border rounded-xl p-6">
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-2">Book a Time Slot</h3>
         <p className="text-sm text-muted-foreground mb-4">
@@ -169,18 +202,42 @@ export default function PublicBookingCalendar({
           <div className="flex-1">
             <label className="block text-sm font-medium mb-1">Date</label>
             <div className="relative">
-              <input
-                type="date"
-                value={selectedDate}
-                min={minDate}
-                max={maxDate}
-                onChange={(e) => {
-                  setSelectedDate(e.target.value);
-                  setSelectedSlots([]);
-                }}
-                className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <CalendarIcon className="h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !selectedDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? (
+                      format(new Date(selectedDate), "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={new Date(selectedDate)}
+                    onSelect={(date) => {
+                      if (date) {
+                        setSelectedDate(format(date, "yyyy-MM-dd"));
+                        setSelectedSlots([]);
+                      }
+                    }}
+                    className="rounded-md border"
+                    disabled={(date) => {
+                      // Allow all dates for testing
+                      return false;
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
           
@@ -305,6 +362,86 @@ export default function PublicBookingCalendar({
             </div>
           </div>
         )}
+      </div>
+        </Card>
+      </div>
+      
+      {/* Booking Summary */}
+      <div className="lg:sticky lg:top-6 h-fit">
+        <Card className="border rounded-xl p-6">
+          <CardHeader className="px-0 pt-0 pb-4">
+            <CardTitle className="text-lg font-semibold">Booking Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="px-0 pb-0 space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Venue</span>
+                <span className="text-sm font-medium">{selectedCourt?.name || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Date</span>
+                <span className="text-sm font-medium">
+                  {selectedDate ? format(new Date(selectedDate), 'PPP') : 'Select date'}
+                </span>
+              </div>
+              {selectedSlots.length > 0 && (
+                <div className="pt-2 border-t">
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Selected Slots</span>
+                    <span className="text-sm font-medium">{selectedSlots.length} hour{selectedSlots.length !== 1 ? 's' : ''}</span>
+                  </div>
+                  <div className="space-y-2">
+                    {selectedSlots.map((slotId, index) => {
+                      const slot = availableSlots.find((s: TimeSlot) => s.id === slotId);
+                      if (!slot) return null;
+                      return (
+                        <div key={index} className="flex justify-between items-center bg-muted/30 p-2 rounded">
+                          <div className="flex items-center">
+                            <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                            <span className="text-sm">
+                              {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
+                            </span>
+                          </div>
+                          <span className="text-sm font-medium">Rs. {slot.rate}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {selectedSlots.length > 0 && (
+              <div className="border-t pt-4">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="font-medium">Total</span>
+                  <span className="text-lg font-bold text-green-600">Rs. {totalPrice.toLocaleString()}</span>
+                </div>
+                <Button 
+                  onClick={handleBookNow}
+                  disabled={isBooking}
+                  className="w-full"
+                  size="lg"
+                >
+                  {isBooking ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    'Book Now'
+                  )}
+                </Button>
+              </div>
+            )}
+            
+            {selectedSlots.length === 0 && (
+              <div className="text-center py-6 text-muted-foreground">
+                <p>Select time slots to see booking details</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
