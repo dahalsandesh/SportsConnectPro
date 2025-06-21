@@ -10,340 +10,712 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 import { useAuthUser } from "@/hooks/useAuthUser";
-import { Venue } from "@/types/api";
-import {
-  useGetVenuesQuery,
+import { 
+  useGetVenueDetailsQuery,
   useUpdateVenueDetailsMutation,
-  useDeleteVenueImageMutation,
   useUploadVenueImageMutation,
-  useGetVenueImagesQuery,
+  useDeleteVenueImageMutation,
 } from "@/redux/api/venue-owner/venueApi";
-import { Plus, MapPin, Edit, Trash2, Image as ImageIcon } from "lucide-react";
+import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
+import { 
+  Plus, 
+  MapPin, 
+  Edit, 
+  Trash2, 
+  Image as ImageIcon, 
+  Clock, 
+  Phone, 
+  Mail, 
+  Users,
+  DollarSign,
+  Calendar
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 
-interface VenueFormData {
-  venueId?: string;
-  name: string;
+interface VenueDetails {
+  venueId: string;
+  venueName: string;
   address: string;
-  cityId: string;
   cityName: string;
   phoneNumber: string;
   email: string;
   desc?: string;
+  openingTime: string;
+  closingTime: string;
   isActive: boolean;
+  venueImage?: Array<{ id: string; image: string }>;
+  courts?: Array<{
+    courtId: string;
+    courtName: string;
+    sportType: string;
+    surfaceType: string;
+    isActive: boolean;
+    hourlyRate: number;
+    capacity: number;
+    desc?: string;
+  }>;
 }
+
+const VenueSkeleton = () => (
+  <div className="space-y-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-64 mt-2" />
+      </div>
+      <Skeleton className="h-10 w-32" />
+    </div>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {[1, 2, 3].map((i) => (
+        <Skeleton key={i} className="h-48 w-full" />
+      ))}
+    </div>
+  </div>
+);
 
 export default function VenueManagement() {
   const router = useRouter();
   const { toast } = useToast();
-  const { user: authUser } = useAuth();
-  const { user, userId, isLoading: isUserLoading } = useAuthUser();
+  const { userId } = useAuthUser();
+  const [activeTab, setActiveTab] = useState("courts"); // Default to courts tab
+  const [isUploading, setIsUploading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingVenue, setEditingVenue] = useState<VenueDetails | null>(null);
 
-  // Log initial state
-  console.log('VenueManagement mounted');
-  console.log('Auth user:', authUser);
-  console.log('LocalStorage user:', user);
-  console.log('User ID:', userId);
-
-  // Only fetch venues when we have a valid user ID
+  // Get venue details
   const {
-    data: venues = [],
-    isLoading: isLoadingVenues,
-    isError: isVenuesError,
-    error: venuesError,
-    refetch: refetchVenues,
-  } = useGetVenuesQuery(
+    data: venueData,
+    isLoading: isLoadingVenue,
+    isError: isVenueError,
+    error: venueError,
+    refetch: refetchVenue
+  } = useGetVenueDetailsQuery(
     { userId: userId || '' },
     { 
-      skip: !userId, // Skip the query if we don't have a user ID yet
+      skip: !userId,
       refetchOnMountOrArgChange: true
     }
   );
 
-  // Log query state changes
-  useEffect(() => {
-    console.log('Venues query state:', {
-      isLoading: isLoadingVenues,
-      isError: isVenuesError,
-      error: venuesError,
-      data: venues
-    });
-  }, [isLoadingVenues, isVenuesError, venuesError, venues]);
-
-  // Manually trigger refetch if we have a userId but no venues
-  useEffect(() => {
-    if (userId && !isLoadingVenues && !isVenuesError && (!venues || venues.length === 0)) {
-      console.log('No venues found, triggering refetch...');
-      refetchVenues();
+  // Get courts for the venue
+  const {
+    data: courtsData = [],
+    isLoading: isLoadingCourts,
+    isError: isCourtsError,
+    refetch: refetchCourts
+  } = useGetCourtsQuery(
+    { 
+      venueId: venueData?.venueId || ''
+    },
+    { 
+      skip: !venueData?.venueId,
+      refetchOnMountOrArgChange: true
     }
-  }, [userId, isLoadingVenues, isVenuesError, venues, refetchVenues]);
-
-  const [editingVenue, setEditingVenue] = useState<Venue | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const [updateVenue] = useUpdateVenueDetailsMutation();
+  );
   
-  // Log when venues data changes
+  const courts = Array.isArray(courtsData) ? courtsData : [];
+
+  // Mutations
+  const [updateVenueDetails] = useUpdateVenueDetailsMutation();
+  const [uploadVenueImage] = useUploadVenueImageMutation();
+  const [deleteVenueImage] = useDeleteVenueImageMutation();
+
+  // Set editing venue when venue data is loaded
   useEffect(() => {
-    if (venues && venues.length > 0) {
-      console.log('Venues loaded successfully:', venues);
-    } else if (isVenuesError) {
-      console.error('Error loading venues');
-    }
-  }, [venues, isVenuesError]);
-
-  const handleEdit = (venue: VenueDetails) => {
-    setEditingVenue(venue);
-    setShowEditModal(true);
-  };
-
-  const handleAdd = () => {
-    router.push("/venue-owner/venues/add");
-  };
-
-  const handleDeleteVenue = async (venueId: string) => {
-    if (!window.confirm("Are you sure you want to delete this venue?")) {
-      return;
-    }
-
-    try {
-      setIsDeleting(true);
-      // TODO: Implement delete venue mutation when API is available
-      // await deleteVenue(venueId).unwrap();
-      toast({
-        title: "Venue deleted",
-        description: "The venue has been deleted successfully.",
+    if (venueData) {
+      setEditingVenue({
+        ...venueData,
+        courts: Array.isArray(courts) ? courts : []
       });
-      refetchVenues();
-    } catch (error) {
-      console.error("Error deleting venue:", error);
+      
+      // Debug log to check if we have venue data and courts
+      console.log('Venue data:', venueData);
+      console.log('Courts data in effect:', courts);
+    }
+  }, [venueData, courts]);
+
+  // Handle venue update
+  const handleUpdateVenue = async (data: any) => {
+    if (!venueData?.venueId || !userId) {
       toast({
         title: "Error",
-        description: "Failed to delete venue. Please try again.",
-        variant: "destructive",
+        description: "Missing required information",
+        variant: "destructive"
       });
-    } finally {
-      setIsDeleting(false);
+      return false;
     }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingVenue) return;
-
+    
     try {
-      setIsUpdating(true);
-      const updateData = {
-        venueId: editingVenue.venueId,
-        venueName: editingVenue.name,
-        address: editingVenue.address,
-        cityId: editingVenue.cityId,
-        latitude: editingVenue.latitude || null,
-        longitude: editingVenue.longitude || null,
-        phoneNumber: editingVenue.phoneNumber,
-        email: editingVenue.email,
-        desc: editingVenue.description || "",
-        openingTime: editingVenue.openingTime || null,
-        closingTime: editingVenue.closingTime || null,
-        isActive:
-          editingVenue.isActive !== undefined ? editingVenue.isActive : true,
-      };
-
-      await updateVenue(updateData).unwrap();
-
+      await updateVenueDetails({
+        ...data,
+        venueId: venueData.venueId,
+        userId: userId,
+        isActive: data.isActive ?? venueData.isActive,
+      }).unwrap();
+      
       toast({
-        title: "Venue updated",
-        description: "The venue has been updated successfully.",
+        title: "Success",
+        description: "Venue updated successfully"
       });
-      setShowEditModal(false);
-      refetch();
+      
+      await refetchVenue();
+      return true;
     } catch (error) {
-      console.error("Error updating venue:", error);
+      console.error('Error updating venue:', error);
       toast({
         title: "Error",
         description: "Failed to update venue. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
+      });
+      return false;
+    }
+  };
+  
+  // Handle image upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length || !venueData?.venueId || !userId) return;
+    
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setIsUploading(true);
+    
+    try {
+      await uploadVenueImage({
+        venueId: venueData.venueId,
+        userId: userId,
+        file
+      }).unwrap();
+      
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully"
+      });
+      
+      await refetchVenue();
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive"
       });
     } finally {
-      setIsUpdating(false);
+      setIsUploading(false);
+      e.target.value = ''; // Reset file input
+    }
+  };
+  
+  // Handle image delete
+  const handleDeleteImage = async (imageId: string) => {
+    if (!window.confirm('Are you sure you want to delete this image?')) return;
+    
+    try {
+      await deleteVenueImage({ imageId }).unwrap();
+      toast({
+        title: "Success",
+        description: "Image deleted successfully"
+      });
+      await refetchVenue();
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete image. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
-  const navigateToVenueDetails = (venueId: string) => {
-    router.push(`/venue-owner/venues/${venueId}`);
-  };
-
-  if (isLoadingVenues) return <div>Loading venues...</div>;
-  if (isVenuesError) {
+  // Loading state
+  if (isLoadingVenue) {
+    return <VenueSkeleton />;
+  }
+  
+  // Error state
+  if (isVenueError) {
     return (
-      <div className="rounded-md bg-red-50 p-4">
-        <div className="flex">
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">
-              Error loading venues
-            </h3>
-            <div className="mt-2 text-sm text-red-700">
-              <p>Failed to load venues. Please try again later.</p>
-            </div>
-          </div>
-        </div>
+      <div className="text-center p-8 text-red-600">
+        <p>Error loading venue details</p>
+        <Button 
+          variant="outline" 
+          className="mt-4"
+          onClick={() => refetchVenue()}
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
+  
+  // No venue data
+  if (!venueData) {
+    return (
+      <div className="text-center p-8">
+        <p>No venue found for your account.</p>
+        <Button 
+          variant="outline" 
+          className="mt-4"
+          onClick={() => refetchVenue()}
+        >
+          Refresh
+        </Button>
       </div>
     );
   }
 
-  const renderEditModal = () => (
-    <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Venue</DialogTitle>
-        </DialogHeader>
-        {editingVenue && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="name">Venue Name</Label>
-              <Input
-                id="name"
-                value={editingVenue.name || ""}
-                onChange={(e) =>
-                  setEditingVenue({ ...editingVenue, name: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="address">Address</Label>
-              <Input
-                id="address"
-                value={editingVenue.address || ""}
-                onChange={(e) =>
-                  setEditingVenue({ ...editingVenue, address: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="cityName">City</Label>
-              <Input
-                id="cityName"
-                value={editingVenue.cityName || ""}
-                onChange={(e) =>
-                  setEditingVenue({ ...editingVenue, cityName: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="phoneNumber">Phone Number</Label>
-              <Input
-                id="phoneNumber"
-                type="tel"
-                value={editingVenue.phoneNumber || ""}
-                onChange={(e) =>
-                  setEditingVenue({
-                    ...editingVenue,
-                    phoneNumber: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={editingVenue.email || ""}
-                onChange={(e) =>
-                  setEditingVenue({ ...editingVenue, email: e.target.value })
-                }
-                required
-              />
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowEditModal(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isUpdating}>
-                {isUpdating ? "Saving..." : "Save Changes"}
-              </Button>
-            </DialogFooter>
-          </form>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
+  // Extract data for easier access
+  const {
+    venueName,
+    address,
+    cityName,
+    phoneNumber,
+    email,
+    desc: description,
+    openingTime,
+    closingTime,
+    isActive,
+    venueImage: venueImages = []
+  } = venueData;
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Venue Management</h1>
-        <Button onClick={handleAdd}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Venue
-        </Button>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">{venueName}</h1>
+          <p className="text-muted-foreground">Manage your venue details, courts, and more</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant={isActive ? "default" : "secondary"}>
+            {isActive ? "Active" : "Inactive"}
+          </Badge>
+          <Button
+            variant={isEditing ? "secondary" : "outline"}
+            size="sm"
+            onClick={() => setIsEditing(!isEditing)}
+          >
+            <Edit className="h-4 w-4 mr-2" />
+            {isEditing ? 'Cancel' : 'Edit Venue'}
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {venues.map((venue) => (
-          <Card
-            key={venue.venueId}
-            className="hover:shadow-lg transition-shadow">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="details">Venue Details</TabsTrigger>
+          <TabsTrigger value="courts">Courts</TabsTrigger>
+          {/* Schedule and Bookings tabs removed as per request */}
+        </TabsList>
+
+        <TabsContent value="details" className="space-y-6">
+          {/* Venue Images */}
+          <Card>
             <CardHeader>
-              <CardTitle>{venue.name}</CardTitle>
-              <CardDescription className="flex items-center">
-                <MapPin className="h-4 w-4 mr-1" />
-                {venue.address}
+              <div className="flex items-center justify-between">
+                <CardTitle>Venue Images</CardTitle>
+                <div>
+                  <label className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 cursor-pointer">
+                    <ImageIcon className="h-4 w-4 mr-1" />
+                    Upload Image
+                    <Input 
+                      type="file" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={isUploading}
+                    />
+                  </label>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {venueImages.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {venueImages.map((image: any) => (
+                    <div key={image.id} className="relative group">
+                      <div className="aspect-video rounded-md overflow-hidden bg-gray-100">
+                        <img
+                          src={image.image}
+                          alt={`Venue ${venueName}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      {isEditing && (
+                        <button
+                          onClick={() => handleDeleteImage(image.id)}
+                          className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Delete image"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
+                  <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                  <p className="mt-2">No images uploaded yet</p>
+                </div>
+              )}
+              {isUploading && (
+                <div className="flex items-center justify-center p-4">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary mr-2"></div>
+                  <span>Uploading image...</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Venue Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Venue Information</CardTitle>
+              <CardDescription>
+                Manage your venue details and contact information
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                <p className="text-sm">
-                  <span className="font-medium">Phone:</span> {venue.phoneNumber}
-                </p>
-                <p className="text-sm">
-                  <span className="font-medium">Email:</span> {venue.email}
-                </p>
-                <div className="flex justify-end space-x-2 mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(venue)}>
-                    <Edit className="h-4 w-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDeleteVenue(venue.venueId)}
-                    disabled={isDeleting}>
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    Delete
-                  </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-2">
+                    <MapPin className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="font-medium">Address</p>
+                      {isEditing ? (
+                        <div className="space-y-2">
+                          <Input 
+                            value={editingVenue?.address || ''} 
+                            onChange={(e) => setEditingVenue(prev => ({
+                              ...prev!,
+                              address: e.target.value
+                            }))}
+                            className="mt-1"
+                          />
+                          <div className="flex items-center gap-2">
+                            <Input 
+                              value={editingVenue?.cityName || ''}
+                              onChange={(e) => setEditingVenue(prev => ({
+                                ...prev!,
+                                cityName: e.target.value
+                              }))}
+                              placeholder="City"
+                              className="flex-1"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground">
+                          {address}, {cityName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2">
+                    <Phone className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="font-medium">Phone</p>
+                      {isEditing ? (
+                        <Input 
+                          value={editingVenue?.phoneNumber || ''}
+                          onChange={(e) => setEditingVenue(prev => ({
+                            ...prev!,
+                            phoneNumber: e.target.value
+                          }))}
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-muted-foreground">{phoneNumber}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2">
+                    <Mail className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="font-medium">Email</p>
+                      {isEditing ? (
+                        <Input 
+                          type="email"
+                          value={editingVenue?.email || ''}
+                          onChange={(e) => setEditingVenue(prev => ({
+                            ...prev!,
+                            email: e.target.value
+                          }))}
+                          className="mt-1"
+                        />
+                      ) : (
+                        <p className="text-muted-foreground">{email}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-start gap-2">
+                    <Clock className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="font-medium">Opening Hours</p>
+                      {isEditing ? (
+                        <div className="grid grid-cols-2 gap-2 mt-1">
+                          <div>
+                            <Label htmlFor="openingTime" className="text-xs text-muted-foreground">
+                              Opens at
+                            </Label>
+                            <Input
+                              id="openingTime"
+                              type="time"
+                              value={editingVenue?.openingTime || ''}
+                              onChange={(e) => setEditingVenue(prev => ({
+                                ...prev!,
+                                openingTime: e.target.value
+                              }))}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="closingTime" className="text-xs text-muted-foreground">
+                              Closes at
+                            </Label>
+                            <Input
+                              id="closingTime"
+                              type="time"
+                              value={editingVenue?.closingTime || ''}
+                              onChange={(e) => setEditingVenue(prev => ({
+                                ...prev!,
+                                closingTime: e.target.value
+                              }))}
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground">
+                          {openingTime} - {closingTime}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2">
+                    <div className="h-5 w-5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium">Status</p>
+                        {isEditing ? (
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-muted-foreground">
+                              {editingVenue?.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                            <Switch
+                              checked={editingVenue?.isActive}
+                              onCheckedChange={(checked) => setEditingVenue(prev => ({
+                                ...prev!,
+                                isActive: checked
+                              }))}
+                            />
+                          </div>
+                        ) : (
+                          <Badge variant={isActive ? "default" : "secondary"}>
+                            {isActive ? "Active" : "Inactive"}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2">
+                    <div className="h-5 w-5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="font-medium">Description</p>
+                      {isEditing ? (
+                        <Textarea
+                          value={editingVenue?.desc || ''}
+                          onChange={(e) => setEditingVenue(prev => ({
+                            ...prev!,
+                            desc: e.target.value
+                          }))}
+                          className="mt-1 min-h-[100px]"
+                          placeholder="Add a description for your venue..."
+                        />
+                      ) : description ? (
+                        <p className="text-muted-foreground">{description}</p>
+                      ) : (
+                        <p className="text-muted-foreground italic">No description provided</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {isEditing && (
+                <div className="flex justify-end gap-2 mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsEditing(false);
+                      setEditingVenue(venueData);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      if (editingVenue) {
+                        const success = await handleUpdateVenue(editingVenue);
+                        if (success) {
+                          setIsEditing(false);
+                        }
+                      }
+                    }}
+                    disabled={isUploading}
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
-        ))}
-      </div>
+        </TabsContent>
 
-      {renderEditModal()}
+        <TabsContent value="courts" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Courts</CardTitle>
+                  <CardDescription>
+                    Manage the courts available at {venueName || 'your venue'}
+                  </CardDescription>
+                </div>
+                <Button 
+                  size="sm" 
+                  onClick={() => {
+                    // TODO: Implement add court functionality
+                    toast({
+                      title: "Add Court",
+                      description: "Adding a new court will be available soon.",
+                    });
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Court
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isLoadingCourts ? (
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : isCourtsError ? (
+                <div className="text-center py-8">
+                  <p className="text-red-600 mb-4">Error loading courts. Please try again.</p>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => refetchCourts()}
+                    disabled={isLoadingCourts}
+                  >
+                    Retry
+                  </Button>
+                </div>
+              ) : courts.length === 0 ? (
+                <div className="text-center text-muted-foreground py-12 border-2 border-dashed rounded-lg">
+                  <div className="flex flex-col items-center justify-center">
+                    <Users className="h-12 w-12 text-gray-400 mb-2" />
+                    <h3 className="text-lg font-medium">No courts found</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Get started by adding your first court
+                    </p>
+                    <Button
+                      className="mt-4"
+                      onClick={() => {
+                        // TODO: Implement add court functionality
+                        toast({
+                          title: "Add Court",
+                          description: "Adding a new court will be available soon.",
+                        });
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Court
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {courts.map((court: any) => (
+                    <Card key={court.courtId} className="overflow-hidden hover:shadow-md transition-shadow">
+                      <div className="aspect-video bg-muted/50 relative">
+                        {court.courtImage?.length > 0 ? (
+                          <img 
+                            src={court.courtImage[0]} 
+                            alt={court.courtName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-muted">
+                            <Users className="h-12 w-12 text-muted-foreground" />
+                          </div>
+                        )}
+                        <Badge 
+                          variant={court.isActive ? "default" : "secondary"} 
+                          className="absolute top-2 right-2"
+                        >
+                          {court.isActive ? "Active" : "Inactive"}
+                        </Badge>
+                      </div>
+                      <div className="p-4">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-medium text-lg">{court.courtName}</h3>
+                          <div className="flex items-center space-x-1">
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-2 space-y-1 text-sm">
+                          <div className="flex items-center text-muted-foreground">
+                            <span className="w-24">Category:</span>
+                            <span className="font-medium">{court.courtCategory || 'N/A'}</span>
+                          </div>
+                          <div className="flex items-center text-muted-foreground">
+                            <span className="w-24">Type:</span>
+                            <span className="font-medium">{court.courtType || 'N/A'}</span>
+                          </div>
+                          <div className="flex items-center text-muted-foreground">
+                            <span className="w-24">Rate:</span>
+                            <span className="font-medium">Rs {court.hourlyRate?.toLocaleString() || '0'}/hour</span>
+                          </div>
+                        </div>
+
+                        {court.desc && (
+                          <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                            {court.desc}
+                          </p>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Schedule and Bookings tabs content removed as per request */}
+      </Tabs>
     </div>
   );
 }

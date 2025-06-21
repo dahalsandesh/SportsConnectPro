@@ -121,7 +121,7 @@ export default function VenueOwnerDashboard() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="venues">Venues</TabsTrigger>
+          {/* <TabsTrigger value="venues">Venues</TabsTrigger> */}
           <TabsTrigger value="courts">Courts</TabsTrigger>
           <TabsTrigger value="events">Events</TabsTrigger>
           <TabsTrigger value="media">Media</TabsTrigger>
