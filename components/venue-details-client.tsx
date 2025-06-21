@@ -84,6 +84,12 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
           <TabsTrigger value="booking">Booking</TabsTrigger>
         </TabsList>
         <TabsContent value="info">
+      <div className="mb-4">
+  <MapEmbed 
+    lat={typeof venue.latitude === 'number' ? venue.latitude : 27.7 + Math.random() * 0.2}
+    lng={typeof venue.longitude === 'number' ? venue.longitude : 85.3 + Math.random() * 0.2}
+  />
+</div>
           <div className="mt-4">
             <h2 className="text-xl font-bold mb-2">About</h2>
             <p className="text-muted-foreground mb-4">{venue.description || 'No description available.'}</p>
