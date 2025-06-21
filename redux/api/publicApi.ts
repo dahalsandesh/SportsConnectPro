@@ -94,6 +94,16 @@ const publicApi = baseApi.injectEndpoints({
       }),
       providesTags: (result, error, id) => [{ type: "Courts", id }],
     }),
+    
+    // Create a new booking
+    createBooking: builder.mutation<{ success: boolean; bookingId: string }, { timeSlotIds: string[] }>({
+      query: (body) => ({
+        url: "/web/api/v1/CreateBooking",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: 'TimeSlots', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -112,6 +122,7 @@ export const {
   useGetVenueByIdQuery,
   useGetCourtsQuery,
   useGetCourtByIdQuery,
+  useCreateBookingMutation,
 } = publicApi;
 
 export { publicApi };

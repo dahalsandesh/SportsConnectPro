@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Phone, Mail, Clock, Star, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import MapEmbed from "@/components/map-embed";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BookingCalendar from "@/components/booking-calendar";
 import { useGetVenueByIdQuery } from "@/redux/api/publicApi";
