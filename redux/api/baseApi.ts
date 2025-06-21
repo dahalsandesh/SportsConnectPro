@@ -3,7 +3,7 @@ import type { RootState } from "../store/reducers"
 
 // Get base URL from environment variables with fallback
 export const getBaseUrl = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:8000';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_HOST || 'http://127.0.0.1:8000';
   // Ensure the URL has a protocol and doesn't end with a slash
   let url = baseUrl.trim();
   if (!url.startsWith('http')) {

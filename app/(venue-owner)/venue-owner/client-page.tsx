@@ -307,7 +307,7 @@ export default function VenueOwnerDashboard() {
                     <CardTitle>{court.courtName}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Button className="w-full" asChild>
+                    <Button className="w-full text-white" asChild>
                       <Link
                         href={`/venue-owner/events?courtId=${court.courtId}`}>
                         Manage Events
