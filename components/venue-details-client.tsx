@@ -3,10 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Phone, Mail, Clock, Star, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import MapEmbed from "@/components/map-embed";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import BookingCalendar from "@/components/booking-calendar";
 import { useGetVenueByIdQuery } from "@/redux/api/publicApi";
 import CourtCard from "@/components/court-card";
+import PublicBookingCalendar from "@/components/public-booking-calendar";
+import { useState, useEffect, useMemo } from "react";
 
 export default function VenueDetailsClient({ venueId }: { venueId: string }) {
   const { data: venue, isLoading, isError } = useGetVenueByIdQuery(venueId);
@@ -18,15 +20,36 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
   ];
   const fallbackCourtImage = "/placeholder.svg?height=300&width=400";
 
+  // Extract venue data or use defaults
+  const venueData = venue || {};
+  const venueImages = venueData.venueImages?.length > 0
+    ? venueData.venueImages.map((img: any) => img.image)
+    : fallbackVenueImages;
+  const courts = venueData.courts || [];
+
+  // Initialize state at the top level
+  const [selectedCourtId, setSelectedCourtId] = useState<string>('');
+  
+  // Update selectedCourtId when courts data is available
+  useEffect(() => {
+    if (courts.length > 0) {
+      const firstCourtId = courts[0]?.courtId || courts[0]?.courtID || '';
+      setSelectedCourtId(firstCourtId);
+    }
+  }, [courts]);
+
+  const courtOptions = useMemo(() => 
+    courts.map(court => ({
+      courtId: court.courtId || court.courtID, // Handle both cases
+      name: court.name,
+      sportCategory: court.sportCategory,
+      hourlyRate: court.hourlyRate
+    })),
+    [courts]
+  );
+
   if (isLoading) return <div>Loading venue details...</div>;
   if (isError || !venue) return <div>Failed to load venue details.</div>;
-
-  const venueImages =
-    venue.venueImages && venue.venueImages.length > 0
-      ? venue.venueImages.map((img: any) => img.image)
-      : fallbackVenueImages;
-
-  const courts = venue.courts || [];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -84,6 +107,12 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
           <TabsTrigger value="booking">Booking</TabsTrigger>
         </TabsList>
         <TabsContent value="info">
+      <div className="mb-4">
+  <MapEmbed 
+    lat={typeof venue.latitude === 'number' ? venue.latitude : 27.7 + Math.random() * 0.2}
+    lng={typeof venue.longitude === 'number' ? venue.longitude : 85.3 + Math.random() * 0.2}
+  />
+</div>
           <div className="mt-4">
             <h2 className="text-xl font-bold mb-2">About</h2>
             <p className="text-muted-foreground mb-4">{venue.description || 'No description available.'}</p>
@@ -119,9 +148,32 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
             )}
           </div>
         </TabsContent>
-        <TabsContent value="booking">
-          <div className="mt-4">
-            <BookingCalendar venueId={venueId} courts={courts} />
+        <TabsContent value="booking" className="mt-6">
+          <div className="space-y-6">
+            {courts.length > 1 && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select Court</label>
+                <select
+                  value={selectedCourtId}
+                  onChange={(e) => setSelectedCourtId(e.target.value)}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  {courts.map((court) => {
+                    const courtId = court.courtId || court.courtID;
+                    return (
+                      <option key={courtId} value={courtId}>
+                        {court.name} ({court.sportCategory})
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            )}
+            <PublicBookingCalendar 
+              courts={courtOptions} 
+              defaultCourtId={selectedCourtId}
+              className="mt-4"
+            />
           </div>
         </TabsContent>
       </Tabs>

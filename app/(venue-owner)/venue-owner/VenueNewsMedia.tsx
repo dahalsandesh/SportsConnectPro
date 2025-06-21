@@ -12,7 +12,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Plus, Image, Video, FileText, Edit, Trash2 } from "lucide-react";
+import { Plus, Image, Video, FileText, Edit, Trash2, ChevronDown } from "lucide-react";
+import { useGetSportCategoriesQuery } from "@/redux/api/venue-owner/sportCategoryApi";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+interface SportCategory {
+  sportCategoryId: string;
+  sportCategory: string;
+}
 
 interface VenuePostFormProps {
   initialData?: any;
@@ -20,6 +33,7 @@ interface VenuePostFormProps {
   loading: boolean;
   onCancel: () => void;
   type: "post" | "reel" | "news";
+  categories: SportCategory[];
 }
 
 const VenuePostForm: React.FC<VenuePostFormProps> = ({
@@ -28,12 +42,13 @@ const VenuePostForm: React.FC<VenuePostFormProps> = ({
   loading,
   onCancel,
   type,
+  categories = [],
 }) => {
   const [title, setTitle] = useState(initialData?.title || "");
   const [description, setDescription] = useState(
     initialData?.description || ""
   );
-  const [categoryId, setCategoryId] = useState(initialData?.categoryId || "");
+  const [categoryId, setCategoryId] = useState(initialData?.sportCategoryId || "");
   const [mediaFile, setMediaFile] = useState<File | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,9 +57,9 @@ const VenuePostForm: React.FC<VenuePostFormProps> = ({
     formData.append("title", title);
     formData.append("description", description);
     formData.append("categoryId", categoryId);
-    formData.append("type", type);
-    if (mediaFile) formData.append("mediaFile", mediaFile);
+    if (mediaFile) formData.append("postImage", mediaFile);
     if (initialData?.postId) formData.append("postId", initialData.postId);
+    console.log('Submitting form data:', Object.fromEntries(formData.entries()));
     onSubmit(formData);
   };
 
@@ -69,13 +84,26 @@ const VenuePostForm: React.FC<VenuePostFormProps> = ({
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="category">Category</Label>
-        <Input
-          id="category"
+        <Label htmlFor="sportCategoryId">Sport Category</Label>
+        <Select
           value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
+          onValueChange={setCategoryId}
           required
-        />
+        >
+          <SelectTrigger id="sportCategoryId">
+            <SelectValue placeholder="Select a sport" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories?.map((category) => (
+              <SelectItem 
+                key={category.sportCategoryId} 
+                value={category.sportCategoryId}
+              >
+                {category.sportCategory}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className="space-y-2">
         <Label htmlFor="media">
@@ -103,7 +131,7 @@ const VenuePostForm: React.FC<VenuePostFormProps> = ({
 };
 
 const VenueNewsMedia: React.FC = () => {
-  const { data: posts, isLoading, error, refetch } = useGetVenuePostsQuery();
+  const { data: posts, isLoading, error: postsError, refetch } = useGetVenuePostsQuery();
   const [createVenuePost, { isLoading: isCreating }] =
     useCreateVenuePostMutation();
   const [updateVenuePost, { isLoading: isUpdating }] =
@@ -111,27 +139,47 @@ const VenueNewsMedia: React.FC = () => {
   const [deleteVenuePost, { isLoading: isDeleting }] =
     useDeleteVenuePostMutation();
 
+  const { data: categories = [], isLoading: isLoadingCategories } = useGetSportCategoriesQuery();
   const [showForm, setShowForm] = useState(false);
   const [editingPost, setEditingPost] = useState<any | null>(null);
   const [activeTab, setActiveTab] = useState<"post" | "reel" | "news">("post");
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleCreate = async (form: FormData) => {
-    await createVenuePost(form).unwrap();
-    setShowForm(false);
-    refetch();
+    try {
+      setFormError(null);
+      await createVenuePost(form).unwrap();
+      setShowForm(false);
+      await refetch();
+    } catch (err) {
+      console.error('Error creating post:', err);
+      setFormError('Failed to create post. Please try again.');
+    }
   };
 
   const handleUpdate = async (form: FormData) => {
-    await updateVenuePost(form).unwrap();
-    setShowForm(false);
-    setEditingPost(null);
-    refetch();
+    try {
+      setFormError(null);
+      await updateVenuePost(form).unwrap();
+      setShowForm(false);
+      setEditingPost(null);
+      await refetch();
+    } catch (err) {
+      console.error('Error updating post:', err);
+      setFormError('Failed to update post. Please try again.');
+    }
   };
 
   const handleDelete = async (postId: string) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
-      await deleteVenuePost({ postId }).unwrap();
-      refetch();
+      try {
+        setFormError(null);
+        await deleteVenuePost({ postId }).unwrap();
+        await refetch();
+      } catch (err) {
+        console.error('Error deleting post:', err);
+        setFormError('Failed to delete post. Please try again.');
+      }
     }
   };
 
@@ -149,12 +197,13 @@ const VenueNewsMedia: React.FC = () => {
             <VenuePostForm
               initialData={editingPost}
               onSubmit={editingPost ? handleUpdate : handleCreate}
-              loading={isCreating || isUpdating}
+              loading={editingPost ? isUpdating : isCreating}
               onCancel={() => {
                 setShowForm(false);
                 setEditingPost(null);
               }}
               type={activeTab}
+              categories={categories}
             />
           </CardContent>
         </Card>
@@ -162,7 +211,7 @@ const VenueNewsMedia: React.FC = () => {
     }
 
     if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error loading content.</div>;
+    if (postsError) return <div>Error loading content. Please try again later.</div>;
     if (!posts || posts.length === 0) return <div>No content found.</div>;
 
     return (
@@ -220,6 +269,11 @@ const VenueNewsMedia: React.FC = () => {
 
   return (
     <div className="space-y-4">
+      {(formError || postsError) && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{formError || 'An error occurred while loading content'}</span>
+        </div>
+      )}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Venue News & Media</h2>
         {!showForm && (

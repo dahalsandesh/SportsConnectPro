@@ -23,6 +23,7 @@ export interface LoginResponse {
   fullName: string
   phoneNumber: string
   userType: UserType
+  userId: string
 }
 
 export interface LogoutResponse {

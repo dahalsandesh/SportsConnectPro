@@ -2,6 +2,7 @@ import { baseApi } from "../baseApi";
 import type { ApiResponse, Venue, VenueDetails, UpdateVenueDetailsRequest, VenueImage, VenueDashboardData } from '@/types/api';
 
 export const venueApi = baseApi.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     getVenueDetails: builder.query<VenueDetails, { userId?: string }>({ 
       query: (params = {}) => ({

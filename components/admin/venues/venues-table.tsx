@@ -48,6 +48,7 @@ interface VenuesTableProps {
   isLoading: boolean;
   searchQuery: string;
   filter: "all" | "active" | "inactive";
+  onViewDetails: (venue: Venue) => void;
 }
 
 export function VenuesTable({
@@ -55,6 +56,7 @@ export function VenuesTable({
   isLoading,
   searchQuery,
   filter,
+  onViewDetails,
 }: VenuesTableProps) {
   const { toast } = useToast();
   const [updateVenueStatus] = useUpdateVenueStatusMutation();
@@ -183,10 +185,8 @@ export function VenuesTable({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/admin/venues/${venue.venueID}`}>
-                            <Eye className="mr-2 h-4 w-4" /> View Details
-                          </Link>
+                        <DropdownMenuItem onClick={() => onViewDetails(venue)}>
+                          <Eye className="mr-2 h-4 w-4" /> View Details
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                           <Edit className="mr-2 h-4 w-4" /> Edit

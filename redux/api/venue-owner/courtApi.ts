@@ -2,6 +2,7 @@ import { baseApi } from "../baseApi";
 import type { ApiResponse, Court, CreateCourtRequest, UpdateCourtRequest } from '@/types/api';
 
 export const courtApi = baseApi.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     createCourt: builder.mutation<ApiResponse<null>, CreateCourtRequest>({
       query: (data) => ({
@@ -12,7 +13,21 @@ export const courtApi = baseApi.injectEndpoints({
       invalidatesTags: [{type: "Courts", id: 'LIST'}],
     }),
     getCourts: builder.query<Court[], void>({
-      query: () => "/web/api/v1/venue/GetCourt",
+      query: () => {
+        // Get userId from localStorage
+        let userId = '';
+        if (typeof window !== 'undefined') {
+          const user = localStorage.getItem('user');
+          if (user) {
+            const userData = JSON.parse(user);
+            userId = userData.userId || '';
+          }
+        }
+        return {
+          url: "/web/api/v1/venue/GetCourt",
+          params: { userId }
+        };
+      },
       providesTags: (result) =>
         result
           ? [...result.map(({ courtId }) => ({ type: 'Courts' as const, id: courtId })), { type: 'Courts', id: 'LIST' }]
