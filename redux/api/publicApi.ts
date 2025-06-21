@@ -3,6 +3,7 @@ import type { Post, Reel, Court, Event, TimeSlot } from '@/types/api';
 
 // Create the public API slice
 const publicApi = baseApi.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
 
     // Get public events for homepage

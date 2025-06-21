@@ -178,23 +178,27 @@ export function VenueOwnerSidebarContent() {
                   <span>{openVenueId === venue.venueId ? "-" : "+"}</span>
                 </Button>
                 {openVenueId === venue.venueId && (
-                  <div className="ml-4 mt-1 flex flex-col gap-1">
+                  <div key={`${venue.venueId}-nav`} className="ml-4 mt-1 flex flex-col gap-1">
                     <Link
+                      key={`${venue.venueId}-overview`}
                       href={`/venue-owner/venues/${venue.venueId}`}
                       className="text-xs hover:underline">
                       Overview
                     </Link>
                     <Link
+                      key={`${venue.venueId}-courts`}
                       href={`/venue-owner/venues/${venue.venueId}/courts`}
                       className="text-xs hover:underline">
                       Courts
                     </Link>
                     <Link
+                      key={`${venue.venueId}-events`}
                       href={`/venue-owner/venues/${venue.venueId}/events`}
                       className="text-xs hover:underline">
                       Events
                     </Link>
                     <Link
+                      key={`${venue.venueId}-media`}
                       href={`/venue-owner/venues/${venue.venueId}/media`}
                       className="text-xs hover:underline">
                       Media
