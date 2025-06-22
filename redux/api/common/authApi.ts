@@ -57,30 +57,88 @@ export const authApi = createApi({
       }),
     }),
 
+    // Send OTP for password reset
     sendOtp: builder.mutation<SendOtpResponse, SendOtpRequest>({
       query: (data) => ({
         url: "/send-otp",
         method: "POST",
         body: data,
       }),
+      // Store email in localStorage for later use
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        try {
+          await queryFulfilled;
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('resetPasswordEmail', arg.email);
+          }
+        } catch (error) {
+          // Handle error
+        }
+      },
     }),
 
+    // Verify OTP for password reset
     verifyOtp: builder.mutation<VerifyOtpResponse, VerifyOtpRequest>({
       query: (data) => ({
         url: "/verify-otp",
         method: "POST",
         body: data,
       }),
+      // Store OTP verification status in localStorage
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        try {
+          await queryFulfilled;
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('otpVerified', 'true');
+          }
+        } catch (error) {
+          // Handle error
+        }
+      },
     }),
 
-    changePassword: builder.mutation<ChangePasswordResponse, ChangePasswordRequest>({
-      query: (data) => ({
-        url: "/changepassword",
-        method: "POST",
-        body: data,
-      }),
+    // Change password after OTP verification
+    changePassword: builder.mutation<ChangePasswordResponse, Omit<ChangePasswordRequest, 'email'>>({
+      query: (data) => {
+        // Get email from localStorage - check both possible keys
+        let email = '';
+        if (typeof window !== 'undefined') {
+          email = localStorage.getItem('otpVerifiedEmail') || 
+                 localStorage.getItem('resetPasswordEmail') || 
+                 '';
+        }
+        
+        if (!email) {
+          throw new Error('Email not found. Please restart the password reset process.');
+        }
+        
+        return {
+          url: "/changepassword",
+          method: "POST",
+          body: { 
+            email,
+            password: data.password,
+            password1: data.password1 
+          },
+        };
+      },
+      // Clear stored data after successful password change
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        try {
+          await queryFulfilled;
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('resetPasswordEmail');
+            localStorage.removeItem('otpVerified');
+            localStorage.removeItem('otpVerifiedEmail');
+          }
+        } catch (error) {
+          console.error('Error in changePassword onQueryStarted:', error);
+          throw error;
+        }
+      },
     }),
 
+    // Legacy forgot password endpoint (kept for backward compatibility)
     forgotPassword: builder.mutation<{ message: string }, { email: string }>({
       query: (data) => ({
         url: "/forgot-password",

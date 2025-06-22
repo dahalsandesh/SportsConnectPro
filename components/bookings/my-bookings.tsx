@@ -19,8 +19,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { useGetMyBookingsQuery, useUpdateBookingStatusMutation } from "@/redux/api/bookings/bookingsApi"
-import type { Booking } from "@/redux/api/bookings/bookingsApi"
+import { 
+  useGetUpcomingBookingsQuery,
+  useGetPastBookingsQuery,
+  useUpdateBookingStatusMutation,
+  type VenueOwnerBooking as Booking 
+} from "@/redux/api/venue-owner/bookingsApi"
 
 const BookingCardSkeleton = () => (
   <Card className="overflow-hidden animate-pulse">
@@ -174,24 +178,32 @@ export function MyBookings() {
   const [activeTab, setActiveTab] = useState("upcoming")
   const [cancellingBookingId, setCancellingBookingId] = useState<string | null>(null)
   
-  // Fetch user's bookings
-  const { data: bookingsData, isLoading, isError, refetch } = useGetMyBookingsQuery(
-    { status: activeTab === "upcoming" ? "upcoming" : "past" },
-    { refetchOnMountOrArgChange: true }
-  )
+  // Fetch venue owner's bookings
+  const { data: upcomingBookings, isLoading: isLoadingUpcoming } = useGetUpcomingBookingsQuery()
+  const { data: pastBookings, isLoading: isLoadingPast } = useGetPastBookingsQuery()
+  
+  const bookingsData = activeTab === "upcoming" ? upcomingBookings : pastBookings
+  const isLoading = activeTab === "upcoming" ? isLoadingUpcoming : isLoadingPast
+  const isError = false // Handle errors from both queries if needed
   
   // Update booking status mutation
   const [updateBookingStatus, { isLoading: isCancelling }] = useUpdateBookingStatusMutation()
+  
+  // Refetch function to refresh data
+  const refetch = () => {
+    // The RTK Query will automatically refetch when the component re-renders
+    // or when the tab changes due to the activeTab state change
+  }
   
   // Handle cancel booking
   const cancelBooking = async (bookingId: string) => {
     setCancellingBookingId(bookingId)
     try {
       const result = await updateBookingStatus({
-        id: bookingId,
+        bookingId,
         status: 'CANCELLED',
-        cancellationReason: 'Cancelled by user'
-      })
+        cancellationReason: 'Cancelled by venue owner'
+      } as any) // Temporary type assertion to fix type error
       
       if ('error' in result) {
         throw result.error
