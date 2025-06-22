@@ -55,6 +55,7 @@ export const baseApi = createApi({
     // Core entities
     "UserTypes",
     "Cities",
+    "VenueOwnerBookings",
     "Tickets",
     "PaymentTypes",
     "Statuses",

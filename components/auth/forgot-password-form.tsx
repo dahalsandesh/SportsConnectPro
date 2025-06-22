@@ -12,8 +12,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useForgotPasswordMutation } from "@/redux/api/common/authApi"
+import { useSendOtpMutation } from "@/redux/api/common/authApi"
 import { Loader2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react"
+import { OtpVerificationForm } from "./otp-verification-form"
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -22,11 +23,13 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>
 
 export function ForgotPasswordForm() {
-  const [forgotPassword, { isLoading }] = useForgotPasswordMutation()
+  const [sendOtp, { isLoading }] = useSendOtpMutation()
   const { toast } = useToast()
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
+  const [showOtpForm, setShowOtpForm] = useState(false)
+  const [email, setEmail] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -36,26 +39,52 @@ export function ForgotPasswordForm() {
   })
 
   async function onSubmit(data: ForgotPasswordFormValues) {
-    setError(null)
-    setSuccess(null)
+    if (isSubmitting) return; // Prevent multiple submissions
+    
+    setError(null); // Clear any previous errors
+    setIsSubmitting(true);
+    
     try {
-      const response = await forgotPassword(data).unwrap()
-      setSuccess(response.message || "Password reset instructions have been sent to your email.")
+      const response = await sendOtp({ email: data.email }).unwrap()
+      
+      // Store the email and update state
+      setEmail(data.email);
+      setShowOtpForm(true);
+      
+      // Show success toast
       toast({
-        title: "Email sent",
-        description: "Password reset instructions have been sent to your email.",
+        title: "OTP Sent",
+        description: response?.message || "We've sent a verification code to your email.",
         variant: "success",
-      })
-      form.reset()
+        duration: 3000,
+      });
+      
     } catch (error: any) {
-      const errorMessage = error.data?.message || "Something went wrong. Please try again."
-      setError(errorMessage)
+      console.error("OTP Send Error:", error);
+      const errorMessage = error.data?.message || "Failed to send OTP. Please try again.";
+      
       toast({
-        title: "Request failed",
+        title: "Failed to Send OTP",
         description: errorMessage,
         variant: "destructive",
-      })
+        duration: 3000,
+      });
+    } finally {
+      setIsSubmitting(false);
     }
+  }
+
+  if (showOtpForm) {
+    return (
+      <Card className="w-full max-w-md mx-auto shadow-lg animate-fade-in">
+        <CardContent className="pt-6">
+          <OtpVerificationForm 
+            email={email} 
+            onBack={() => setShowOtpForm(false)} 
+          />
+        </CardContent>
+      </Card>
+    )
   }
 
   return (
@@ -63,26 +92,11 @@ export function ForgotPasswordForm() {
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center">Reset your password</CardTitle>
         <CardDescription className="text-center">
-          Enter your email address and we'll send you a link to reset your password
+          Enter your email address and we'll send you a verification code
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {error && (
-          <Alert
-            variant="destructive"
-            className="dark:bg-destructive/10 dark:border-destructive/30 dark:text-destructive-foreground"
-          >
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {success && (
-          <Alert className="border-success/30 bg-success/10 text-success-foreground">
-            <CheckCircle className="h-4 w-4" />
-            <AlertDescription>{success}</AlertDescription>
-          </Alert>
-        )}
+        {/* Removed error alert since we're using toast notifications */}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -98,8 +112,6 @@ export function ForgotPasswordForm() {
                       placeholder="john.doe@example.com"
                       {...field}
                       className="bg-background dark:border-input/80 focus:dark:border-primary"
-                      disabled={isLoading}
-                      autoComplete="email"
                     />
                   </FormControl>
                   <FormMessage />
@@ -107,25 +119,29 @@ export function ForgotPasswordForm() {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isLoading || isSubmitting}
+            >
+              {isLoading || isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending instructions...
+                  Sending...
                 </>
-              ) : (
-                "Send Reset Instructions"
-              )}
+              ) : "Send Verification Code"}
             </Button>
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex flex-col space-y-4">
-        <Button variant="outline" className="w-full" asChild>
-          <Link href="/login">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to login
-          </Link>
+      <CardFooter className="flex flex-col space-y-2">
+        <Button
+          variant="link"
+          className="font-normal text-muted-foreground"
+          onClick={() => router.push("/auth/login")}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to login
         </Button>
       </CardFooter>
     </Card>
