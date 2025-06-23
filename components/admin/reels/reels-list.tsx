@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Trash2, Pencil } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ReelsListProps {
   onCreate: () => void;
@@ -13,7 +14,8 @@ interface ReelsListProps {
 }
 
 const ReelsList: React.FC<ReelsListProps> = ({ onCreate, onEdit }) => {
-  const { data: reels, isLoading, error } = useGetAdminReelsQuery();
+  const { user } = useAuth();
+  const { data: reels, isLoading, error } = useGetAdminReelsQuery(user?.userId);
   const [deleteReel, { isLoading: isDeleting }] = useDeleteAdminReelMutation();
   const [detailsReelId, setDetailsReelId] = React.useState<string | null>(null);
   const ReelDetails = React.useMemo(() => React.lazy(() => import("./reel-details")), []);
