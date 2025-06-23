@@ -38,13 +38,41 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useGetAdminNotificationsQuery } from "@/redux/api/admin/notificationsApi";
+import { useGetAdminNotificationsQuery, useMarkNotificationAsReadMutation } from "@/redux/api/admin/notificationsApi";
+import { NotificationDetailsModal } from "./notification-details-modal";
 
 export function NotificationBell() {
-  const { data, isLoading, error } = useGetAdminNotificationsQuery();
-  const unreadCount = data?.notifications.filter((n) => !n.isRead).length || 0;
+  const { user } = useAppSelector((state) => state.auth);
+  const [selectedNotificationId, setSelectedNotificationId] = useState<string | null>(null);
+  const { data, isLoading, error, refetch } = useGetAdminNotificationsQuery(
+    user?.userId ? { userId: user.userId } : undefined
+  );
+  const [markAsRead] = useMarkNotificationAsReadMutation();
+  const unreadCount = data?.notifications.filter((n) => !n.IsRead).length || 0;
+
+  const handleNotificationClick = (notificationId: string, isRead: boolean) => {
+    setSelectedNotificationId(notificationId);
+    if (!isRead) {
+      markAsRead({ notificationId });
+    }
+  };
+
+  const handleCloseModal = () => {
+    setSelectedNotificationId(null);
+    refetch(); // Refresh notifications when modal is closed
+  };
+
+  const handleMarkAsRead = async (notificationId: string) => {
+    try {
+      await markAsRead({ notificationId }).unwrap();
+      refetch();
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+    }
+  };
   return (
-    <DropdownMenu>
+    <>
+      <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
@@ -72,28 +100,35 @@ export function NotificationBell() {
         )}
         {data?.notifications.map((notification) => (
           <div
-            key={notification.id}
-            className="flex items-start gap-2 p-3 border-b last:border-b-0 bg-background hover:bg-accent/50 transition-colors">
+            key={notification.NotificationID}
+            className="flex items-start gap-2 p-3 border-b last:border-b-0 bg-background hover:bg-accent/50 transition-colors cursor-pointer"
+            onClick={() => handleNotificationClick(notification.NotificationID, notification.IsRead)}>
             <div className="flex-shrink-0 mt-1">
-              {!notification.isRead ? (
+              {!notification.IsRead ? (
                 <Bell className="h-4 w-4 text-primary" />
               ) : (
                 <Check className="h-4 w-4 text-muted-foreground" />
               )}
             </div>
             <div className="flex-grow">
-              <p className="font-semibold">{notification.title}</p>
+              <p className="font-semibold">Notification</p>
               <p className="text-sm text-muted-foreground">
-                {notification.message}
+                {notification.Message}
               </p>
               <p className="text-xs text-muted-foreground">
-                {new Date(notification.createdAt).toLocaleString()}
+                {new Date(notification.CreatedAt).toLocaleString()}
               </p>
             </div>
           </div>
         ))}
       </DropdownMenuContent>
-    </DropdownMenu>
+      </DropdownMenu>
+      <NotificationDetailsModal
+        notificationId={selectedNotificationId}
+        onOpenChange={(open) => !open && setSelectedNotificationId(null)}
+        onMarkAsRead={handleMarkAsRead}
+      />
+    </>
   );
 }
 
