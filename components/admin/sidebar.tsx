@@ -63,8 +63,8 @@ export const sidebarItems: SidebarItem[] = [
     icon: <CreditCard className="h-5 w-5" />,
   },
   {
-    title: "News & Media",
-    href: "/admin/news",
+    title: "Posts",
+    href: "/admin/posts",
     icon: <Newspaper className="h-5 w-5" />,
   },
   {

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { Eye, Check, X, Loader2 } from "lucide-react";
+import { Eye, Loader2 } from "lucide-react";
 import { useGetAllVenueApplicationsQuery, useUpdateVenueApplicationStatusMutation } from "@/redux/api/admin/venueApplicationsApi";
 import {
   Table,

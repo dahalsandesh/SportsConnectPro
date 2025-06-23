@@ -17,6 +17,15 @@ export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: getBaseUrl(),
+    paramsSerializer: (params) => {
+      const searchParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+      return searchParams.toString();
+    },
     prepareHeaders: (headers, { getState }) => {
       // Get token from state
       let token = (getState() as RootState).auth.token
@@ -29,13 +38,20 @@ export const baseApi = createApi({
         console.log('Using token from Redux state')
       }
 
-      // If token exists, add authorization header
+      // If token exists, add authorization header and user ID
       if (token) {
         const authHeader = `token ${token}`
         headers.set("Authorization", authHeader)
-        console.log('Authorization header set with token')
+        
+        // Get user from state
+        const user = (getState() as RootState).auth.user;
+        if (user?.id) {
+          headers.set('X-User-Id', user.id);
+        }
+        
+        console.log('Authorization header set with token');
       } else {
-        console.warn('No authentication token found')
+        console.warn('No authentication token found');
       }
 
       // Add required headers for CORS and content type
