@@ -11,8 +11,16 @@ export const reelsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [{type: "Reels", id: 'LIST'}],
     }),
-    getAdminReels: builder.query<Reel[], void>({
-      query: () => "/web/api/v1/adminapp/GetReel",
+    getAdminReels: builder.query<Reel[], string | undefined>({
+      query: (userId) => {
+        const query = new URLSearchParams();
+        if (userId) {
+          query.append('userId', userId);
+        }
+        return {
+          url: `/web/api/v1/adminapp/GetReel?${query.toString()}`,
+        };
+      },
       providesTags: (result) =>
         result
           ? [...result.map(({ reelId }) => ({ type: 'Reels' as const, id: reelId })), { type: 'Reels', id: 'LIST' }]
@@ -41,9 +49,11 @@ export const reelsApi = baseApi.injectEndpoints({
   }),
 });
 
+// Export hooks with proper types
 export const {
     useCreateAdminReelMutation,
     useGetAdminReelsQuery,
+    useLazyGetAdminReelsQuery,
     useGetAdminReelDetailsQuery,
     useUpdateAdminReelMutation,
     useDeleteAdminReelMutation,

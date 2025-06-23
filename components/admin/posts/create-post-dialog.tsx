@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateAdminPostMutation } from "@/redux/api/admin/postsApi";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@/hooks/useAuth";
 import * as z from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -91,13 +92,31 @@ export function CreatePostDialog({
     setImagePreview(null);
   };
 
+  const { user } = useAuth();
   const [createAdminPost, { isLoading: isCreating }] = useCreateAdminPostMutation();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!user?.userId) {
+      toast({
+        title: "Error",
+        description: "User not authenticated",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const formData = new FormData();
       
       // Append text fields with proper encoding
+      formData.append('title', values.title);
+      formData.append('description', values.description);
+      formData.append('category', values.categoryId);
+      
+      // Append image if selected
+      if (selectedImage) {
+        formData.append('postImage', selectedImage);
+      }
       formData.append("title", values.title);
       formData.append("description", values.description);
       formData.append("categoryId", values.categoryId);
