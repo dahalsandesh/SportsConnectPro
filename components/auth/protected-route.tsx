@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAppSelector } from "@/hooks/redux"
@@ -24,9 +23,14 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
       router.replace("/login")
       return
     }
-    if (!loading && isAuthenticated && requiredRole) {
+
+    if (!loading && isAuthenticated && requiredRole && user) {
       const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole]
+
+      // Check if user has the required role
       if (!roles.includes(user.userType)) {
+        console.log("User type:", user.userType, "Required roles:", roles)
+
         // Redirect based on user type
         switch (user.userType) {
           case UserType.Admin:
@@ -45,7 +49,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     }
   }, [isAuthenticated, loading, router, user, requiredRole])
 
-  // Always render something (never return null), so SSR and client match
+  // Show loading state
   if (loading || !isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -57,14 +61,17 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     )
   }
 
-  // If user is authenticated but doesn't have the required role, show nothing (could also show an unauthorized message)
-  if (requiredRole) {
+  // If user is authenticated but doesn't have the required role, show unauthorized message
+  if (requiredRole && user) {
     const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole]
     if (!roles.includes(user.userType)) {
       return (
         <div className="flex flex-col items-center justify-center min-h-screen text-red-500">
           <h2 className="text-2xl font-bold mb-2">Unauthorized</h2>
           <p>You do not have permission to access this page.</p>
+          <p className="text-sm text-gray-500 mt-2">
+            Your role: {user.userType}, Required: {roles.join(", ")}
+          </p>
         </div>
       )
     }
