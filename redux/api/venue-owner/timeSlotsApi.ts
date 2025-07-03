@@ -121,6 +121,28 @@ export const timeSlotsApi = baseApi.injectEndpoints({
       ],
     }),
 
+    // Update time slot - this was missing
+    updateTimeSlot: builder.mutation<
+      ApiResponse<null>,
+      {
+        timeSlotId: string
+        startTime: string
+        endTime: string
+        isActive: boolean
+        userId: string
+      }
+    >({
+      query: ({ timeSlotId, startTime, endTime, isActive, userId }) => ({
+        url: "/web/api/v1/venue/UpdateTimeSlot",
+        method: "POST",
+        body: { timeSlotId, startTime, endTime, isActive, userId },
+      }),
+      invalidatesTags: (result, error, { timeSlotId }) => [
+        { type: "TimeSlots", id: timeSlotId },
+        { type: "TimeSlots", id: "LIST" },
+      ],
+    }),
+
     // Get available time slots for a court
     getAvailableTimeSlots: builder.query<
       ITimeSlot[],
@@ -155,6 +177,7 @@ export const {
   useGetTicketByIdQuery,
   useCreateTicketsMutation,
   useUpdateTicketStatusMutation,
+  useUpdateTimeSlotMutation, // This was missing
   useGetAvailableTimeSlotsQuery,
   useLazyGetAvailableTimeSlotsQuery,
 } = timeSlotsApi
