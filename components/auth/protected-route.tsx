@@ -1,27 +1,26 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAppSelector } from "@/hooks/redux"
 import { UserType } from "@/types/auth"
+import { Loader2 } from "lucide-react"
 
 interface ProtectedRouteProps {
   children: React.ReactNode
-  requiredRole?: UserType
-  redirectTo?: string
+  requiredRole?: UserType | UserType[]
 }
 
-export default function ProtectedRoute({ children, requiredRole, redirectTo }: ProtectedRouteProps) {
+export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
+  const { isAuthenticated, user, loading } = useAppSelector((state) => state.auth)
   const router = useRouter()
-  const { user, isAuthenticated, isLoading } = useAppSelector((state) => state.auth)
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null)
+  const [isChecking, setIsChecking] = useState(true)
 
   useEffect(() => {
     console.log("ProtectedRoute - Auth state:", {
       isAuthenticated,
-      isLoading,
+      loading,
       user: user
         ? {
             id: user.id,
@@ -32,88 +31,98 @@ export default function ProtectedRoute({ children, requiredRole, redirectTo }: P
       requiredRole,
     })
 
-    // Still loading authentication state
-    if (isLoading) {
-      setIsAuthorized(null)
+    // Wait for auth to finish loading
+    if (loading) {
       return
     }
 
-    // Not authenticated
+    setIsChecking(false)
+
+    // Not authenticated - redirect to login
     if (!isAuthenticated || !user) {
       console.log("ProtectedRoute - User not authenticated, redirecting to login")
-      router.push("/login")
-      setIsAuthorized(false)
+      router.replace("/login")
       return
     }
 
-    // No specific role required, just need to be authenticated
+    // No specific role required - user just needs to be authenticated
     if (!requiredRole) {
-      setIsAuthorized(true)
       return
     }
 
     // Check if user has required role
-    const hasRequiredRole = user.userType === requiredRole
+    const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole]
+    const hasRequiredRole = roles.includes(user.userType)
+
     console.log("ProtectedRoute - Role check:", {
       userType: user.userType,
-      requiredRole,
+      requiredRoles: roles,
       hasRequiredRole,
     })
 
     if (!hasRequiredRole) {
-      console.log("ProtectedRoute - User does not have required role")
+      console.log("ProtectedRoute - User does not have required role, redirecting...")
 
-      // Redirect based on user type if no custom redirect specified
-      if (!redirectTo) {
-        switch (user.userType) {
-          case UserType.Admin:
-            router.push("/admin")
-            break
-          case UserType.VenueUsers:
-            router.push("/venue-owner")
-            break
-          case UserType.NormalUsers:
-            router.push("/dashboard")
-            break
-          default:
-            router.push("/login")
-        }
-      } else {
-        router.push(redirectTo)
+      // Redirect based on user type
+      switch (user.userType) {
+        case UserType.Admin:
+          router.replace("/admin")
+          break
+        case UserType.VenueUsers:
+          router.replace("/venue-owner")
+          break
+        case UserType.SuperUsers:
+          window.location.href = "http://localhost:8000/admin"
+          break
+        default:
+          router.replace("/dashboard")
       }
-
-      setIsAuthorized(false)
-      return
     }
-
-    setIsAuthorized(true)
-  }, [isAuthenticated, isLoading, user, requiredRole, router, redirectTo])
+  }, [isAuthenticated, loading, user, requiredRole, router])
 
   // Show loading while checking authentication
-  if (isLoading || isAuthorized === null) {
+  if (loading || isChecking) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
     )
   }
 
-  // Show unauthorized message if user doesn't have access
-  if (!isAuthorized) {
+  // Not authenticated
+  if (!isAuthenticated || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Unauthorized</h1>
-          <p className="text-gray-600 mb-4">You do not have permission to access this page.</p>
-          {user && (
-            <div className="text-sm text-gray-500">
-              <p>Your role: {user.userType}</p>
-              <p>Required role: {requiredRole}</p>
-            </div>
-          )}
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Redirecting to login...</p>
         </div>
       </div>
     )
+  }
+
+  // Check role authorization
+  if (requiredRole) {
+    const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole]
+    if (!roles.includes(user.userType)) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen text-red-500">
+          <h2 className="text-2xl font-bold mb-2">Unauthorized</h2>
+          <p className="mb-4">You do not have permission to access this page.</p>
+          <div className="text-sm text-gray-500 text-center">
+            <p>
+              Your role: <span className="font-mono">{user.userType}</span>
+            </p>
+            <p>
+              Required role(s): <span className="font-mono">{roles.join(", ")}</span>
+            </p>
+          </div>
+        </div>
+      )
+    }
   }
 
   return <>{children}</>

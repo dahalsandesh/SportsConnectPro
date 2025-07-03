@@ -6,7 +6,7 @@ import { setCredentials, logout } from "@/redux/features/authSlice"
 
 export const useAuth = () => {
   const dispatch = useAppDispatch()
-  const { user, token, isAuthenticated, isLoading } = useAppSelector((state) => state.auth)
+  const { user, token, isAuthenticated, loading } = useAppSelector((state) => state.auth)
 
   useEffect(() => {
     // Check for stored auth data on mount
@@ -20,8 +20,8 @@ export const useAuth = () => {
           token: storedToken.substring(0, 20) + "...",
           user: {
             id: parsedUser.id,
-            userType: parsedUser.userType,
             email: parsedUser.email,
+            userType: parsedUser.userType,
           },
         })
 
@@ -41,25 +41,25 @@ export const useAuth = () => {
     }
   }, [dispatch])
 
-  const login = (userData: any, token: string) => {
+  const login = (userData: any, authToken: string) => {
     console.log("useAuth - Login called:", {
       user: {
         id: userData.id,
-        userType: userData.userType,
         email: userData.email,
+        userType: userData.userType,
       },
-      token: token.substring(0, 20) + "...",
+      token: authToken.substring(0, 20) + "...",
     })
 
     // Store in localStorage
-    localStorage.setItem("token", token)
+    localStorage.setItem("token", authToken)
     localStorage.setItem("user", JSON.stringify(userData))
 
     // Update Redux state
     dispatch(
       setCredentials({
         user: userData,
-        token,
+        token: authToken,
       }),
     )
   }
@@ -79,7 +79,7 @@ export const useAuth = () => {
     user,
     token,
     isAuthenticated,
-    isLoading,
+    loading,
     login,
     logout: logoutUser,
   }

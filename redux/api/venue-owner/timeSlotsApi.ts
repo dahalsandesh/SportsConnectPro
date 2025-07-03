@@ -1,185 +1,77 @@
-import { baseApi } from "../baseApi"
-import type { ApiResponse, VenueTicket, TimeSlot as ITimeSlot } from "@/types/api"
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 
-export const timeSlotsApi = baseApi.injectEndpoints({
-  overrideExisting: true,
+export interface TimeSlot {
+  id: number
+  startTime: string
+  endTime: string
+  isAvailable: boolean
+  price: number
+  courtId: number
+  date: string
+}
+
+export interface CreateTimeSlotRequest {
+  startTime: string
+  endTime: string
+  price: number
+  courtId: number
+  date: string
+}
+
+export interface UpdateTimeSlotRequest {
+  id: number
+  startTime?: string
+  endTime?: string
+  price?: number
+  isAvailable?: boolean
+}
+
+export const timeSlotsApi = createApi({
+  reducerPath: "timeSlotsApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/api/venue-owner/time-slots`,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as any).auth.token
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`)
+      }
+      return headers
+    },
+  }),
+  tagTypes: ["TimeSlot"],
   endpoints: (builder) => ({
-    // Get time slots for a court and date
-    getTimeSlots: builder.query<
-      ITimeSlot[],
-      {
-        courtId: string
-        date: string
-        userId: string
-      }
-    >({
-      query: ({ courtId, date, userId }) => ({
-        url: "/web/api/v1/venue/GetTimeSlots",
-        method: "GET",
-        params: { courtId, date, userId },
+    getTimeSlots: builder.query<TimeSlot[], { courtId?: number; date?: string }>({
+      query: (params) => ({
+        url: "",
+        params,
       }),
-      providesTags: (result, error, { courtId, date }) => [
-        { type: "TimeSlots" as const, id: `${courtId}-${date}` },
-        { type: "TimeSlots" as const, id: "LIST" },
-      ],
+      providesTags: ["TimeSlot"],
     }),
-
-    // Get tickets by court and date
-    getTickets: builder.query<VenueTicket[], { courtId: string; date: string; userId: string }>({
-      query: ({ courtId, date, userId }) => ({
-        url: "/web/api/v1/venue/GetTicket",
-        method: "GET",
-        params: { courtId, date, userId },
-      }),
-      providesTags: (result, error, { courtId, date }) => {
-        const tags = [{ type: "Tickets" as const, id: "LIST" }]
-
-        if (error || !result) {
-          return tags
-        }
-
-        const resultArray = Array.isArray(result) ? result : [result]
-
-        const ticketTags = resultArray
-          .filter((ticket): ticket is VenueTicket => Boolean(ticket))
-          .map((ticket) => ({
-            type: "Tickets" as const,
-            id: ticket.id || `${courtId}-${date}-${ticket.startTime}`,
-          }))
-
-        return [...ticketTags, ...tags]
-      },
-    }),
-
-    // Get ticket by ID
-    getTicketById: builder.query<VenueTicket, { ticketId: string; userId: string }>({
-      query: ({ ticketId, userId }) => ({
-        url: "/web/api/v1/venue/GetTicketById",
-        method: "GET",
-        params: { ticketId, userId },
-      }),
-      providesTags: (result, error, { ticketId }) => [
-        { type: "Tickets" as const, id: ticketId },
-        { type: "Tickets" as const, id: "LIST" },
-      ],
-    }),
-
-    // Create tickets
-    createTickets: builder.mutation<
-      ApiResponse<null> | VenueTicket[],
-      {
-        courtId: string
-        date: string
-        userId: string
-        ticketList: Array<{
-          startTime: string
-          endTime: string
-          specialPrice: number | null
-        }>
-      }
-    >({
-      query: (data) => {
-        console.log("Sending createTickets request:", JSON.stringify(data, null, 2))
-        return {
-          url: "/web/api/v1/venue/CreateTicket",
-          method: "POST",
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      },
-      transformErrorResponse: (response, meta, arg) => {
-        console.error("Create tickets error:", {
-          status: response.status,
-          data: response.data,
-          meta,
-          arg,
-        })
-        return response
-      },
-      invalidatesTags: ["Tickets"],
-    }),
-
-    // Update ticket status
-    updateTicketStatus: builder.mutation<
-      ApiResponse<null>,
-      {
-        ticketId: string
-        isActive: boolean
-        userId: string
-      }
-    >({
-      query: ({ ticketId, isActive, userId }) => ({
-        url: "/web/api/v1/venue/UpdateTicketStatus",
+    createTimeSlot: builder.mutation<TimeSlot, CreateTimeSlotRequest>({
+      query: (data) => ({
+        url: "",
         method: "POST",
-        body: { ticketId, isActive, userId },
+        body: data,
       }),
-      invalidatesTags: (result, error, { ticketId }) => [
-        { type: "Tickets", id: ticketId },
-        { type: "Tickets", id: "LIST" },
-      ],
+      invalidatesTags: ["TimeSlot"],
     }),
-
-    // Update time slot - this was missing
-    updateTimeSlot: builder.mutation<
-      ApiResponse<null>,
-      {
-        timeSlotId: string
-        startTime: string
-        endTime: string
-        isActive: boolean
-        userId: string
-      }
-    >({
-      query: ({ timeSlotId, startTime, endTime, isActive, userId }) => ({
-        url: "/web/api/v1/venue/UpdateTimeSlot",
-        method: "POST",
-        body: { timeSlotId, startTime, endTime, isActive, userId },
+    updateTimeSlot: builder.mutation<TimeSlot, UpdateTimeSlotRequest>({
+      query: ({ id, ...data }) => ({
+        url: `/${id}`,
+        method: "PUT",
+        body: data,
       }),
-      invalidatesTags: (result, error, { timeSlotId }) => [
-        { type: "TimeSlots", id: timeSlotId },
-        { type: "TimeSlots", id: "LIST" },
-      ],
+      invalidatesTags: ["TimeSlot"],
     }),
-
-    // Get available time slots for a court
-    getAvailableTimeSlots: builder.query<
-      ITimeSlot[],
-      {
-        courtId: string
-        date: string
-        userId: string
-        duration?: number
-      }
-    >({
-      query: ({ courtId, date, userId, duration }) => ({
-        url: "/web/api/v1/venue/GetAvailableTimeSlots",
-        method: "GET",
-        params: {
-          courtId,
-          date,
-          userId,
-          duration: duration?.toString(),
-        },
+    deleteTimeSlot: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `/${id}`,
+        method: "DELETE",
       }),
-      providesTags: (result, error, { courtId, date }) => [
-        { type: "TimeSlots" as const, id: `${courtId}-${date}` },
-        { type: "TimeSlots" as const, id: "LIST" },
-      ],
+      invalidatesTags: ["TimeSlot"],
     }),
   }),
 })
 
-export const {
-  useGetTimeSlotsQuery,
-  useGetTicketsQuery,
-  useGetTicketByIdQuery,
-  useCreateTicketsMutation,
-  useUpdateTicketStatusMutation,
-  useUpdateTimeSlotMutation, // This was missing
-  useGetAvailableTimeSlotsQuery,
-  useLazyGetAvailableTimeSlotsQuery,
-} = timeSlotsApi
-
-export const timeSlotsEndpoints = timeSlotsApi.endpoints
+export const { useGetTimeSlotsQuery, useCreateTimeSlotMutation, useUpdateTimeSlotMutation, useDeleteTimeSlotMutation } =
+  timeSlotsApi
