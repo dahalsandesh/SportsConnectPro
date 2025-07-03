@@ -26,4 +26,4 @@ function PaymentsSkeleton() {
       </div>
     </div>
   );
-} 
+}

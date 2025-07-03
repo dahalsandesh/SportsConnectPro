@@ -1,5 +1,5 @@
-import { baseApi } from "../baseApi";
-import type { ApiResponse, Post, UpdatePostRequest } from '@/types/api';
+import { baseApi } from "../baseApi"
+import type { ApiResponse, Post } from "@/types/api"
 
 export const postApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,21 +9,24 @@ export const postApi = baseApi.injectEndpoints({
         method: "POST",
         body: formData,
       }),
-      invalidatesTags: [{type: "Posts", id: 'LIST'}],
+      invalidatesTags: [{ type: "Posts", id: "LIST" }],
     }),
-    getVenuePosts: builder.query<Post[], void>({
-      query: () => "/web/api/v1/venue/GetPost",
+    getVenuePosts: builder.query<Post[], { userId: string }>({
+      query: ({ userId }) => ({
+        url: "/web/api/v1/venue/GetPost",
+        params: { userId },
+      }),
       providesTags: (result) =>
         result
-          ? [...result.map(({ postID }) => ({ type: 'Posts' as const, id: postID })), { type: 'Posts', id: 'LIST' }]
-          : [{ type: 'Posts', id: 'LIST' }],
+          ? [...result.map(({ postID }) => ({ type: "Posts" as const, id: postID })), { type: "Posts", id: "LIST" }]
+          : [{ type: "Posts", id: "LIST" }],
     }),
-    getVenuePostDetails: builder.query<Post, string>({
-      query: (postId) => ({
+    getVenuePostDetails: builder.query<Post, { postId: string; userId: string }>({
+      query: ({ postId, userId }) => ({
         url: "/web/api/v1/venue/GetPostDetails",
-        params: { postId },
+        params: { postId, userId },
       }),
-      providesTags: (result, error, id) => [{ type: "Posts", id }],
+      providesTags: (result, error, { postId }) => [{ type: "Posts", id: postId }],
     }),
     updateVenuePost: builder.mutation<ApiResponse<null>, FormData>({
       query: (formData) => ({
@@ -31,23 +34,26 @@ export const postApi = baseApi.injectEndpoints({
         method: "POST",
         body: formData,
       }),
-      invalidatesTags: (result, error, formData) => [{ type: 'Posts', id: formData.get('postId') as string }],
+      invalidatesTags: (result, error, formData) => [{ type: "Posts", id: formData.get("postId") as string }],
     }),
-    deleteVenuePost: builder.mutation<ApiResponse<null>, { postId: string }>({
-      query: ({ postId }) => ({
+    deleteVenuePost: builder.mutation<ApiResponse<null>, { postId: string; userId: string }>({
+      query: ({ postId, userId }) => ({
         url: "/web/api/v1/venue/DelPost",
         method: "POST",
-        body: { postId },
+        body: { postId, userId },
       }),
-      invalidatesTags: (result, error, { postId }) => [{ type: 'Posts', id: postId }, {type: 'Posts', id: 'LIST'}],
+      invalidatesTags: (result, error, { postId }) => [
+        { type: "Posts", id: postId },
+        { type: "Posts", id: "LIST" },
+      ],
     }),
   }),
-});
+})
 
 export const {
-    useCreateVenuePostMutation,
-    useGetVenuePostsQuery,
-    useGetVenuePostDetailsQuery,
-    useUpdateVenuePostMutation,
-    useDeleteVenuePostMutation,
-} = postApi;
+  useCreateVenuePostMutation,
+  useGetVenuePostsQuery,
+  useGetVenuePostDetailsQuery,
+  useUpdateVenuePostMutation,
+  useDeleteVenuePostMutation,
+} = postApi

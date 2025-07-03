@@ -47,4 +47,4 @@ export const {
   useCreateEventMutation,
   useUpdateEventMutation,
   useDeleteEventMutation,
-} = adminEventsApi; 
+} = adminEventsApi;

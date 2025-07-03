@@ -14,4 +14,4 @@ export const adminBookingsApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetAllBookingsQuery } = adminBookingsApi; 
+export const { useGetAllBookingsQuery } = adminBookingsApi;

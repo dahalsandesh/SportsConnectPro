@@ -1,95 +1,109 @@
-import { baseApi } from "../baseApi";
-import type { ApiResponse, Venue, VenueDetails, UpdateVenueDetailsRequest, VenueImage, VenueDashboardData, City } from '@/types/api';
+import { baseApi } from "../baseApi"
+import type {
+  ApiResponse,
+  VenueDetails,
+  UpdateVenueDetailsRequest,
+  VenueImage,
+  VenueDashboardData,
+  City,
+} from "@/types/api"
 
 export const venueApi = baseApi.injectEndpoints({
   overrideExisting: true,
   endpoints: (builder) => ({
-    getVenueDetails: builder.query<VenueDetails, { userId: string }>({ 
+    getVenueDetails: builder.query<VenueDetails, { userId: string }>({
       query: ({ userId }) => {
         if (!userId) {
-          throw new Error('User ID is required to fetch venue details');
+          throw new Error("User ID is required to fetch venue details")
         }
         return {
           url: "/web/api/v1/venue/GetVenueDetails",
-          method: 'GET',
+          method: "GET",
           params: { userId },
           headers: {
-            'Accept': 'application/json',
+            Accept: "application/json",
           },
-        };
+        }
       },
-      providesTags: (result) => 
-        result ? [{ type: 'Venues' as const, id: result.venueId }] : ['Venues'],
+      providesTags: (result) => (result ? [{ type: "Venues" as const, id: result.venueId }] : ["Venues"]),
     }),
-    updateVenueDetails: builder.mutation<ApiResponse<null>, UpdateVenueDetailsRequest>({ 
+    updateVenueDetails: builder.mutation<ApiResponse<null>, UpdateVenueDetailsRequest>({
       query: (data) => {
-        const formData = new FormData();
-        
+        const formData = new FormData()
+
         // Append all fields to FormData
         Object.entries(data).forEach(([key, value]) => {
           if (value !== null && value !== undefined) {
-            formData.append(key, String(value));
+            formData.append(key, String(value))
           }
-        });
-        
+        })
+
         return {
-          url: '/web/api/v1/venue/UpdateVenueDetails',
-          method: 'POST',
+          url: "/web/api/v1/venue/UpdateVenueDetails",
+          method: "POST",
           body: formData,
           headers: {
-            'Accept': 'application/json',
+            Accept: "application/json",
           },
-        };
+        }
       },
       invalidatesTags: (result, error, { venueId }) => [
-        { type: 'Venues', id: venueId },
-        { type: 'Venues', id: 'LIST' },
-        { type: 'VenueImages', id: venueId },
-        { type: 'VenueImages', id: 'LIST' },
+        { type: "Venues", id: venueId },
+        { type: "Venues", id: "LIST" },
+        { type: "VenueImages", id: venueId },
+        { type: "VenueImages", id: "LIST" },
       ],
     }),
-    uploadVenueImage: builder.mutation<ApiResponse<{ imageUrl: string }>, { venueId: string; file: File }>({ 
-      query: ({ venueId, file }) => {
-        const formData = new FormData();
-        formData.append('venueId', venueId);
-        formData.append('image', file);
-        
+    uploadVenueImage: builder.mutation<
+      ApiResponse<{ imageUrl: string }>,
+      { venueId: string; file: File; userId: string }
+    >({
+      query: ({ venueId, file, userId }) => {
+        const formData = new FormData()
+        formData.append("venueId", venueId)
+        formData.append("userId", userId)
+        formData.append("image", file)
+
         return {
-          url: '/web/api/v1/venue/UploadVenueImage',
-          method: 'POST',
+          url: "/web/api/v1/venue/UploadVenueImage",
+          method: "POST",
           body: formData,
           headers: {
-            'Accept': 'application/json',
+            Accept: "application/json",
           },
-        };
+        }
       },
       invalidatesTags: (result, error, { venueId }) => [
-        { type: 'Venues', id: venueId },
-        { type: 'VenueImages', id: 'LIST' },
-        { type: 'VenueImages', id: venueId },
+        { type: "Venues", id: venueId },
+        { type: "VenueImages", id: "LIST" },
+        { type: "VenueImages", id: venueId },
       ],
     }),
-    deleteVenueImage: builder.mutation<ApiResponse<null>, { imageId: string }>({
-      query: ({ imageId }) => {
-        const formData = new FormData();
-        formData.append('imageId', imageId);
-        
+    deleteVenueImage: builder.mutation<ApiResponse<null>, { imageId: string; userId: string }>({
+      query: ({ imageId, userId }) => {
+        const formData = new FormData()
+        formData.append("imageId", imageId)
+        formData.append("userId", userId)
+
         return {
-          url: '/web/api/v1/venue/DeleteVenueImage',
-          method: 'POST',
+          url: "/web/api/v1/venue/DeleteVenueImage",
+          method: "POST",
           body: formData,
           headers: {
-            'Accept': 'application/json',
+            Accept: "application/json",
           },
-        };
+        }
       },
       invalidatesTags: (result, error, { imageId }) => [
-        { type: 'VenueImages', id: imageId },
-        { type: 'Venues', id: 'LIST' },
+        { type: "VenueImages", id: imageId },
+        { type: "Venues", id: "LIST" },
       ],
     }),
-    getVenueDashboardData: builder.query<VenueDashboardData, void>({ 
-      query: () => "/web/api/v1/venue/GetDashboardData",
+    getVenueDashboardData: builder.query<VenueDashboardData, { userId: string }>({
+      query: ({ userId }) => ({
+        url: "/web/api/v1/venue/GetDashboardData",
+        params: { userId },
+      }),
       providesTags: ["Dashboard"],
     }),
     getVenues: builder.query<VenueDetails[], { userId: string }>({
@@ -98,57 +112,53 @@ export const venueApi = baseApi.injectEndpoints({
         params: { userId },
       }),
       providesTags: (result) => {
-        // If result is not an array, return the basic tag
         if (!Array.isArray(result)) {
-          return [{ type: 'Venues' as const, id: 'LIST' }];
+          return [{ type: "Venues" as const, id: "LIST" }]
         }
-        
-        // Map over the result and include both individual and list tags
+
         const venueTags = result
-          .filter(venue => venue?.venueId) // Filter out any invalid venues
-          .map(venue => ({
-            type: 'Venues' as const,
-            id: venue.venueId
-          }));
-          
-        return [...venueTags, { type: 'Venues' as const, id: 'LIST' }];
+          .filter((venue) => venue?.venueId)
+          .map((venue) => ({
+            type: "Venues" as const,
+            id: venue.venueId,
+          }))
+
+        return [...venueTags, { type: "Venues" as const, id: "LIST" }]
       },
     }),
-    getVenueImages: builder.query<VenueImage[], { venueId: string }>({
-      query: ({ venueId }) => ({
+    getVenueImages: builder.query<VenueImage[], { venueId: string; userId: string }>({
+      query: ({ venueId, userId }) => ({
         url: `/web/api/v1/venue/GetVenueImages`,
-        params: { venueId },
+        params: { venueId, userId },
       }),
       providesTags: (result) => {
-        // If result is not an array, return the basic tag
         if (!Array.isArray(result)) {
-          return [{ type: 'VenueImages' as const, id: 'LIST' }];
+          return [{ type: "VenueImages" as const, id: "LIST" }]
         }
-        
-        // Map over the result and include both individual and list tags
+
         const imageTags = result
-          .filter(image => image?.imageId) // Filter out any invalid images
-          .map(image => ({
-            type: 'VenueImages' as const,
-            id: image.imageId
-          }));
-          
-        return [...imageTags, { type: 'VenueImages' as const, id: 'LIST' }];
+          .filter((image) => image?.imageId)
+          .map((image) => ({
+            type: "VenueImages" as const,
+            id: image.imageId,
+          }))
+
+        return [...imageTags, { type: "VenueImages" as const, id: "LIST" }]
       },
     }),
   }),
-});
+})
 
 export const {
-    useGetVenueDetailsQuery,
-    useUpdateVenueDetailsMutation,
-    useUploadVenueImageMutation,
-    useDeleteVenueImageMutation,
-    useGetVenueDashboardDataQuery,
-    useGetVenuesQuery,
-    useGetVenueImagesQuery,
-    useLazyGetVenueImagesQuery,
-} = venueApi;
+  useGetVenueDetailsQuery,
+  useUpdateVenueDetailsMutation,
+  useUploadVenueImageMutation,
+  useDeleteVenueImageMutation,
+  useGetVenueDashboardDataQuery,
+  useGetVenuesQuery,
+  useGetVenueImagesQuery,
+  useLazyGetVenueImagesQuery,
+} = venueApi
 
 // Add cities API endpoint
 export const citiesApi = baseApi.injectEndpoints({
@@ -156,27 +166,25 @@ export const citiesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCities: builder.query<City[], void>({
       query: () => ({
-        url: '/web/api/v1/venue/GetAllCities',
-        method: 'GET',
+        url: "/web/api/v1/venue/GetAllCities",
+        method: "GET",
       }),
       providesTags: (result) => {
-        // If result is not an array, return the basic tag
         if (!Array.isArray(result)) {
-          return [{ type: 'Cities' as const, id: 'LIST' }];
+          return [{ type: "Cities" as const, id: "LIST" }]
         }
-        
-        // Map over the result and include both individual and list tags
+
         const cityTags = result
-          .filter(city => city?.id) // Filter out any invalid cities
-          .map(city => ({
-            type: 'Cities' as const,
-            id: city.id
-          }));
-          
-        return [...cityTags, { type: 'Cities' as const, id: 'LIST' }];
+          .filter((city) => city?.id)
+          .map((city) => ({
+            type: "Cities" as const,
+            id: city.id,
+          }))
+
+        return [...cityTags, { type: "Cities" as const, id: "LIST" }]
       },
     }),
   }),
-});
+})
 
-export const { useGetCitiesQuery } = citiesApi;
+export const { useGetCitiesQuery } = citiesApi
