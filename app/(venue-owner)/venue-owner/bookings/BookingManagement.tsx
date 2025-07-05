@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useGetVenueBookingsQuery } from "@/redux/api/venue-owner/bookingApi";
+import { useGetVenueBookingsQuery, useUpdateVenueBookingStatusMutation } from "@/redux/api/venue-owner/bookingApi";
 import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, User, Check, X } from "lucide-react";
@@ -26,6 +27,23 @@ export default function BookingManagement() {
 
   // Get courts for selection
   const { data: courts = [], isLoading: isLoadingCourts } = useGetCourtsQuery();
+  
+  // Status update mutation
+  const [updateStatus, { isLoading: isUpdating }] = useUpdateVenueBookingStatusMutation();
+
+  // Handle status update
+  const handleStatusUpdate = async (bookingId: string, status: 'confirmed' | 'rejected') => {
+    try {
+      await updateStatus({
+        bookingId,
+        statusId: status === 'confirmed' ? 'CONFIRMED_STATUS_ID' : 'REJECTED_STATUS_ID' // Placeholder, replace with actual status IDs
+      }).unwrap();
+      toast.success(`Booking ${status} successfully`);
+    } catch (error) {
+      console.error('Error updating booking status:', error);
+      toast.error(`Failed to ${status} booking`);
+    }
+  };
 
   // Fetch bookings for the selected court and date range
   const {
@@ -140,23 +158,34 @@ export default function BookingManagement() {
                       </div>
                     </div>
                     <div className="flex items-center justify-end gap-2">
-                      {booking.status === "pending" && (
-                        <>
+                      {booking.status.toLowerCase() === "pending" && (
+                        <div className="flex flex-col sm:flex-row gap-2">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-green-500">
+                            className="text-green-500"
+                            onClick={() => handleStatusUpdate(booking.bookingId, 'confirmed')}
+                            disabled={isUpdating}
+                          >
                             <Check className="h-4 w-4 mr-2" />
-                            Approve
+                            {isUpdating ? 'Processing...' : 'Approve'}
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-red-500">
+                            className="text-red-500"
+                            onClick={() => handleStatusUpdate(booking.bookingId, 'rejected')}
+                            disabled={isUpdating}
+                          >
                             <X className="h-4 w-4 mr-2" />
-                            Reject
+                            {isUpdating ? 'Processing...' : 'Reject'}
                           </Button>
-                        </>
+                        </div>
+                      )}
+                      {booking.status.toLowerCase() !== "pending" && (
+                        <div className="text-sm text-muted-foreground">
+                          {booking.status.charAt(0).toUpperCase() + booking.status.slice(1).toLowerCase()}
+                        </div>
                       )}
                     </div>
                   </div>
