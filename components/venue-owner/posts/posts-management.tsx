@@ -218,11 +218,11 @@ export function PostsManagement() {
             </div>
             <Tabs 
               value={activeTab} 
-              onValueChange={(value) => setActiveTab(value as "all" | "mine")}
+              onValueChange={(value) => setActiveTab(value as "mine")}
               className="ml-4"
             >
               <TabsList>
-                <TabsTrigger value="all">All Posts</TabsTrigger>
+                {/* <TabsTrigger value="all">All Posts</TabsTrigger> */}
                 <TabsTrigger value="mine">My Posts</TabsTrigger>
               </TabsList>
             </Tabs>

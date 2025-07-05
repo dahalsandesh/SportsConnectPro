@@ -33,6 +33,17 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useGetNotificationsQuery } from "@/redux/api/venue-owner/notificationsApi";
 import { useState, useEffect } from "react";
+import {
+  LayoutDashboard,
+  MapPin,
+  Calendar,
+  CreditCard,
+  BarChart,
+  Clock,
+  Trophy,
+  Video,
+  NewspaperIcon,
+} from "lucide-react";
 
 export function VenueOwnerHeader() {
   const { user } = useAppSelector((state) => state.auth);
@@ -40,6 +51,7 @@ export function VenueOwnerHeader() {
   const router = useRouter();
   const { toast } = useToast();
   const [logoutApi] = useLogoutMutation();
+  const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Use mounted state to prevent hydration mismatch
@@ -105,7 +117,7 @@ export function VenueOwnerHeader() {
     <header className="sticky top-0 z-40 border-b bg-background dark:border-border/50">
       <div className="flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-4 lg:hidden">
-          <Sheet>
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon">
                 <Menu className="h-5 w-5" />
@@ -116,8 +128,28 @@ export function VenueOwnerHeader() {
               <SheetHeader className="p-4 border-b">
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
-              <nav className="flex flex-col gap-4 p-4">
-                {/* Mobile sidebar content will go here */}
+              <nav className="flex flex-col gap-1 p-2">
+                {[
+                  { title: "Dashboard", href: "/venue-owner", icon: <LayoutDashboard className="h-5 w-5" /> },
+                  { title: "My Venue", href: "/venue-owner/venues", icon: <MapPin className="h-5 w-5" /> },
+                  { title: "Bookings", href: "/venue-owner/bookings", icon: <Calendar className="h-5 w-5" /> },
+                  { title: "Time Slots", href: "/venue-owner/availability", icon: <Clock className="h-5 w-5" /> },
+                  { title: "Events", href: "/venue-owner/events", icon: <Trophy className="h-5 w-5" /> },
+                  { title: "Posts & News", href: "/venue-owner/posts", icon: <NewspaperIcon className="h-5 w-5" /> },
+                  { title: "Reels", href: "/venue-owner/reels", icon: <Video className="h-5 w-5" /> },
+                  { title: "Payments", href: "/venue-owner/payments", icon: <CreditCard className="h-5 w-5" /> },
+                  { title: "Analytics", href: "/venue-owner/analytics", icon: <BarChart className="h-5 w-5" /> },
+                ].map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                    onClick={() => setOpen(false)}
+                  >
+                    {item.icon}
+                    <span>{item.title}</span>
+                  </Link>
+                ))}
               </nav>
             </SheetContent>
           </Sheet>
