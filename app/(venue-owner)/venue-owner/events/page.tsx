@@ -7,8 +7,13 @@ import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+interface CourtType {
+  courtId: string;
+  courtName: string;
+}
+
 export default function EventsPage() {
-  const [selectedCourtId, setSelectedCourtId] = useState<string | null>(null);
+  const [selectedCourt, setSelectedCourt] = useState<CourtType | null>(null);
   const { data: courts, isLoading: isLoadingCourts } = useGetCourtsQuery();
 
   if (isLoadingCourts) {
@@ -23,7 +28,7 @@ export default function EventsPage() {
     );
   }
 
-  if (!selectedCourtId) {
+  if (!selectedCourt) {
     return (
       <div className="container mx-auto p-6">
         <h1 className="text-3xl font-bold mb-6">Select a Court</h1>
@@ -37,7 +42,7 @@ export default function EventsPage() {
               </CardHeader>
               <CardContent>
                 <Button
-                  onClick={() => setSelectedCourtId(court.courtId)}
+                  onClick={() => setSelectedCourt({ courtId: court.courtId, courtName: court.courtName })}
                   className="w-full">
                   View Events
                 </Button>
@@ -54,11 +59,11 @@ export default function EventsPage() {
       <div className="container mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Events</h1>
-          <Button variant="outline" onClick={() => setSelectedCourtId(null)}>
+          <Button variant="outline" onClick={() => setSelectedCourt(null)}>
             Back to Courts
           </Button>
         </div>
-        <SportsEventManagement courtId={selectedCourtId} />
+        <SportsEventManagement courtId={selectedCourt.courtId} courtName={selectedCourt.courtName} />
       </div>
     </Suspense>
   );

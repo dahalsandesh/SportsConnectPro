@@ -395,10 +395,10 @@ export default function SportsEventManagement({
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Events</h2>
+        <div className="space-y-1">
+          <h2 className="text-2xl font-bold tracking-tight">Court: {courtName}</h2>
           <p className="text-muted-foreground">
-            Manage events for {courtName}
+            Manage events and schedules
           </p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
