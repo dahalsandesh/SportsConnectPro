@@ -111,15 +111,10 @@ export default function VenueManagement() {
     isLoading: isLoadingCourts,
     isError: isCourtsError,
     refetch: refetchCourts
-  } = useGetCourtsQuery(
-    { 
-      venueId: venueData?.venueId || ''
-    },
-    { 
-      skip: !venueData?.venueId,
-      refetchOnMountOrArgChange: true
-    }
-  );
+  } = useGetCourtsQuery(undefined, { 
+    skip: !userId,
+    refetchOnMountOrArgChange: true
+  });
   
   const courts = Array.isArray(courtsData) ? courtsData : [];
 
