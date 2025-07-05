@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useCreateAdminPostMutation } from "@/redux/api/admin/postsApi";
+import { useCreateVenuePostMutation } from "@/redux/api/venue-owner/postApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/useAuth";
 import * as z from "zod";
@@ -62,7 +62,7 @@ export function CreatePostDialog({
   categories,
 }: CreatePostDialogProps) {
   const { toast } = useToast();
-  const [createPost, { isLoading }] = useCreateAdminPostMutation();
+  const [createPost, { isLoading }] = useCreateVenuePostMutation();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -93,7 +93,8 @@ export function CreatePostDialog({
   };
 
   const { user } = useAuth();
-  const [createAdminPost, { isLoading: isCreating }] = useCreateAdminPostMutation();
+  const [createVenuePost] = useCreateVenuePostMutation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!user?.userId) {
@@ -105,25 +106,20 @@ export function CreatePostDialog({
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       const formData = new FormData();
       
-      // Append text fields with proper encoding
+      // Append text fields
       formData.append('title', values.title);
       formData.append('description', values.description);
-      formData.append('category', values.categoryId);
+      formData.append('categoryId', values.categoryId);
+      formData.append('userId', user.userId); // Add userId to form data
       
       // Append image if selected
       if (selectedImage) {
-        formData.append('postImage', selectedImage);
-      }
-      formData.append("title", values.title);
-      formData.append("description", values.description);
-      formData.append("categoryId", values.categoryId);
-
-      // Append file if it exists
-      if (selectedImage) {
-        formData.append("postImage", selectedImage, selectedImage.name);
+        formData.append('postImage', selectedImage, selectedImage.name);
       }
 
       // Log form data for debugging
@@ -134,8 +130,13 @@ export function CreatePostDialog({
         }
       }
 
-      // Use the RTK Query mutation
-      await createAdminPost(formData).unwrap();
+      // Call the venue post creation mutation with formData
+      const response = await createVenuePost(formData).unwrap();
+      
+      // Check if the response indicates success
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to create post');
+      }
       
       // Reset form and state on success
       form.reset({
@@ -145,20 +146,31 @@ export function CreatePostDialog({
       });
       setSelectedImage(null);
       setImagePreview(null);
+      
+      // Show success message
+      toast({
+        title: "Success",
+        description: "Post created successfully!",
+      });
+      
+      // Close the dialog
       onOpenChange(false);
       
-      toast({
-        title: "Post created",
-        description: "The post has been created successfully.",
-        variant: "success",
-      });
     } catch (error) {
       console.error('Error creating post:', error);
+      
+      // Show error message
+      const errorMessage = error?.data?.message || 
+                         error?.message || 
+                         "Failed to create post. Please try again.";
+      
       toast({
         title: "Error",
-        description: error?.data?.message || "Failed to create post. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -283,8 +295,8 @@ export function CreatePostDialog({
                 onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create Post
               </Button>
             </DialogFooter>

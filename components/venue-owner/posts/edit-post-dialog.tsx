@@ -7,7 +7,7 @@ import * as z from "zod";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { useUpdateAdminPostMutation } from "@/redux/api/admin/postsApi";
+import { useUpdateVenuePostMutation } from "@/redux/api/venue-owner/postApi";
 import {
   Dialog,
   DialogContent,
@@ -119,7 +119,7 @@ export function EditPostDialog({
     setImagePreview(null);
   };
 
-  const [updatePost] = useUpdateAdminPostMutation();
+  const [updateVenuePost, { isLoading: isUpdating }] = useUpdateVenuePostMutation();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!user?.userId) {
@@ -139,6 +139,7 @@ export function EditPostDialog({
       formData.append("title", values.title);
       formData.append("description", values.description);
       formData.append("categoryId", values.categoryId);
+      formData.append("postId", post.postID); // Add postId to the form data
 
       // Append file if it exists
       if (selectedImage) {
@@ -153,12 +154,8 @@ export function EditPostDialog({
         }
       }
 
-      // Use the RTK Query mutation
-      await updatePost({
-        formData,
-        postId: post.postID,
-        userId: user.userId
-      }).unwrap();
+      // Call the update venue post mutation
+      const response = await updateVenuePost(formData).unwrap();
       
       // Reset form and state on success
       setSelectedImage(null);
@@ -168,7 +165,7 @@ export function EditPostDialog({
       toast({
         title: "Post updated",
         description: "The post has been updated successfully.",
-        variant: "success",
+        variant: "default",
       });
     } catch (error) {
       console.error('Error updating post:', error);

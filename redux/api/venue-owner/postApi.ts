@@ -3,9 +3,9 @@ import type { ApiResponse, Post, UpdatePostRequest } from '@/types/api';
 
 export const postApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createVenuePost: builder.mutation<ApiResponse<null>, { formData: FormData, userId: string }>({
-      query: ({ formData, userId }) => ({
-        url: `/web/api/v1/venue/CreatePost?userId=${userId}`,
+    createVenuePost: builder.mutation<ApiResponse<null>, FormData>({
+      query: (formData) => ({
+        url: `/web/api/v1/venue/CreatePost`,
         method: "POST",
         body: formData,
       }),
@@ -38,7 +38,7 @@ export const postApi = baseApi.injectEndpoints({
     }),
     deleteVenuePost: builder.mutation<ApiResponse<null>, { postId: string }>({
       query: ({ postId }) => ({
-        url: "/web/api/v1/venue/DelPost",
+        url: "/web/api/v1/venue/DeletePost",
         method: "POST",
         body: { postId },
       }),
