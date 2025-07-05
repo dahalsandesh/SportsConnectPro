@@ -3,16 +3,19 @@ import type { ApiResponse, Reel, ReelDetails } from '@/types/api';
 
 export const reelApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createReel: builder.mutation<ApiResponse<null>, FormData>({
-      query: (formData) => ({
-        url: "/web/api/v1/venue/CreateReel",
+    createReel: builder.mutation<ApiResponse<null>, { formData: FormData, userId: string }>({
+      query: ({ formData, userId }) => ({
+        url: `/web/api/v1/venue/CreateReel?userId=${userId}`,
         method: "POST",
         body: formData,
       }),
       invalidatesTags: [{type: "Reels", id: 'LIST'}],
     }),
-    getReels: builder.query<Reel[], void>({
-      query: () => "/web/api/v1/venue/GetReel",
+    getReels: builder.query<Reel[], string>({
+      query: (userId) => ({
+        url: "/web/api/v1/venue/GetReel",
+        params: { userId },
+      }),
       providesTags: (result) =>
         result
           ? [...result.map(({ reelId }) => ({ type: 'Reels' as const, id: reelId })), { type: 'Reels', id: 'LIST' }]

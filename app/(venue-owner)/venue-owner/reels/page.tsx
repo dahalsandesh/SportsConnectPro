@@ -1,18 +1,11 @@
-import { ReelsManagement } from "../components/ReelsManagement";
+import { Metadata } from "next";
+import VenueOwnerReelsPage from "@/components/venue-owner/reels";
 
-export default function ReelsPage() {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Reels</h1>
-          <p className="text-muted-foreground">
-            Manage your venue reels and videos
-          </p>
-        </div>
-      </div>
-      
-      <ReelsManagement />
-    </div>
-  );
+export const metadata: Metadata = {
+  title: "Reels | Venue Owner",
+  description: "Manage your venue's video reels",
+};
+
+export default function Page() {
+  return <VenueOwnerReelsPage />;
 }

@@ -3,16 +3,19 @@ import type { ApiResponse, Post, UpdatePostRequest } from '@/types/api';
 
 export const postApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createVenuePost: builder.mutation<ApiResponse<null>, FormData>({
-      query: (formData) => ({
-        url: "/web/api/v1/venue/CreatePost",
+    createVenuePost: builder.mutation<ApiResponse<null>, { formData: FormData, userId: string }>({
+      query: ({ formData, userId }) => ({
+        url: `/web/api/v1/venue/CreatePost?userId=${userId}`,
         method: "POST",
         body: formData,
       }),
       invalidatesTags: [{type: "Posts", id: 'LIST'}],
     }),
-    getVenuePosts: builder.query<Post[], void>({
-      query: () => "/web/api/v1/venue/GetPost",
+    getVenuePosts: builder.query<Post[], string>({
+      query: (userId) => ({
+        url: "/web/api/v1/venue/GetPost",
+        params: { userId },
+      }),
       providesTags: (result) =>
         result
           ? [...result.map(({ postID }) => ({ type: 'Posts' as const, id: postID })), { type: 'Posts', id: 'LIST' }]

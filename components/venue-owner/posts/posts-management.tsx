@@ -1,0 +1,413 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { 
+  useCreateVenuePostMutation,
+  useGetVenuePostsQuery, 
+  useDeleteVenuePostMutation, 
+  useGetVenuePostDetailsQuery,
+  useUpdateVenuePostMutation
+} from "@/redux/api/venue-owner/postApi";
+import { useGetSportCategoriesQuery } from "@/redux/api/venue-owner/sportCategoryApi";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Trash, Edit, Plus, Eye, Loader2, ImageIcon, Search } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { CreatePostDialog } from "./create-post-dialog";
+import { EditPostDialog } from "./edit-post-dialog";
+import { ViewPostDialog } from "./view-post-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { format } from "date-fns";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+
+import type { Post } from '@/types/api';
+
+interface PostWithUI extends Post {
+  isPublished?: boolean;
+  time?: string;
+  category?: string;
+  postImage?: string;
+  date?: string;
+}
+
+export function PostsManagement() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  
+  // State for UI
+  const [activeTab, setActiveTab] = useState<"all" | "mine">("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<PostWithUI | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  // API Calls
+  const userId = user?.userId || '';
+  
+  const { 
+    data: posts = [], 
+    isLoading, 
+    isError, 
+    error,
+    refetch 
+  } = useGetVenuePostsQuery(userId, {
+    refetchOnMountOrArgChange: true,
+    skip: !userId
+  });
+
+  const { data: categories = [] } = useGetSportCategoriesQuery();
+  const [deletePost] = useDeleteVenuePostMutation();
+  const [createPost] = useCreateVenuePostMutation();
+  const [updatePost] = useUpdateVenuePostMutation();
+
+  // Get post details query - only enable when view dialog is open
+  const { data: postDetails } = useGetVenuePostDetailsQuery(selectedPost?.postID || '', { 
+    skip: !selectedPost?.postID || !isViewDialogOpen
+  });
+
+  // Filter posts based on active tab and search query
+  const filteredPosts = useMemo(() => {
+    if (!posts) return [];
+    
+    return posts.filter(post => {
+      // Filter by active tab (all or mine)
+      const matchesTab = activeTab !== 'mine' || post.userId === userId;
+      
+      // Filter by search query
+      const search = searchQuery.toLowerCase();
+      const matchesSearch = 
+        post.title.toLowerCase().includes(search) ||
+        (post.description?.toLowerCase().includes(search) ?? false) ||
+        (post.category?.toLowerCase().includes(search) ?? false);
+      
+      return matchesTab && matchesSearch;
+    });
+  }, [posts, activeTab, searchQuery, userId]);
+
+  // Debug logs
+  console.log('Current user ID:', user?.id);
+  console.log('Active tab:', activeTab);
+  console.log('Posts:', posts);
+  console.log('Filtered posts:', filteredPosts);
+  console.log('API Error:', error);
+
+  const handleEdit = (post: PostWithUI) => {
+    setSelectedPost({
+      ...post,
+      isPublished: true
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleView = (post: PostWithUI) => {
+    setSelectedPost({
+      ...post,
+      isPublished: true
+    });
+    setIsViewDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedPost?.postID) return;
+    
+    setIsDeleting(true);
+    try {
+      await deletePost({ postId: selectedPost.postID }).unwrap();
+      toast({
+        title: "Success",
+        description: "Post deleted successfully",
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedPost(null);
+      refetch();
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete post. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const confirmDelete = (post: PostWithUI) => {
+    setSelectedPost(post);
+    setIsDeleteDialogOpen(true);
+  };
+  
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-10 w-64" />
+          <Skeleton className="h-10 w-32" />
+        </div>
+        <div className="rounded-md border">
+          <Skeleton className="h-12 w-full" />
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-16 w-full border-t" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  
+  // Error state
+  if (isError) {
+    return (
+      <div className="rounded-lg border border-destructive bg-destructive/10 p-4 text-destructive">
+        <p>Error loading posts. Please try again later.</p>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="mt-2"
+          onClick={() => refetch()}
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-2xl font-bold">
+            Posts & News Management
+          </CardTitle>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search posts..."
+                className="pl-8 w-[200px] lg:w-[300px]"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <Tabs 
+              value={activeTab} 
+              onValueChange={(value) => setActiveTab(value as "all" | "mine")}
+              className="ml-4"
+            >
+              <TabsList>
+                <TabsTrigger value="all">All Posts</TabsTrigger>
+                <TabsTrigger value="mine">My Posts</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <Button
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create Post
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Image</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredPosts.length > 0 ? (
+                  filteredPosts.map((post) => {
+                    // Safely parse the date and handle invalid dates
+                    const dateString = post.date && post.time 
+                      ? `${post.date}T${post.time.split('.')[0]}` // Remove milliseconds if present
+                      : post.createdAt || '';
+                    const postDate = dateString ? new Date(dateString) : null;
+                    const formattedDate = postDate && !isNaN(postDate.getTime()) 
+                      ? format(postDate, 'MMM d, yyyy')
+                      : post.date || 'N/A'; // Fallback to raw date if available
+                      
+                    return (
+                      <TableRow key={post.postID} className="hover:bg-muted/50">
+                        <TableCell>
+                          <Avatar className="h-12 w-12 rounded-md">
+                            <AvatarImage
+                              src={post.postImage || "/placeholder.svg"}
+                              alt={post.title}
+                              className="object-cover"
+                            />
+                            <AvatarFallback className="rounded-md bg-muted">
+                              <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                            </AvatarFallback>
+                          </Avatar>
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          <div className="line-clamp-2">{post.title}</div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {post.category || 'Uncategorized'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          {formattedDate}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="default">
+                            Published
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleView(post)}
+                              title="View"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEdit(post)}
+                              title="Edit"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => confirmDelete(post)}
+                              className="text-destructive hover:text-destructive"
+                              title="Delete"
+                            >
+                              <Trash className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                      No posts found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Create Post Dialog */}
+      <CreatePostDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+        onSuccess={() => {
+          refetch();
+          setIsCreateDialogOpen(false);
+        }}
+        categories={categories}
+        userId={userId}
+      />
+
+      {/* Edit Post Dialog */}
+      {selectedPost && (
+        <EditPostDialog
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          post={selectedPost}
+          onSuccess={() => {
+            refetch();
+            setIsEditDialogOpen(false);
+            setSelectedPost(null);
+          }}
+          categories={categories}
+          apiEndpoint={`/api/venue-owner/posts/${selectedPost.postID}`}
+          apiMethod="PUT"
+          onError={(error) => console.error('Error editing post:', error)}
+        />
+      )}
+
+      {/* View Post Dialog */}
+      {selectedPost && (
+        <ViewPostDialog
+          open={isViewDialogOpen}
+          onOpenChange={setIsViewDialogOpen}
+          post={{
+            ...(postDetails || selectedPost),
+            createdAt: postDetails?.date || selectedPost.date,
+            category: postDetails?.category || selectedPost.category || 'Uncategorized',
+            isPublished: true
+          }}
+          isLoading={!postDetails && isViewDialogOpen}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the post.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete Post'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
