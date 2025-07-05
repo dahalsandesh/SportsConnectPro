@@ -82,8 +82,9 @@ const CreateEditReelDialog: React.FC<CreateEditReelDialogProps> = ({ open, onClo
     formData.append('title', form.title);
     formData.append('description', form.description);
     formData.append('categoryId', form.categoryId);
+    formData.append('userId', userId); // Add userId to form data
     if (form.video) {
-      formData.append('videoFile', form.video);
+      formData.append('video', form.video);
     }
     if (isEdit && reelId) formData.append("reelId", reelId || reelDetails?.postID);
 
@@ -156,8 +157,8 @@ const CreateEditReelDialog: React.FC<CreateEditReelDialogProps> = ({ open, onClo
           </div>
           {error && <div className="text-red-500 text-sm">{error}</div>}
           <DialogFooter>
-            <Button type="button" onClick={onClose} variant="outline">Cancel</Button>
-            <Button type="submit" disabled={isCreating || isUpdating} variant="primary">
+            <Button type="button" onClick={onClose} variant="destructive">Cancel</Button>
+            <Button type="submit" disabled={isCreating || isUpdating} variant="default">
               {isEdit ? (isUpdating ? "Updating..." : "Update") : (isCreating ? "Creating..." : "Create")}
             </Button>
           </DialogFooter>

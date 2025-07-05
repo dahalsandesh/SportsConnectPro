@@ -1,12 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useGetReelsQuery, useDeleteReelMutation } from "@/redux/api/venue-owner/reelApi";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Trash2, Pencil } from "lucide-react";
+import { Trash2, Pencil, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ReelsListProps {
   onCreate: () => void;
@@ -20,9 +30,19 @@ const ReelsList: React.FC<ReelsListProps> = ({ onCreate, onEdit }) => {
   const [detailsReelId, setDetailsReelId] = React.useState<string | null>(null);
   const ReelDetails = React.useMemo(() => React.lazy(() => import("./reel-details")), []);
 
-  const handleDelete = async (reelId: string) => {
-    if (confirm("Are you sure you want to delete this reel?")) {
-      await deleteReel({ reelId }).unwrap();
+  const [reelToDelete, setReelToDelete] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const handleDeleteClick = (reelId: string) => {
+    setReelToDelete(reelId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (reelToDelete) {
+      await deleteReel({ reelId: reelToDelete }).unwrap();
+      setIsDeleteDialogOpen(false);
+      setReelToDelete(null);
     }
   };
 
@@ -61,7 +81,12 @@ const ReelsList: React.FC<ReelsListProps> = ({ onCreate, onEdit }) => {
                   <td className="px-4 py-2 flex gap-2">
                     <Button size="icon" variant="outline" onClick={() => onEdit(reel.reelId)}><Pencil className="w-4 h-4" /></Button>
                     <Button size="icon" variant="secondary" onClick={() => setDetailsReelId(reel.reelId)}>Details</Button>
-                    <Button size="icon" variant="destructive" onClick={() => handleDelete(reel.reelId)} disabled={isDeleting}>
+                    <Button 
+                      size="icon" 
+                      variant="destructive" 
+                      onClick={() => handleDeleteClick(reel.reelId)} 
+                      disabled={isDeleting}
+                    >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </td>
@@ -87,6 +112,31 @@ const ReelsList: React.FC<ReelsListProps> = ({ onCreate, onEdit }) => {
           </div>
         </React.Suspense>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-destructive" />
+              Are you sure?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the reel and remove the data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
