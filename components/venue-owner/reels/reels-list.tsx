@@ -33,7 +33,7 @@ const ReelsList: React.FC<ReelsListProps> = ({ onCreate, onEdit }) => {
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Reels</h2>
-        <Button variant="primary" onClick={onCreate}>Create Reel</Button>
+        <Button variant="default" onClick={onCreate}>Create Reel</Button>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useGetNotificationsQuery } from "@/redux/api/venue-owner/notificationsApi";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Card,
   CardContent,
@@ -16,15 +17,23 @@ import { format } from "date-fns";
 
 export default function NotificationManagement() {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const {
-    data: notificationsData,
+    data: notificationsData = { count: 0, notifications: [] },
     isLoading,
     refetch,
-  } = useGetNotificationsQuery();
+  } = useGetNotificationsQuery(
+    { userId: user?.userId },
+    { skip: !isMounted || !user?.userId }
+  );
 
-  // Extract notifications from the response structure
-  const notifications = notificationsData?.notifications || [];
-  const unreadCount = notificationsData?.count || 0;
+  const { notifications = [], count: unreadCount = 0 } = notificationsData;
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {

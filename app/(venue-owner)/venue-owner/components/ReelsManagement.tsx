@@ -181,7 +181,10 @@ const ReelsManagement = () => {
             <p className="text-sm text-muted-foreground mb-4">
               Get started by creating your first reel
             </p>
-            <Button onClick={() => setIsCreating(true)}>
+            <Button 
+              onClick={() => setIsCreating(true)}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
               <Plus className="mr-2 h-4 w-4" /> Create Reel
             </Button>
           </CardContent>

@@ -49,12 +49,15 @@ export function VenueOwnerHeader() {
 
   // Only fetch notifications on the client side
   const {
-    data: notifications = [],
+    data: notificationsData = { count: 0, notifications: [] },
     isLoading,
     refetch,
-  } = useGetNotificationsQuery(undefined, {
-    skip: !mounted,
-  });
+  } = useGetNotificationsQuery(
+    { userId: user?.id },
+    { skip: !mounted || !user?.id }
+  );
+  
+  const notifications = notificationsData.notifications || [];
 
   // These functions are no longer needed as the API endpoints were removed
   const handleMarkAsRead = async (notificationId: string) => {
