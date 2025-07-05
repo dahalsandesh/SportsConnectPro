@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname } from 'next/navigation';
+import { skipToken } from '@reduxjs/toolkit/query';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,8 @@ import {
   Activity,
   Trophy,
   Bell,
+  Video,
+  NewspaperIcon,
 } from "lucide-react";
 import { useGetVenuesQuery } from "@/redux/api/venue-owner/venueApi";
 import { useState, useEffect } from "react";
@@ -45,6 +48,21 @@ const sidebarItems = [
     icon: <Clock className="h-5 w-5" />,
   },
   {
+    title: "Events",
+    href: "/venue-owner/events",
+    icon: <Trophy className="h-5 w-5" />,
+  },
+  {
+    title: "Posts & News",
+    href: "/venue-owner/posts",
+    icon: <NewspaperIcon className="h-5 w-5" />,
+  },
+  {
+    title: "Reels",
+    href: "/venue-owner/reels",
+    icon: <Video className="h-5 w-5" />,
+  },
+  {
     title: "Payments",
     href: "/venue-owner/payments",
     icon: <CreditCard className="h-5 w-5" />,
@@ -53,16 +71,6 @@ const sidebarItems = [
     title: "Analytics",
     href: "/venue-owner/analytics",
     icon: <BarChart className="h-5 w-5" />,
-  },
-  {
-    title: "Events",
-    href: "/venue-owner/events",
-    icon: <Trophy className="h-5 w-5" />,
-  },
-  {
-    title: "Media",
-    href: "/venue-owner/media",
-    icon: <Activity className="h-5 w-5" />,
   },
   // {
   //   title: "Messages",
@@ -100,19 +108,26 @@ export function VenueOwnerSidebarContent() {
     }
   }, []);
 
+  // Get the user's venues using the venue-owner specific endpoint
   const {
     data: venuesData,
     isLoading,
     isError,
   } = useGetVenuesQuery(
-    { userId: currentUserId || "" },
-    { skip: !currentUserId }
+    // Only pass the query when we have a currentUserId
+    currentUserId ? { userId: currentUserId } : skipToken,
+    { 
+      // Skip the query if we don't have a currentUserId
+      skip: !currentUserId,
+      // Enable refetching when the component mounts or arguments change
+      refetchOnMountOrArgChange: true
+    }
   );
   const [openVenueId, setOpenVenueId] = useState<string | null>(null);
   const pathname = usePathname();
-
-  // Ensure venues is always an array
-  const venues = Array.isArray(venuesData) ? venuesData : [];
+  
+  // Get the single venue data
+  const venue = venuesData;
 
   return (
     <>
@@ -154,60 +169,49 @@ export function VenueOwnerSidebarContent() {
               Failed to load venues.
             </div>
           )}
-          {!isLoading && !isError && venues.length === 0 && (
-            <div className="text-xs text-muted-foreground px-2">
-              No venues found.
+        
+          {!isLoading && !isError && venue && (
+            <div className="mb-1">
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full justify-between text-left px-2 py-1 text-sm",
+                  openVenueId === venue.venueId && "bg-secondary"
+                )}
+                onClick={() =>
+                  setOpenVenueId(
+                    openVenueId === venue.venueId ? null : venue.venueId
+                  )
+                }>
+                <span>{venue.venueName}</span>
+                <span>{openVenueId === venue.venueId ? "-" : "+"}</span>
+              </Button>
+              {openVenueId === venue.venueId && (
+                <div key={`${venue.venueId}-nav`} className="ml-4 mt-1 flex flex-col gap-1">
+                  <Link
+                    href={`/venue-owner/venues/${venue.venueId}`}
+                    className="text-xs hover:underline">
+                    Overview
+                  </Link>
+                  <Link
+                    href={`/venue-owner/venues/${venue.venueId}/courts`}
+                    className="text-xs hover:underline">
+                    Courts
+                  </Link>
+                  <Link
+                    href={`/venue-owner/venues/${venue.venueId}/events`}
+                    className="text-xs hover:underline">
+                    Events
+                  </Link>
+                  <Link
+                    href={`/venue-owner/venues/${venue.venueId}/media`}
+                    className="text-xs hover:underline">
+                    Media
+                  </Link>
+                </div>
+              )}
             </div>
           )}
-          {!isLoading &&
-            !isError &&
-            venues.map((venue) => (
-              <div key={venue.venueId} className="mb-1">
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-between text-left px-2 py-1 text-sm",
-                    openVenueId === venue.venueId && "bg-secondary"
-                  )}
-                  onClick={() =>
-                    setOpenVenueId(
-                      openVenueId === venue.venueId ? null : venue.venueId
-                    )
-                  }>
-                  <span>{venue.name}</span>
-                  <span>{openVenueId === venue.venueId ? "-" : "+"}</span>
-                </Button>
-                {openVenueId === venue.venueId && (
-                  <div key={`${venue.venueId}-nav`} className="ml-4 mt-1 flex flex-col gap-1">
-                    <Link
-                      key={`${venue.venueId}-overview`}
-                      href={`/venue-owner/venues/${venue.venueId}`}
-                      className="text-xs hover:underline">
-                      Overview
-                    </Link>
-                    <Link
-                      key={`${venue.venueId}-courts`}
-                      href={`/venue-owner/venues/${venue.venueId}/courts`}
-                      className="text-xs hover:underline">
-                      Courts
-                    </Link>
-                    <Link
-                      key={`${venue.venueId}-events`}
-                      href={`/venue-owner/venues/${venue.venueId}/events`}
-                      className="text-xs hover:underline">
-                      Events
-                    </Link>
-                    <Link
-                      key={`${venue.venueId}-media`}
-                      href={`/venue-owner/venues/${venue.venueId}/media`}
-                      className="text-xs hover:underline">
-                      Media
-                    </Link>
-                  
-                  </div>
-                )}
-              </div>
-            ))}
         </div>
       </nav>
     </>

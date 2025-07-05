@@ -102,7 +102,8 @@ export const baseApi = createApi({
     // Additional tags for venue management
     "SportsEvents",
     "VenueEvents",
-    "VenueImages"
+    "VenueImages",
+    "VenuePaymentMethods"
   ],
   endpoints: () => ({}),
 })

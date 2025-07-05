@@ -19,7 +19,7 @@ export const venueApi = baseApi.injectEndpoints({
         };
       },
       providesTags: (result) => 
-        result ? [{ type: 'Venues' as const, id: result.venueId }] : ['Venues'],
+        result ? [{ type: 'Venues' as const, id: result.id }] : ['Venues'],
     }),
     updateVenueDetails: builder.mutation<ApiResponse<null>, UpdateVenueDetailsRequest>({ 
       query: (data) => {
@@ -88,10 +88,21 @@ export const venueApi = baseApi.injectEndpoints({
         { type: 'Venues', id: 'LIST' },
       ],
     }),
-    getVenueDashboardData: builder.query<VenueDashboardData, void>({ 
-      query: () => "/web/api/v1/venue/GetDashboardData",
+
+    
+     getVenueDashboardData: builder.query<VenueDashboardData, { userId: string }>({ 
+      query: ({ userId }) => ({
+        url: "/web/api/v1/venue/GetDashboardData",
+        method: 'GET',
+        params: { userId },
+        headers: {
+          'Accept': 'application/json',
+        },
+      }),
       providesTags: ["Dashboard"],
     }),
+
+
     getVenues: builder.query<VenueDetails[], { userId: string }>({
       query: ({ userId }) => ({
         url: `/web/api/v1/venue/GetVenueDetails`,
@@ -105,10 +116,10 @@ export const venueApi = baseApi.injectEndpoints({
         
         // Map over the result and include both individual and list tags
         const venueTags = result
-          .filter(venue => venue?.venueId) // Filter out any invalid venues
+          .filter(venue => venue?.id) // Filter out any invalid venues
           .map(venue => ({
             type: 'Venues' as const,
-            id: venue.venueId
+            id: venue.id
           }));
           
         return [...venueTags, { type: 'Venues' as const, id: 'LIST' }];
@@ -140,12 +151,12 @@ export const venueApi = baseApi.injectEndpoints({
 });
 
 export const {
+    useGetVenuesQuery,
+    useGetVenueDashboardDataQuery,
     useGetVenueDetailsQuery,
     useUpdateVenueDetailsMutation,
     useUploadVenueImageMutation,
     useDeleteVenueImageMutation,
-    useGetVenueDashboardDataQuery,
-    useGetVenuesQuery,
     useGetVenueImagesQuery,
     useLazyGetVenueImagesQuery,
 } = venueApi;

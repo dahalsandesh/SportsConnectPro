@@ -7,33 +7,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Calendar,
   CreditCard,
   ArrowUpRight,
-  MapPin,
   Users,
-  Activity,
-  Trophy,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import {
-  useGetVenuesQuery,
-  useGetVenueDashboardDataQuery,
-} from "@/redux/api/venue-owner/venueApi";
+import { useGetVenuesQuery, useGetVenueDashboardDataQuery } from "@/redux/api/venue-owner/venueApi";
+import { useGetNotificationsQuery } from "@/redux/api/venue-owner/notificationsApi";
 import { useAppSelector } from "@/redux/store/hooks";
 import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
-import type { VenueDetails } from "@/types/api";
-import SlotManagement from "./SlotManagement";
-import React from "react";
-import VenueNewsMedia from "./VenueNewsMedia";
-import VenueApplication from "./components/VenueApplication";
-import CourtManagement from "./components/CourtManagement";
-import VenueImageManagement from "./components/VenueImageManagement";
-import SportsEventManagement from "./components/SportsEventManagement";
-import ReelsManagement from "./components/ReelsManagement";
 import { BookingChart } from "@/components/admin/dashboard/booking-chart";
 import { RevenueChart } from "@/components/admin/dashboard/revenue-chart";
 import { subMonths, startOfMonth, format } from "date-fns";
@@ -41,9 +24,7 @@ import type { VenueDashboardData, Booking, Payment } from "@/types/api";
 
 export default function VenueOwnerDashboard() {
   const { user } = useAppSelector((state) => state.auth);
-  // Get the current user's ID from your auth state or context
-  // Type assertion for now - should update the User type in auth slice to include id
-  const currentUserId = (user as unknown as { id?: string })?.id || "";
+  const currentUserId = user?.userId || "";
 
   const {
     data: venuesResponse,
@@ -55,20 +36,33 @@ export default function VenueOwnerDashboard() {
   );
 
   // Extract venues from the response
-  const venues = Array.isArray(venuesResponse) ? venuesResponse : [];
-  const ownerVenues =
-    venues.filter((venue: VenueDetails) => venue.ownerEmail === user?.email) ||
-    [];
+  const ownerVenues = Array.isArray(venuesResponse) ? venuesResponse : [];
 
-  // Get the first venue ID for components that need it
-  const firstVenueId = ownerVenues[0]?.venueId || "";
+   
+
+
 
   // Get dashboard data
   const {
     data: dashboardData,
     isLoading: isDashboardLoading,
     isError: isDashboardError,
-  } = useGetVenueDashboardDataQuery();
+  } = useGetVenueDashboardDataQuery(
+    { userId: currentUserId },
+    // { skip: !currentUserId } // Skip query if no user ID is available
+  );
+
+  // Get notifications
+  const {
+    data: notificationsData,
+    isLoading: isNotificationsLoading,
+    isError: isNotificationsError,
+  } = useGetNotificationsQuery(
+    { userId: currentUserId },
+    // { skip: !currentUserId }
+  );
+  
+  const notifications = notificationsData?.notifications || [];
 
   // Prepare data for charts
   const months: string[] = [];
@@ -91,13 +85,13 @@ export default function VenueOwnerDashboard() {
   }));
 
   // Get data from dashboard response
-  const totalBookings = dashboardData?.totalBookings || 0;
-  const totalRevenue = dashboardData?.totalRevenue || 0;
-  const activeVenues = ownerVenues.length; // Use the actual count of owner's venues
-  const pendingBookings = 0; // Not available in VenueDashboardData
+  const totalBookings = dashboardData?.total_books || 0;
+  const totalRevenue = dashboardData?.total_earnings || 0;
+  const totalCourts = dashboardData?.total_courts || 0;
+  const pendingBookings = dashboardData?.pending_books || 0;
 
-  // Mock recent data since not in VenueDashboardData
-  const recentBookings: Booking[] = [];
+  // Use actual recent bookings from dashboard data if available
+  const recentBookings: Booking[] = dashboardData?.recentBookings || [];
   const recentPayments: Payment[] = [];
 
   const {
@@ -115,20 +109,9 @@ export default function VenueOwnerDashboard() {
             Manage your venues and bookings
           </p>
         </div>
-    
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          {/* <TabsTrigger value="venues">Venues</TabsTrigger> */}
-          <TabsTrigger value="courts">Courts</TabsTrigger>
-          <TabsTrigger value="events">Events</TabsTrigger>
-          <TabsTrigger value="media">Media</TabsTrigger>
-          <TabsTrigger value="reels">Reels</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
+      <div className="space-y-4">
           {/* Dashboard Stats Cards */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
@@ -145,7 +128,7 @@ export default function VenueOwnerDashboard() {
                   <div className="text-red-500">Error</div>
                 ) : (
                   <div className="text-2xl font-bold">
-                    {dashboardData?.totalBookings ?? 0}
+                    {dashboardData?.total_books ?? 0}
                   </div>
                 )}
               </CardContent>
@@ -164,7 +147,7 @@ export default function VenueOwnerDashboard() {
                   <div className="text-red-500">Error</div>
                 ) : (
                   <div className="text-2xl font-bold">
-                    Rs.{dashboardData?.totalRevenue?.toLocaleString() ?? 0}
+                    Rs.{dashboardData?.total_earnings?.toLocaleString() ?? 0}
                   </div>
                 )}
               </CardContent>
@@ -172,7 +155,7 @@ export default function VenueOwnerDashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Active Courts
+                  Total Courts
                 </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
@@ -183,7 +166,7 @@ export default function VenueOwnerDashboard() {
                   <div className="text-red-500">Error</div>
                 ) : (
                   <div className="text-2xl font-bold">
-                    {dashboardData?.activeCourts ?? 0}
+                    {dashboardData?.total_courts ?? 0}
                   </div>
                 )}
               </CardContent>
@@ -271,63 +254,7 @@ export default function VenueOwnerDashboard() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-
-        <TabsContent value="venues" className="space-y-4">
-          {isLoading && <p>Loading venues...</p>}
-          {isError && <p className="text-red-500">Failed to load venues.</p>}
-          {!isLoading && !isError && ownerVenues.length === 0 && (
-            <p>No venues found.</p>
-          )}
-          {!isLoading && !isError && ownerVenues.length > 0 && (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {ownerVenues.map((venue) => (
-                <VenueCardWithCourts key={venue.venueId} venue={venue} />
-              ))}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="courts">
-          <CourtManagement venueId={firstVenueId} />
-        </TabsContent>
-
-        <TabsContent value="events">
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold">Events</h2>
-            <p className="text-muted-foreground">
-              Select a court to manage events
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {courts.map((court: any) => (
-                <Card
-                  key={court.courtId}
-                  className="cursor-pointer hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle>{court.courtName}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Button className="w-full text-white" asChild>
-                      <Link
-                        href={`/venue-owner/events?courtId=${court.courtId}`}>
-                        Manage Events
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="media">
-          <VenueNewsMedia />
-        </TabsContent>
-
-        <TabsContent value="reels">
-          <ReelsManagement />
-        </TabsContent>
-      </Tabs>
+      </div>
     </div>
   );
 }

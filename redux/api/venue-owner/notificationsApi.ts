@@ -3,8 +3,15 @@ import type { VenueNotification } from '@/types/api';
 
 export const notificationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getNotifications: builder.query<{ count: number; notifications: VenueNotification[] }, void>({
-      query: () => "/web/api/v1/venue/GetNotification",
+    getNotifications: builder.query<{ count: number; notifications: VenueNotification[] }, { userId: string }>({
+      query: ({ userId }) => ({
+        url: "/web/api/v1/venue/GetNotification",
+        method: 'GET',
+        params: { userId },
+        headers: {
+          'Accept': 'application/json',
+        },
+      }),
       providesTags: (result) =>
         result && result.notifications
           ? [
