@@ -32,6 +32,8 @@ export function LoginForm() {
   const dispatch = useAppDispatch()
   const searchParams = useSearchParams()
   const registered = searchParams.get("registered")
+  const redirectUrl = searchParams.get("redirect")
+  const bookingState = searchParams.get("state")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -54,16 +56,26 @@ export function LoginForm() {
         variant: "success",
       })
 
-      // Redirect based on user type
-      switch (response.userType) {
-        case UserType.Admin:
-          router.push("/admin")
-          break
-        case UserType.VenueOwner:
-          router.push("/venue-owner")
-          break
-        default:
-          router.push("/dashboard")
+      // Redirect based on redirect URL or user type
+      if (redirectUrl) {
+        // If there's a booking state, append it to the redirect URL
+        if (bookingState) {
+          router.push(`${redirectUrl}?bookingState=${encodeURIComponent(bookingState)}`)
+        } else {
+          router.push(redirectUrl)
+        }
+      } else {
+        // Default redirect based on user type
+        switch (response.userType) {
+          case UserType.Admin:
+            router.push("/admin")
+            break
+          case UserType.VenueOwner:
+            router.push("/venue-owner")
+            break
+          default:
+            router.push("/dashboard")
+        }
       }
     } catch (error: any) {
       const errorMessage = error.data?.message || "Invalid email or password. Please try again."

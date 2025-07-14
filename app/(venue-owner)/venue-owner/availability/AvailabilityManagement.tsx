@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useGetVenuesQuery } from "@/redux/api/venue-owner/venueApi";
 import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
-import { useGetTimeSlotsQuery } from "@/redux/api/venue-owner/timeSlotsApi";
+import { useGetTicketsQuery } from "@/redux/api/venue-owner/timeSlotsApi";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -50,16 +50,14 @@ export default function AvailabilityManagement() {
   const { data: courts = [], isLoading: isLoadingCourts } = useGetCourtsQuery();
 
   // Get time slots for the selected court and date
-  const { data: timeSlots = [], isLoading: isLoadingSlots } =
-    useGetTimeSlotsQuery(
-      {
-        courtId: selectedCourt,
-        date: selectedDate
-          ? format(selectedDate, "yyyy-MM-dd")
-          : format(new Date(), "yyyy-MM-dd"),
-      },
-      { skip: !selectedCourt || !selectedDate }
-    );
+  const { data: timeSlots, isLoading: isLoadingSlots } = useGetTicketsQuery(
+    selectedCourt && selectedDate
+      ? {
+          courtId: selectedCourt,
+          date: format(selectedDate, "yyyy-MM-dd"),
+        }
+      : null
+  );
 
   const venues = Array.isArray(venuesData)
     ? venuesData

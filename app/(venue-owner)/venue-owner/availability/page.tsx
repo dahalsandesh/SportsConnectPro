@@ -85,7 +85,7 @@ export default function AvailabilityPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editingSlot, setEditingSlot] = useState<TimeSlot | null>(null);
+  const [editingSlot, setEditingSlot] = useState<(TimeSlot & { rate?: number | null }) | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
@@ -380,7 +380,7 @@ export default function AvailabilityPage() {
   };
 
   // Handle editing a time slot
-  const handleEditSlot = useCallback((slot: TimeSlot) => {
+  const handleEditSlot = useCallback((slot: TimeSlot & { rate?: number | null }) => {
     if (!slot) {
       console.error('No slot provided to edit');
       return;
@@ -407,7 +407,7 @@ export default function AvailabilityPage() {
       
       // Update state in the correct order
       setEditingSlot(slotData);
-      setSpecialPrice(slot.rate !== undefined ? slot.rate.toString() : '');
+      setSpecialPrice(slot.rate !== undefined && slot.rate !== null ? slot.rate.toString() : '');
       setStartTime(startTime);
       
       // Force a re-render to ensure modal opens
