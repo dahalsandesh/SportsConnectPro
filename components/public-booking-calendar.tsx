@@ -136,7 +136,7 @@ export default function PublicBookingCalendar({
     return format(new Date(`2000-01-01T${timeString}`), 'h:mm a');
   };
 
-  // Handle booking submission
+  // Handle booking submission for multiple slots
   const handleBookNow = useCallback(async () => {
     // First check if user is authenticated
     if (!user || !user.userId) {
@@ -175,56 +175,48 @@ export default function PublicBookingCalendar({
     try {
       setIsBooking(true);
       
-      // Create booking for the first selected slot (we'll handle multiple slots differently if needed)
-      const slotId = selectedSlots[0];
-      if (!user?.userId) {
-        throw new Error('User not authenticated');
+      // Get courtId from URL
+      const courtId = window.location.pathname.split('/').pop();
+      
+      // Send single request with all ticket IDs
+      const result = await createBooking({ 
+        ticketIds: selectedSlots,
+        paymentTypeId: selectedPaymentType,
+        userId: user.userId,
+        totalPrice: totalPrice,
+        courtId: courtId || ''
+      }).unwrap();
+      
+      // Handle payment URL if present
+      if (result?.payment_url) {
+        // Store the booking data in localStorage
+        localStorage.setItem('pendingBooking', JSON.stringify({
+          ticketIds: selectedSlots,
+          paymentTypeId: selectedPaymentType,
+          totalPrice,
+          timestamp: new Date().toISOString()
+        }));
+        
+        // Redirect to the payment URL
+        window.location.href = result.payment_url;
+        return;
       }
       
-      try {
-        const result = await createBooking({ 
-          timeSlotId: slotId,
-          paymentTypeId: selectedPaymentType,
-          userId: user.userId,
-          totalPrice: totalPrice
-        }).unwrap();
-
-        // If we get a payment URL, redirect to it
-        if (result.payment_url) {
-          // Store the booking data in localStorage in case the user returns without completing payment
-          localStorage.setItem('pendingBooking', JSON.stringify({
-            slotId,
-            paymentTypeId: selectedPaymentType,
-            totalPrice,
-            timestamp: new Date().toISOString()
-          }));
-          
-          // Redirect to the payment URL
-          window.location.href = result.payment_url;
-          return; // Stop further execution
-        }
-        
-        // If no payment URL, it's a direct booking
-        toast.success('Booking successful!');
-        await refetchSlots();
-        setSelectedSlots([]);
-        setSelectedPaymentType("");
-        
-      } catch (error) {
-        console.error('Booking error:', error);
-        toast.error(error?.data?.message || 'Failed to process booking');
-        throw error; // Re-throw to be caught by the outer try-catch
-      }
+      // If no payment URL, it's a direct booking
+      toast.success(`Successfully booked ${selectedSlots.length} time slot(s)!`);
+      await refetchSlots();
+      setSelectedSlots([]);
+      setSelectedPaymentType("");
       
     } catch (error) {
       console.error('Booking error:', error);
-      toast.error('An error occurred while processing your booking');
+      toast.error(error?.data?.message || 'Failed to process booking');
     } finally {
       setIsBooking(false);
     }
   }, [selectedSlots, selectedCourtId, selectedDate, createBooking, refetchSlots, selectedCourt, user, selectedPaymentType, router]);
 
-  // Handle slot selection with consecutive logic
+  // Handle slot selection allowing multiple selections
   const handleSlotClick = useCallback((slotId: string) => {
     setSelectedSlots(current => {
       // If already selected, deselect it
@@ -232,39 +224,10 @@ export default function PublicBookingCalendar({
         return current.filter(id => id !== slotId);
       }
       
-      // If first selection
-      if (current.length === 0) {
-        return [slotId];
-      }
-      
-      // Only allow consecutive selection
-      const currentSlot = availableSlots.find((s: TimeSlot) => s.id === slotId);
-      const selectedSlot = availableSlots.find((s: TimeSlot) => s.id === current[0]);
-      
-      if (!currentSlot || !selectedSlot) return current;
-      
-      const currentTime = new Date(`2000-01-01T${currentSlot.startTime}`).getTime();
-      const selectedTime = new Date(`2000-01-01T${selectedSlot.startTime}`).getTime();
-      
-      // If new slot is right before the first selected slot
-      if (currentTime < selectedTime && 
-          currentTime + 60 * 60 * 1000 === selectedTime) {
-        return [slotId, ...current];
-      }
-      
-      // If new slot is right after the last selected slot
-      const lastSelected = availableSlots.find((s: TimeSlot) => s.id === current[current.length - 1]);
-      if (lastSelected) {
-        const lastTime = new Date(`2000-01-01T${lastSelected.endTime}`).getTime();
-        if (currentTime === lastTime) {
-          return [...current, slotId];
-        }
-      }
-      
-      // If not consecutive, start new selection
-      return [slotId];
+      // Add to selection
+      return [...current, slotId];
     });
-  }, [availableSlots]);
+  }, []);
 
   // Render payment types selection
   const renderPaymentTypes = () => (
@@ -456,9 +419,7 @@ export default function PublicBookingCalendar({
                         "h-14 flex flex-col items-center justify-center rounded-lg transition-all duration-150 relative overflow-hidden",
                         isSelected 
                           ? "bg-green-100 hover:bg-green-100 text-green-900 border-2 border-green-400"
-                          : "hover:bg-accent/50 hover:border-accent",
-                        isFirstSelected && "rounded-r-none border-r-0",
-                        isLastSelected && "rounded-l-none border-l-0"
+                          : "hover:bg-accent/50 hover:border-accent"
                       )}
                       onClick={() => handleSlotClick(slot.id)}
                     >

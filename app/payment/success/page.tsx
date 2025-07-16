@@ -86,13 +86,27 @@ export default function PaymentSuccessPage() {
           throw new Error('Invalid payment reference');
         }
 
+        // Get courtId from URL
+        const courtId = searchParams.get('courtId');
+        
+        // Get user data from localStorage
+        let userId = '';
+        try {
+          const userData = localStorage.user ? JSON.parse(localStorage.user) : null;
+          userId = userData?.userId || '';
+        } catch (error) {
+          console.error('Error parsing user data from localStorage:', error);
+        }
+        
         // Prepare payment data
         const paymentInfo = {
           pidx,
           transaction_id,
           amount,
           status,
-          purchase_order_id,
+          purchase_order_id: purchase_order_id || searchParams.get('purchaseOrderId'),
+          courtId: courtId || '',
+          userId
         };
         
         setPaymentData(paymentInfo);
@@ -104,12 +118,17 @@ export default function PaymentSuccessPage() {
         // Only verify with our backend for pending or success status
         if (paymentStatus === 'success' || paymentStatus === 'pending') {
           try {
-            const response = await fetch('/api/payment/verify', {
+            const response = await fetch('http://127.0.0.1:8000/web/api/v1/user/VerifyPayment', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify(paymentInfo),
+              body: JSON.stringify({
+                pidx,
+                purchaseOrderId: paymentInfo.purchase_order_id,
+                courtId: paymentInfo.courtId,
+                userId: paymentInfo.userId
+              })
             });
 
             if (!response.ok) {

@@ -12,6 +12,16 @@ export const notificationApi = baseApi.injectEndpoints({
           'Accept': 'application/json',
         },
       }),
+      transformResponse: (response: { count: number; notifications: any[] }) => ({
+        ...response,
+        notifications: response.notifications.map(notification => ({
+          ...notification,
+          notificationId: notification.NotificationID,
+          message: notification.Message,
+          isRead: notification.IsRead,
+          createdAt: notification.CreatedAt
+        }))
+      }),
       providesTags: (result) =>
         result && result.notifications
           ? [

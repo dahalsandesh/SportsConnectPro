@@ -109,12 +109,13 @@ const publicApi = baseApi.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Courts", id }],
     }),
     
-    // Create a new booking
-    createBooking: builder.mutation<{ success: boolean; bookingId: string }, { 
-      timeSlotId: string; 
+    // Create a new booking with multiple tickets
+    createBooking: builder.mutation<{ success: boolean; bookingId: string; payment_url?: string }, { 
+      ticketIds: string[]; 
       paymentTypeId: string; 
       userId: string;
       totalPrice: number;
+      courtId: string;
     }>({
       query: (body) => {
         if (!body.userId) {
@@ -126,20 +127,24 @@ const publicApi = baseApi.injectEndpoints({
         if (body.totalPrice === undefined || body.totalPrice === null) {
           throw new Error('Total price is required for booking');
         }
+        if (!body.ticketIds?.length) {
+          throw new Error('At least one ticket ID is required');
+        }
         
         return {
           url: "/web/api/v1/user/CreateTicket",
           method: "POST",
           body: {
-            ticketId: [body.timeSlotId],
+            ticketId: body.ticketIds, // Array of ticket IDs
             paymentTypeId: body.paymentTypeId,
             userId: body.userId,
-            totalPrice: body.totalPrice // Total price in rupees
+            totalPrice: body.totalPrice,
+            courtId: body.courtId
           },
         };
       },
-      invalidatesTags: (result, error, { timeSlotId }) => [
-        { type: 'TimeSlots', id: timeSlotId },
+      invalidatesTags: (result, error, { ticketIds }) => [
+        ...ticketIds.map(id => ({ type: 'TimeSlots' as const, id })),
         { type: 'TimeSlots', id: 'LIST' }
       ],
     }),
