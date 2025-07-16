@@ -65,11 +65,15 @@ export function VenueOwnerHeader() {
     isLoading,
     refetch,
   } = useGetNotificationsQuery(
-    { userId: user?.id },
-    { skip: !mounted || !user?.id }
+    { userId: user?.userId },
+    { 
+      skip: !mounted || !user?.userId,
+      pollingInterval: 30000, // Refetch every 30 seconds
+    }
   );
   
   const notifications = notificationsData.notifications || [];
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   // These functions are no longer needed as the API endpoints were removed
   const handleMarkAsRead = async (notificationId: string) => {
@@ -177,9 +181,12 @@ export function VenueOwnerHeader() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
-                  {unreadNotifications.length > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
-                      {unreadNotifications.length}
+                  {unreadCount > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                    >
+                      {unreadCount > 9 ? '9+' : unreadCount}
                     </Badge>
                   )}
                 </Button>

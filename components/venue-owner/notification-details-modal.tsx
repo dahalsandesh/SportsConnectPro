@@ -1,22 +1,13 @@
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { Loader2 } from "lucide-react"
 import { useEffect } from "react"
 import { skipToken } from "@reduxjs/toolkit/query"
 import { useGetNotificationByIdQuery } from "@/redux/api/venue-owner/notificationsApi"
-
-type VenueNotification = {
-  notificationId: string
-  message: string
-  isRead: boolean
-  createdAt: string
-  updatedAt: string
-  userId: string
-  type?: string
-  metadata?: Record<string, any>
-}
+import type { VenueNotification } from "@/types/venue-owner-api"
 
 interface NotificationDetailsModalProps {
   notificationId: string | null
@@ -38,9 +29,11 @@ export function VenueNotificationDetailsModal({
     onOpenChange(open)
   }
 
-  const { data: notification, isLoading, isFetching } = useGetNotificationByIdQuery(
-    notificationId || skipToken,
-    { skip: !notificationId }
+  const { data: notification, isLoading } = useGetNotificationByIdQuery(
+    notificationId || "",
+    {
+      skip: !notificationId,
+    }
   )
 
   useEffect(() => {
@@ -57,7 +50,7 @@ export function VenueNotificationDetailsModal({
         </DialogHeader>
         <ScrollArea className="max-h-[70vh] pr-4">
           <div className="space-y-4">
-            {isLoading || isFetching ? (
+            {isLoading ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
@@ -69,32 +62,26 @@ export function VenueNotificationDetailsModal({
                     {notification.message}
                   </p>
                 </div>
-                {notification.type && (
-                  <div className="space-y-2">
-                    <p className="font-medium">Type:</p>
-                    <p className="text-muted-foreground capitalize">
-                      {notification.type.replace(/([A-Z])/g, ' $1').trim()}
-                    </p>
-                  </div>
-                )}
                 <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>
-                    <span className="font-medium">Date:</span>{' '}
-                    {format(new Date(notification.createdAt), 'PPPp')}
-                  </p>
-                  <p>
-                    <span className="font-medium">Status:</span>{' '}
-                    <span className={notification.isRead ? 'text-green-500' : 'text-amber-500'}>
-                      {notification.isRead ? 'Read' : 'Unread'}
-                    </span>
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Type:</span>
+                    <Badge variant="outline">
+                      {notification.title || "General"}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Status:</span>
+                    <Badge variant={notification.isRead ? "outline" : "default"}>
+                      {notification.isRead ? "Read" : "Unread"}
+                    </Badge>
+                  </div>
                 </div>
-                {notification.metadata && Object.keys(notification.metadata).length > 0 && (
-                  <div className="space-y-2">
-                    <p className="font-medium">Details:</p>
+                {notification && Object.keys(notification).length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="mb-2 text-sm font-medium">Details</h4>
                     <div className="rounded-md bg-muted/50 p-3">
                       <pre className="overflow-x-auto text-sm">
-                        {JSON.stringify(notification.metadata, null, 2)}
+                        {JSON.stringify(notification, null, 2)}
                       </pre>
                     </div>
                   </div>

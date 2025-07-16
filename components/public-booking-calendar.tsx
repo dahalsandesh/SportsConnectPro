@@ -1,16 +1,21 @@
 "use client";
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useGetTicketsQuery, useCreateBookingMutation } from "@/redux/api/publicApi";
-import { format, addDays, isBefore } from "date-fns";
-import { Loader2, Calendar as CalendarIcon, Clock } from "lucide-react";
+import { useGetTicketsQuery, useCreateBookingMutation, useGetPaymentTypesQuery } from "@/redux/api/publicApi";
+import { format, addDays } from "date-fns";
+import { Loader2, Calendar as CalendarIcon, Clock, CreditCard } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useAppSelector } from "@/redux/store/hooks";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export interface TimeSlot {
+interface TimeSlot {
   id: string;
   date: string;
   startTime: string;
@@ -27,6 +32,11 @@ interface Court {
   hourlyRate: number;
 }
 
+interface PaymentType {
+  PaymentTypeID: string;
+  PaymentTypeName: string;
+}
+
 interface PublicBookingCalendarProps {
   courts: Court[];
   defaultCourtId?: string;
@@ -38,12 +48,52 @@ export default function PublicBookingCalendar({
   defaultCourtId = '',
   className = ''
 }: PublicBookingCalendarProps) {
+  const router = useRouter();
+  const { user } = useAppSelector((state) => state.auth);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [selectedPaymentType, setSelectedPaymentType] = useState<string>("");
   const [selectedCourtId, setSelectedCourtId] = useState<string>(defaultCourtId || (courts[0]?.courtId ?? ""));
   const [selectedDate, setSelectedDate] = useState<string>(() => format(new Date(), "yyyy-MM-dd"));
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [isBooking, setIsBooking] = useState(false);
+  const searchParams = useSearchParams();
+  
+  useEffect(() => {
+    // Check for booking state in URL parameters
+    const bookingStateParam = searchParams.get('bookingState');
+    if (bookingStateParam) {
+      try {
+        const bookingState = JSON.parse(decodeURIComponent(bookingStateParam));
+        
+        // Restore booking state
+        if (bookingState.selectedDate) {
+          setSelectedDate(bookingState.selectedDate);
+        }
+        
+        if (bookingState.selectedCourtId) {
+          setSelectedCourtId(bookingState.selectedCourtId);
+        }
+        
+        if (bookingState.selectedSlots && Array.isArray(bookingState.selectedSlots)) {
+          setSelectedSlots(bookingState.selectedSlots);
+        }
+        
+        if (bookingState.selectedPaymentType) {
+          setSelectedPaymentType(bookingState.selectedPaymentType);
+        }
+        
+        // Remove booking state from URL
+        const url = new URL(window.location.href);
+        url.searchParams.delete('bookingState');
+        window.history.replaceState({}, '', url.toString());
+      } catch (error) {
+        console.error('Failed to parse booking state:', error);
+      }
+    }
+  }, [searchParams]);
   
   const [createBooking] = useCreateBookingMutation();
+  const { data: paymentTypes = [], isLoading: isLoadingPaymentTypes } = useGetPaymentTypesQuery();
 
   const { 
     data: slots = [], 
@@ -63,30 +113,21 @@ export default function PublicBookingCalendar({
     [courts, selectedCourtId]
   );
 
-  // Remove date restrictions for testing
-  const minDate = "2000-01-01";
-  const maxDate = "2100-12-31";
-  
-  // Generate an array of the next 30 days for the date picker
-  const availableDates = Array.from({ length: 30 }, (_, i) => {
-    const date = addDays(new Date(), i);
-    return format(date, "yyyy-MM-dd");
-  });
-
   // Filter and sort slots
   const availableSlots = useMemo(() => {
     if (!Array.isArray(slots)) return [];
     return slots
-      .filter((slot: TimeSlot) => slot.isActive) // Changed from isAvailable to isActive to match API
+      .filter((slot: TimeSlot) => slot.isActive)
       .sort((a: TimeSlot, b: TimeSlot) => a.startTime.localeCompare(b.startTime));
   }, [slots]);
 
-  // Calculate total price for selected slots
+  // Calculate the total price based on selected slots
   const totalPrice = useMemo(() => {
-    if (selectedSlots.length === 0) return 0;
+    if (!selectedSlots.length || !availableSlots) return 0;
+    
     return selectedSlots.reduce((total, slotId) => {
       const slot = availableSlots.find((s: TimeSlot) => s.id === slotId);
-      return total + (slot?.rate || 0); // Changed from price to rate to match API
+      return total + (slot?.rate || 0);
     }, 0);
   }, [selectedSlots, availableSlots]);
 
@@ -95,58 +136,87 @@ export default function PublicBookingCalendar({
     return format(new Date(`2000-01-01T${timeString}`), 'h:mm a');
   };
 
-  // Handle booking submission
+  // Handle booking submission for multiple slots
   const handleBookNow = useCallback(async () => {
+    // First check if user is authenticated
+    if (!user || !user.userId) {
+      // If user is not logged in, redirect to login with booking details
+      const bookingState = {
+        selectedSlots,
+        selectedCourtId,
+        selectedDate,
+        selectedPaymentType,
+        courtName: selectedCourt?.name || '',
+        redirectUrl: window.location.pathname
+      };
+      
+      // Encode the booking state and redirect to login
+      const encodedState = encodeURIComponent(JSON.stringify(bookingState));
+      router.push(`/login?redirect=${window.location.pathname}&state=${encodedState}`);
+      return;
+    }
+    
+    // Double check we have a valid user ID
+    if (!user.userId) {
+      toast.error('You must be logged in to make a booking');
+      return;
+    }
+
     if (selectedSlots.length === 0 || !selectedCourtId) {
       toast.error('No time slots selected');
+      return;
+    }
+
+    if (!selectedPaymentType) {
+      toast.error('Please select a payment method');
       return;
     }
     
     try {
       setIsBooking(true);
       
-      // Create booking for each selected time slot
-      const bookingPromises = selectedSlots.map(slotId => {
-        return createBooking({ timeSlotId: slotId }).unwrap()
-          .then(result => ({
-            success: true,
-            slotId,
-            data: result
-          }))
-          .catch(error => ({
-            success: false,
-            slotId,
-            error: error?.data?.message || 'Failed to book time slot'
-          }));
-      });
+      // Get courtId from URL
+      const courtId = window.location.pathname.split('/').pop();
       
-      // Wait for all bookings to complete
-      const results = await Promise.all(bookingPromises);
-      const successfulBookings = results.filter(r => r.success);
-      const failedBookings = results.filter(r => !r.success);
+      // Send single request with all ticket IDs
+      const result = await createBooking({ 
+        ticketIds: selectedSlots,
+        paymentTypeId: selectedPaymentType,
+        userId: user.userId,
+        totalPrice: totalPrice,
+        courtId: courtId || ''
+      }).unwrap();
       
-      // Show success/error messages
-      if (successfulBookings.length > 0) {
-        toast.success(`Successfully booked ${successfulBookings.length} time slot(s)`);
+      // Handle payment URL if present
+      if (result?.payment_url) {
+        // Store the booking data in localStorage
+        localStorage.setItem('pendingBooking', JSON.stringify({
+          ticketIds: selectedSlots,
+          paymentTypeId: selectedPaymentType,
+          totalPrice,
+          timestamp: new Date().toISOString()
+        }));
+        
+        // Redirect to the payment URL
+        window.location.href = result.payment_url;
+        return;
       }
       
-      if (failedBookings.length > 0) {
-        toast.error(`Failed to book ${failedBookings.length} time slot(s)`);
-      }
-      
-      // Refresh available slots after booking
+      // If no payment URL, it's a direct booking
+      toast.success(`Successfully booked ${selectedSlots.length} time slot(s)!`);
       await refetchSlots();
       setSelectedSlots([]);
+      setSelectedPaymentType("");
       
     } catch (error) {
       console.error('Booking error:', error);
-      toast.error('An error occurred while processing your booking');
+      toast.error(error?.data?.message || 'Failed to process booking');
     } finally {
       setIsBooking(false);
     }
-  }, [selectedSlots, selectedCourtId, selectedDate, createBooking, refetchSlots, selectedCourt]);
+  }, [selectedSlots, selectedCourtId, selectedDate, createBooking, refetchSlots, selectedCourt, user, selectedPaymentType, router]);
 
-  // Consecutive selection logic
+  // Handle slot selection allowing multiple selections
   const handleSlotClick = useCallback((slotId: string) => {
     setSelectedSlots(current => {
       // If already selected, deselect it
@@ -154,219 +224,221 @@ export default function PublicBookingCalendar({
         return current.filter(id => id !== slotId);
       }
       
-      // If first selection
-      if (current.length === 0) {
-        return [slotId];
-      }
-      
-      // Only allow consecutive selection
-      const currentSlot = availableSlots.find((s: TimeSlot) => s.id === slotId);
-      const selectedSlot = availableSlots.find((s: TimeSlot) => s.id === current[0]);
-      
-      if (!currentSlot || !selectedSlot) return current;
-      
-      const currentTime = new Date(`2000-01-01T${currentSlot.startTime}`).getTime();
-      const selectedTime = new Date(`2000-01-01T${selectedSlot.startTime}`).getTime();
-      
-      // If new slot is right before the first selected slot
-      if (currentTime < selectedTime && 
-          currentTime + 60 * 60 * 1000 === selectedTime) {
-        return [slotId, ...current];
-      }
-      
-      // If new slot is right after the last selected slot
-      const lastSelected = availableSlots.find((s: TimeSlot) => s.id === current[current.length - 1]);
-      if (lastSelected) {
-        const lastTime = new Date(`2000-01-01T${lastSelected.endTime}`).getTime();
-        if (currentTime === lastTime) {
-          return [...current, slotId];
-        }
-      }
-      
-      // If not consecutive, start new selection
-      return [slotId];
+      // Add to selection
+      return [...current, slotId];
     });
-  }, [availableSlots]);
+  }, []);
+
+  // Render payment types selection
+  const renderPaymentTypes = () => (
+    <div className="space-y-4 mt-4">
+      <h4 className="font-medium">Select Payment Method</h4>
+      {isLoadingPaymentTypes ? (
+        <div className="flex items-center justify-center py-4">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      ) : paymentTypes.length > 0 ? (
+        <RadioGroup 
+          value={selectedPaymentType} 
+          onValueChange={setSelectedPaymentType}
+          className="space-y-2"
+        >
+          {paymentTypes.map((paymentType: PaymentType) => (
+            <div key={paymentType.PaymentTypeID} className="flex items-center space-x-2">
+              <RadioGroupItem value={paymentType.PaymentTypeID} id={`payment-${paymentType.PaymentTypeID}`} />
+              <Label htmlFor={`payment-${paymentType.PaymentTypeID}`} className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-muted-foreground" />
+                {paymentType.PaymentTypeName}
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
+      ) : (
+        <p className="text-sm text-muted-foreground">No payment methods available</p>
+      )}
+    </div>
+  );
+
+  // Render login modal
+  const renderLoginModal = () => (
+    <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Login Required</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <p>You need to be logged in to book a time slot.</p>
+          <div className="flex justify-end space-x-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setIsLoginModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                const currentUrl = window.location.pathname + window.location.search;
+                router.push(`/login?redirect=${encodeURIComponent(currentUrl)}`);
+              }}
+            >
+              Go to Login
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 
   return (
     <div className={cn("grid grid-cols-1 lg:grid-cols-3 gap-6", className)}>
+      {/* Left Column - Calendar and Time Slots */}
       <div className="lg:col-span-2">
         <Card className="border rounded-xl p-6">
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-2">Book a Time Slot</h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          Select your preferred date and time
-        </p>
-        
-        <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
-          <div className="flex-1">
-            <label className="block text-sm font-medium mb-1">Date</label>
-            <div className="relative">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !selectedDate && "text-muted-foreground"
-                    )}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2">Book a Time Slot</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Select your preferred date and time
+            </p>
+            
+            <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-1">Date</label>
+                <div className="relative">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !selectedDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {selectedDate ? (
+                          format(new Date(selectedDate), "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={new Date(selectedDate)}
+                        onSelect={(date) => {
+                          if (date) {
+                            setSelectedDate(format(date, "yyyy-MM-dd"));
+                            setSelectedSlots([]);
+                          }
+                        }}
+                        className="rounded-md border"
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+              
+              {courts.length > 1 && (
+                <div className="flex-1">
+                  <label className="block text-sm font-medium mb-1">Court</label>
+                  <select
+                    value={selectedCourtId}
+                    onChange={(e) => {
+                      setSelectedCourtId(e.target.value);
+                      setSelectedSlots([]);
+                    }}
+                    className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    disabled={isLoading}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? (
-                      format(new Date(selectedDate), "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={new Date(selectedDate)}
-                    onSelect={(date) => {
-                      if (date) {
-                        setSelectedDate(format(date, "yyyy-MM-dd"));
-                        setSelectedSlots([]);
-                      }
-                    }}
-                    className="rounded-md border"
-                    disabled={(date) => {
-                      // Allow all dates for testing
-                      return false;
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+                    {courts.map((court) => (
+                      <option key={court.courtId} value={court.courtId}>
+                        {court.name} ({court.sportCategory})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           </div>
           
-          {courts.length > 1 && (
-            <div className="flex-1">
-              <label className="block text-sm font-medium mb-1">Court</label>
-              <select
-                value={selectedCourtId}
-                onChange={(e) => {
-                  setSelectedCourtId(e.target.value);
-                  setSelectedSlots([]);
-                }}
-                className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                disabled={isLoading}
-              >
-                {courts.map((court) => (
-                  <option key={court.courtId} value={court.courtId}>
-                    {court.name} ({court.sportCategory})
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="font-semibold">Available Time Slots</h3>
-          {selectedSlots.length > 0 && (
-            <div className="text-sm">
-              <span className="text-muted-foreground">Selected: </span>
-              <span className="font-medium">{selectedSlots.length} slot{selectedSlots.length > 1 ? 's' : ''}</span>
-              {totalPrice > 0 && (
-                <span className="ml-2 text-green-600 font-semibold">
-                  Rs. {totalPrice.toLocaleString()}
-                </span>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="font-semibold">Available Time Slots</h3>
+              {selectedSlots.length > 0 && (
+                <div className="text-sm">
+                  <span className="text-muted-foreground">Selected: </span>
+                  <span className="font-medium">
+                    {selectedSlots.length} slot{selectedSlots.length > 1 ? 's' : ''}
+                  </span>
+                  {totalPrice > 0 && (
+                    <span className="ml-2 text-green-600 font-semibold">
+                      Rs. {totalPrice.toLocaleString()}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
-        
-        {isLoading ? (
-          <div className="py-12 flex flex-col items-center justify-center text-muted-foreground">
-            <Loader2 className="h-8 w-8 animate-spin mb-2" />
-            <p>Loading available slots...</p>
-          </div>
-        ) : isError ? (
-          <div className="py-8 text-center">
-            <div className="text-red-500 mb-2">Failed to load time slots.</div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => refetchSlots()}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Retrying...' : 'Retry'}
-            </Button>
-          </div>
-        ) : availableSlots.length === 0 ? (
-          <div className="py-12 text-center border rounded-lg bg-muted/20">
-            <p className="text-muted-foreground">No time slots available for this date.</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Try selecting a different date or check back later.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {availableSlots.map((slot: TimeSlot) => {
-              const isSelected = selectedSlots.includes(slot.id);
-              const isFirstSelected = selectedSlots[0] === slot.id;
-              const isLastSelected = selectedSlots[selectedSlots.length - 1] === slot.id;
-              
-              return (
-                <Button
-                  key={slot.id}
-                  variant={isSelected ? "default" : "outline"}
-                  className={cn(
-                    "h-14 flex flex-col items-center justify-center rounded-lg transition-all duration-150 relative overflow-hidden",
-                    isSelected 
-                      ? "bg-green-100 hover:bg-green-100 text-green-900 border-2 border-green-400"
-                      : "hover:bg-accent/50 hover:border-accent",
-                    isFirstSelected && "rounded-r-none border-r-0",
-                    isLastSelected && "rounded-l-none border-l-0"
-                  )}
-                  onClick={() => handleSlotClick(slot.id)}
+            
+            {isLoading ? (
+              <div className="py-12 flex flex-col items-center justify-center text-muted-foreground">
+                <Loader2 className="h-8 w-8 animate-spin mb-2" />
+                <p>Loading available slots...</p>
+              </div>
+            ) : isError ? (
+              <div className="py-8 text-center">
+                <div className="text-red-500 mb-2">Failed to load time slots.</div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => refetchSlots()}
+                  disabled={isLoading}
                 >
-                  <span className="font-medium text-sm">
-                    {formatTime(slot.startTime)}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    Rs. {slot.price}
-                  </span>
+                  {isLoading ? 'Retrying...' : 'Retry'}
                 </Button>
-              );
-            })}
-          </div>
-        )}
-
-        {selectedSlots.length > 0 && (
-          <div className="pt-4 mt-4 border-t">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-muted-foreground">Selected time:</p>
-                <p className="font-medium">
-                  {format(new Date(selectedDate), 'EEEE, MMM d, yyyy')} • {selectedSlots.length} hour{selectedSlots.length > 1 ? 's' : ''}
+              </div>
+            ) : availableSlots.length === 0 ? (
+              <div className="py-12 text-center border rounded-lg bg-muted/20">
+                <p className="text-muted-foreground">No time slots available for this date.</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Try selecting a different date or check back later.
                 </p>
               </div>
-              <Button 
-                onClick={handleBookNow}
-                disabled={isBooking}
-                className="px-6"
-              >
-                {isBooking ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Booking...
-                  </>
-                ) : (
-                  `Book Now (Rs. ${totalPrice.toLocaleString()})`
-                )}
-              </Button>
-            </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {availableSlots.map((slot: TimeSlot) => {
+                  const isSelected = selectedSlots.includes(slot.id);
+                  const isFirstSelected = selectedSlots[0] === slot.id;
+                  const isLastSelected = selectedSlots[selectedSlots.length - 1] === slot.id;
+                  
+                  return (
+                    <Button
+                      key={slot.id}
+                      variant={isSelected ? "default" : "outline"}
+                      className={cn(
+                        "h-14 flex flex-col items-center justify-center rounded-lg transition-all duration-150 relative overflow-hidden",
+                        isSelected 
+                          ? "bg-green-100 hover:bg-green-100 text-green-900 border-2 border-green-400"
+                          : "hover:bg-accent/50 hover:border-accent"
+                      )}
+                      onClick={() => handleSlotClick(slot.id)}
+                    >
+                      <span className="font-medium text-sm">
+                        {formatTime(slot.startTime)}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        Rs. {slot.rate}
+                      </span>
+                    </Button>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
-      </div>
         </Card>
       </div>
       
-      {/* Booking Summary */}
+      {/* Right Column - Booking Summary */}
       <div className="lg:sticky lg:top-6 h-fit">
         <Card className="border rounded-xl p-6">
           <CardHeader className="px-0 pt-0 pb-4">
@@ -388,7 +460,9 @@ export default function PublicBookingCalendar({
                 <div className="pt-2 border-t">
                   <div className="flex justify-between mb-2">
                     <span className="text-sm text-muted-foreground">Selected Slots</span>
-                    <span className="text-sm font-medium">{selectedSlots.length} hour{selectedSlots.length !== 1 ? 's' : ''}</span>
+                    <span className="text-sm font-medium">
+                      {selectedSlots.length} hour{selectedSlots.length !== 1 ? 's' : ''}
+                    </span>
                   </div>
                   <div className="space-y-2">
                     {selectedSlots.map((slotId, index) => {
@@ -415,11 +489,17 @@ export default function PublicBookingCalendar({
               <div className="border-t pt-4">
                 <div className="flex justify-between items-center mb-4">
                   <span className="font-medium">Total</span>
-                  <span className="text-lg font-bold text-green-600">Rs. {totalPrice.toLocaleString()}</span>
+                  <span className="text-lg font-bold text-green-600">
+                    Rs. {totalPrice.toLocaleString()}
+                  </span>
                 </div>
+                
+                {/* Payment Type Selection */}
+                {renderPaymentTypes()}
+                
                 <Button 
                   onClick={handleBookNow}
-                  disabled={isBooking}
+                  disabled={isBooking || !selectedPaymentType}
                   className="w-full"
                   size="lg"
                 >
@@ -443,6 +523,9 @@ export default function PublicBookingCalendar({
           </CardContent>
         </Card>
       </div>
+      
+      {/* Login Modal */}
+      {renderLoginModal()}
     </div>
   );
 }

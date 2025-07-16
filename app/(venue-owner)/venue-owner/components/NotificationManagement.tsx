@@ -90,9 +90,6 @@ export default function NotificationManagement() {
     setSelectedNotificationId(notificationId);
   };
 
-  const unreadNotifications = notifications.filter((n: any) => !n.isRead);
-  const readNotifications = notifications.filter((n: any) => n.isRead);
-
   return (
     <>
       <VenueNotificationDetailsModal
@@ -175,40 +172,42 @@ export default function NotificationManagement() {
                 <div className="space-y-2">
                   {unreadNotifications.map((notification: any) => (
                     <div
-                      key={notification.notificationId}
+                      key={notification.NotificationID}
                       className="p-4 bg-muted/50 hover:bg-muted transition-colors rounded-lg space-y-2 cursor-pointer"
-                      onClick={() => handleNotificationClick(notification.notificationId)}
+                      onClick={() => handleNotificationClick(notification.NotificationID)}
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            {!notification.isRead && (
+                            {!notification.IsRead && (
                               <span className="h-2 w-2 rounded-full bg-primary" />
                             )}
-                            <p className="font-medium">{notification.title || 'Notification'}</p>
+                            <p className="font-medium">Booking Notification</p>
                           </div>
                           <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                            {notification.message}
+                            {notification.Message}
                           </p>
                           <p className="text-xs text-muted-foreground mt-2">
-                            {format(new Date(notification.createdAt), "PPp")}
+                            {format(new Date(notification.CreatedAt), "PPp")}
                           </p>
                         </div>
                         <div className="flex gap-2">
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() =>
-                              handleMarkAsRead(notification.notificationId)
-                            }>
-                            <Check className="h-4 w-4" />
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMarkAsRead(notification.NotificationID);
+                            }}
+                            className="h-7 w-7 p-0" />
                           </Button>
                           <Button
                             size="sm"
-                            variant="destructive"
-                            onClick={() =>
-                              handleDelete(notification.notificationId)
-                            }>
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setNotificationToDelete(notification.NotificationID);
+                              setIsDeleteDialogOpen(true);
+                            }}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -226,7 +225,7 @@ export default function NotificationManagement() {
                 <div className="space-y-2">
                   {readNotifications.map((notification: any) => (
                     <div
-                      key={notification.notificationId}
+                      key={notification.NotificationID}
                       className="p-4 border rounded-lg space-y-2 hover:bg-muted/30 transition-colors cursor-pointer"
                       onClick={() => handleNotificationClick(notification.notificationId)}
                     >
@@ -234,10 +233,10 @@ export default function NotificationManagement() {
                         <div className="flex-1">
                           <p className="font-medium">{notification.title || 'Notification'}</p>
                           <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                            {notification.message}
+                            {notification.Message}
                           </p>
                           <p className="text-xs text-muted-foreground mt-2">
-                            {format(new Date(notification.createdAt), "PPp")}
+                            {format(new Date(notification.CreatedAt), "PPp")}
                           </p>
                         </div>
                         <Button

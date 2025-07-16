@@ -1,5 +1,5 @@
 import { baseApi } from "./baseApi";
-import type { Post, Reel, Court, Event, TimeSlot } from '@/types/api';
+import type { Post, Reel, Court, Event, TimeSlot, PaymentType } from '@/types/api';
 
 // Create the public API slice
 const publicApi = baseApi.injectEndpoints({
@@ -44,6 +44,12 @@ const publicApi = baseApi.injectEndpoints({
           ? [...result.map(({ id }) => ({ type: 'TimeSlots' as const, id })), { type: 'TimeSlots', id: 'LIST' }]
           : [{ type: 'TimeSlots', id: 'LIST' }],
     }),
+    // Get available payment types
+    getPaymentTypes: builder.query<PaymentType[], void>({
+      query: () => "/web/api/v1/GetPaymentType",
+      providesTags: [{ type: 'PaymentTypes', id: 'LIST' }],
+    }),
+    
     // Get ticket by ID (public)
     getTicketById: builder.query<any, string>({
       query: (ticketId) => ({
@@ -103,17 +109,42 @@ const publicApi = baseApi.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Courts", id }],
     }),
     
-    // Create a new booking
-    createBooking: builder.mutation<{ success: boolean; bookingId: string }, { timeSlotId: string }>({
-      query: (body) => ({
-        url: "/web/api/v1/CreateBooking",
-        method: "POST",
-        body: {
-          timeSlotIds: [body.timeSlotId] // Match backend expected format
-        },
-      }),
-      invalidatesTags: (result, error, { timeSlotId }) => [
-        { type: 'TimeSlots', id: timeSlotId },
+    // Create a new booking with multiple tickets
+    createBooking: builder.mutation<{ success: boolean; bookingId: string; payment_url?: string }, { 
+      ticketIds: string[]; 
+      paymentTypeId: string; 
+      userId: string;
+      totalPrice: number;
+      courtId: string;
+    }>({
+      query: (body) => {
+        if (!body.userId) {
+          throw new Error('User ID is required for booking');
+        }
+        if (!body.paymentTypeId) {
+          throw new Error('Payment type is required for booking');
+        }
+        if (body.totalPrice === undefined || body.totalPrice === null) {
+          throw new Error('Total price is required for booking');
+        }
+        if (!body.ticketIds?.length) {
+          throw new Error('At least one ticket ID is required');
+        }
+        
+        return {
+          url: "/web/api/v1/user/CreateTicket",
+          method: "POST",
+          body: {
+            ticketId: body.ticketIds, // Array of ticket IDs
+            paymentTypeId: body.paymentTypeId,
+            userId: body.userId,
+            totalPrice: body.totalPrice,
+            courtId: body.courtId
+          },
+        };
+      },
+      invalidatesTags: (result, error, { ticketIds }) => [
+        ...ticketIds.map(id => ({ type: 'TimeSlots' as const, id })),
         { type: 'TimeSlots', id: 'LIST' }
       ],
     }),
@@ -122,6 +153,7 @@ const publicApi = baseApi.injectEndpoints({
 
 // Export the API slice and its hooks
 export const {
+  useGetPaymentTypesQuery,
   useGetCountDataQuery,
   useGetEventsQuery,
   useGetEventByIdQuery,
