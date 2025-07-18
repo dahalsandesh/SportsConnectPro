@@ -1,12 +1,24 @@
 "use client"
 
-import { useAppSelector } from "@/hooks/redux"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, CreditCard, MapPin, Trophy, ArrowUpRight, Heart, Search } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Calendar, Clock, CheckCircle, DollarSign } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { useGetBookingsQuery } from '@/redux/api/user/bookingsApi'
-import React from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { 
+  useGetBookingsQuery, 
+  useGetDashboardStatsQuery 
+} from '@/redux/api/user/userApi'
+import { Skeleton } from "@/components/ui/skeleton"
+import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { useAuth } from "@/hooks/useAuth"
+
+// Dynamically import client components with SSR disabled to avoid hydration issues
+const BookingList = dynamic(
+  () => import('@/components/user/booking-list').then((mod) => mod.BookingList),
+  { ssr: false, loading: () => <Skeleton className="h-64 w-full" /> }
+);
 
 interface DashboardStatCardProps {
   title: string;
@@ -20,164 +32,213 @@ function DashboardStatCard({ title, icon, value, description }: DashboardStatCar
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {icon}
+        <div className="h-5 w-5 text-muted-foreground">
+          {icon}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
         {description && (
-          <div className="flex items-center text-xs text-muted-foreground">{description}</div>
+          <div className="text-xs text-muted-foreground">{description}</div>
         )}
       </CardContent>
     </Card>
   );
 }
 
-export default function DashboardPage() {
-  const { user } = useAppSelector((state) => state.auth)
-  const { data: bookingsData, isLoading: isBookingsLoading, isError: isBookingsError } = useGetBookingsQuery({ limit: 1000 });
+// Ensure client-side only rendering
+const useIsClient = () => {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  return isClient;
+};
 
-  // Filter bookings for this user
-  const userBookings = (bookingsData?.data || []).filter(b => b.userEmail === user?.email);
-  const totalBookings = userBookings.length;
-  const totalSpent = userBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
-  const upcomingBookings = userBookings
-    .filter(b => ["CONFIRMED", "PENDING"].includes(b.status) && new Date(b.bookingDate) >= new Date())
-    .sort((a, b) => new Date(a.bookingDate).getTime() - new Date(b.bookingDate).getTime())
-    .slice(0, 3);
+export default function DashboardPage() {
+  const isClient = useIsClient();
+  const { user } = useAuth();
+  const userId = user?.userId || '';
+  
+  // Fetch dashboard stats
+  const { 
+    data: stats, 
+    isLoading: isStatsLoading, 
+    error: statsError,
+    refetch: refetchStats
+  } = useGetDashboardStatsQuery(
+    { userId },
+    { skip: !userId || !isClient }
+  );
+  
+  // Fetch all bookings for the user
+  const { 
+    data: allBookings = [], 
+    isLoading: isBookingsLoading,
+    error: bookingsError,
+    refetch: refetchBookings
+  } = useGetBookingsQuery(
+    { userId },
+    { skip: !userId || !isClient }
+  );
+
+  // Filter bookings by status
+  const upcomingBookings = allBookings.filter(b => b.status === 'Pending' || b.status === 'Success');
+  const pastBookings = allBookings.filter(b => b.status === 'Rejected' || b.status === 'Cancelled');
+  
+  // Refetch data when user changes and queries are ready
+  useEffect(() => {
+    if (isClient && userId) {
+      // Only refetch if the queries have been started
+      const refetchData = async () => {
+        try {
+          await Promise.all([
+            refetchStats(),
+            refetchBookings()
+          ]);
+        } catch (error) {
+          console.error('Error refetching data:', error);
+        }
+      };
+      
+      refetchData();
+    }
+  }, [isClient, userId]);
+
+  const isLoading = isStatsLoading || isBookingsLoading;
+  const hasError = statsError || bookingsError;
+  
+  // Calculate stats
+  const totalSpent = stats?.total_revenue || 0;
+  const upcomingCount = upcomingBookings.length;
+  const pastCount = pastBookings.length;
+  const cancelledCount = stats?.booking_reject_count || 0;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-[120px] w-full" />
+          ))}
+        </div>
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-md bg-destructive/15 p-4 text-destructive">
+          <p>Failed to load dashboard data. Please try again later.</p>
+          <Button 
+            variant="outline" 
+            className="mt-2"
+            onClick={() => {
+              if (userId) {
+                refetchStats();
+                refetchBookings();
+              }
+            }}
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, {user.fullName || user.userName}!</p>
+          <p className="text-muted-foreground">Welcome back, {user?.fullName || user?.userName || 'User'}!</p>
         </div>
-        <Button asChild>
-          <Link href="/venues">
-            <Search className="mr-2 h-4 w-4" />
-            Find Venues
-          </Link>
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button variant="default" size="sm" asChild className="bg-primary text-primary-foreground">
+            <Link href="/venues">New Booking</Link>
+          </Button>
+        </div>
       </div>
 
+      {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <DashboardStatCard
-          title="Total Bookings"
-          icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
-          value={isBookingsLoading ? '...' : totalBookings}
-          description={
-            <>
-              <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-500 font-medium">{isBookingsLoading ? '' : `+${totalBookings}`}</span> total
-            </>
-          }
-        />
-        <DashboardStatCard
-          title="Upcoming Events"
-          icon={<Trophy className="h-4 w-4 text-muted-foreground" />}
-          value={3}
-          description={
-            <>
-              <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-500 font-medium">+1</span> new event this week
-            </>
-          }
-        />
-        <DashboardStatCard
-          title="Favorite Venues"
-          icon={<Heart className="h-4 w-4 text-muted-foreground" />}
-          value={5}
-          description={<span>Across 3 sports</span>}
-        />
-        <DashboardStatCard
           title="Total Spent"
-          icon={<CreditCard className="h-4 w-4 text-muted-foreground" />}
-          value={isBookingsLoading ? '...' : `Rs. ${totalSpent}`}
-          description={
-            <>
-              <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-500 font-medium">{isBookingsLoading ? '' : `+Rs. ${totalSpent}`}</span> total
-            </>
-          }
+          value={`$${totalSpent.toFixed(2)}`}
+          icon={<DollarSign className="h-4 w-4" />}
+          description="All time"
+        />
+        <DashboardStatCard
+          title="Upcoming Bookings"
+          value={upcomingCount}
+          icon={<Calendar className="h-4 w-4" />}
+          description={`${pastCount} past bookings`}
+        />
+        <DashboardStatCard
+          title="Cancelled"
+          value={cancelledCount}
+          icon={<Clock className="h-4 w-4" />}
+          description="All time"
+        />
+        <DashboardStatCard
+          title="Active Now"
+          value="0"
+          icon={<CheckCircle className="h-4 w-4" />}
+          description="Currently playing"
         />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Upcoming Bookings</CardTitle>
-            <CardDescription>Your next 3 scheduled bookings</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {isBookingsLoading ? (
-                <div>Loading...</div>
-              ) : upcomingBookings.length === 0 ? (
-                <div className="text-muted-foreground">No upcoming bookings.</div>
-              ) : (
-                upcomingBookings.map((booking) => (
-                  <div key={booking.bookingId} className="flex items-center gap-4 rounded-lg border p-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                      <Calendar className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium">{booking.court?.venueName} - {booking.court?.courtName}</p>
-                      <p className="text-xs text-muted-foreground">{booking.bookingDate} • {booking.startTime} - {booking.endTime}</p>
-                    </div>
-                    <div className="text-sm font-medium">Rs.{booking.totalAmount}</div>
-                  </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Recent Activities</CardTitle>
-            <CardDescription>Your recent activities on the platform</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
-                  <Calendar className="h-4 w-4 text-green-600" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm">Booked Green Field Futsal</p>
-                  <p className="text-xs text-muted-foreground">2 days ago</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
-                  <CreditCard className="h-4 w-4 text-blue-600" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm">Payment of Rs.1,200 completed</p>
-                  <p className="text-xs text-muted-foreground">2 days ago</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100">
-                  <Trophy className="h-4 w-4 text-purple-600" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm">Registered for Summer Tournament</p>
-                  <p className="text-xs text-muted-foreground">5 days ago</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100">
-                  <MapPin className="h-4 w-4 text-amber-600" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm">Added Victory Court to favorites</p>
-                  <p className="text-xs text-muted-foreground">1 week ago</p>
-                </div>
+      {/* Bookings Tabs */}
+      <Tabs defaultValue="upcoming" className="space-y-4">
+        <div className="flex items-center justify-between">
+          <TabsList>
+            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+            <TabsTrigger value="past">Past</TabsTrigger>
+          </TabsList>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/dashboard/bookings">View All Bookings</Link>
+          </Button>
+        </div>
+
+        <TabsContent value="upcoming" className="space-y-4">
+          {upcomingBookings?.length > 0 ? (
+            <BookingList bookings={upcomingBookings} />
+          ) : (
+            <div className="flex h-[200px] items-center justify-center rounded-md border border-dashed">
+              <div className="text-center">
+                <h3 className="text-lg font-medium">No upcoming bookings</h3>
+                <p className="text-sm text-muted-foreground">
+                  You don't have any upcoming bookings.
+                </p>
+                <Button className="mt-4" variant="default" asChild size="sm" color="primary">
+                  <Link href="/venues">Book a court</Link>
+                </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="past" className="space-y-4">
+          {pastBookings?.length > 0 ? (
+            <BookingList bookings={pastBookings} />
+          ) : (
+            <div className="flex h-[200px] items-center justify-center rounded-md border border-dashed">
+              <div className="text-center">
+                <h3 className="text-lg font-medium">No past bookings</h3>
+                <p className="text-sm text-muted-foreground">
+                  Your past bookings will appear here.
+                </p>
+              </div>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
-  )
+  );
 }
