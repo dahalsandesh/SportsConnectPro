@@ -1,4 +1,6 @@
 "use client";
+import React from "react";
+declare const SlotManagement: any;
 
 import {
   Card,
@@ -85,13 +87,13 @@ export default function VenueOwnerDashboard() {
   }));
 
   // Get data from dashboard response
-  const totalBookings = dashboardData?.total_books || 0;
-  const totalRevenue = dashboardData?.total_earnings || 0;
-  const totalCourts = dashboardData?.total_courts || 0;
-  const pendingBookings = dashboardData?.pending_books || 0;
+  const totalBookings = (dashboardData as any)?.total_books || 0;
+  const totalRevenue = (dashboardData as any)?.total_earnings || 0;
+  const totalCourts = (dashboardData as any)?.total_courts || 0;
+  const pendingBookings = (dashboardData as any)?.pending_books || 0;
 
   // Use actual recent bookings from dashboard data if available
-  const recentBookings: Booking[] = dashboardData?.recentBookings || [];
+  const recentBookings: Booking[] = (dashboardData as any)?.recentBookings || [];
   const recentPayments: Payment[] = [];
 
   const {
@@ -128,7 +130,7 @@ export default function VenueOwnerDashboard() {
                   <div className="text-red-500">Error</div>
                 ) : (
                   <div className="text-2xl font-bold">
-                    {dashboardData?.total_books ?? 0}
+                    {(dashboardData as any)?.total_books ?? 0}
                   </div>
                 )}
               </CardContent>
@@ -147,7 +149,7 @@ export default function VenueOwnerDashboard() {
                   <div className="text-red-500">Error</div>
                 ) : (
                   <div className="text-2xl font-bold">
-                    Rs.{dashboardData?.total_earnings?.toLocaleString() ?? 0}
+                    Rs.{((dashboardData as any)?.total_earnings ?? 0).toLocaleString()}
                   </div>
                 )}
               </CardContent>
@@ -166,7 +168,7 @@ export default function VenueOwnerDashboard() {
                   <div className="text-red-500">Error</div>
                 ) : (
                   <div className="text-2xl font-bold">
-                    {dashboardData?.total_courts ?? 0}
+                    {(dashboardData as any)?.total_courts ?? 0}
                   </div>
                 )}
               </CardContent>
@@ -221,7 +223,7 @@ export default function VenueOwnerDashboard() {
           </div>
 
           {/* Recent Activities */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-4">
               <CardHeader>
                 <CardTitle>Recent Bookings</CardTitle>
@@ -253,14 +255,14 @@ export default function VenueOwnerDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </div> */}
       </div>
     </div>
   );
 }
 
 // Child component for venue card with courts
-function VenueCardWithCourts({ venue }: { venue: VenueDetails }) {
+function VenueCardWithCourts({ venue }: { venue: any }) {
   const {
     data: courts = [],
     isLoading: isCourtsLoading,
