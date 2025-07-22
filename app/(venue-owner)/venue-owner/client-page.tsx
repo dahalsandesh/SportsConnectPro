@@ -66,25 +66,9 @@ export default function VenueOwnerDashboard() {
   
   const notifications = notificationsData?.notifications || [];
 
-  // Prepare data for charts
-  const months: string[] = [];
-  const now = new Date();
-  for (let i = 5; i >= 0; i--) {
-    const d = subMonths(startOfMonth(now), i);
-    months.push(format(d, "yyyy-MM"));
-  }
-
-  // Mock data for charts since dashboardData doesn't have trends
-  const bookingsByMonth = months.map((month) => ({
-    date: `${month}-01`,
-    bookings: Math.floor(Math.random() * 50) + 10, // Random data for demo
-  }));
-
-  const revenueByMonth = months.map((month) => ({
-    date: `${month}-01`,
-    revenue: Math.floor(Math.random() * 10000) + 1000, // Random data for demo
-    target: Math.floor(Math.random() * 12000) + 1200, // Random target
-  }));
+  // Prepare data for charts from dashboard data
+  const postStats = (dashboardData as any)?.post_statics || [];
+  const reelStats = (dashboardData as any)?.reel_statics || [];
 
   // Get data from dashboard response
   const totalBookings = (dashboardData as any)?.total_books || 0;
@@ -204,7 +188,10 @@ export default function VenueOwnerDashboard() {
                   <div>Error loading bookings chart</div>
                 </Card>
               ) : (
-                <BookingChart data={bookingsByMonth} />
+                <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
+                  <BookingChart postStats={postStats} />
+                  <RevenueChart reelStats={reelStats} />
+                </div>
               )}
             </div>
             <div className="col-span-3">
@@ -216,9 +203,7 @@ export default function VenueOwnerDashboard() {
                 <Card className="h-[300px] flex items-center justify-center text-destructive">
                   <div>Error loading revenue chart</div>
                 </Card>
-              ) : (
-                <RevenueChart data={revenueByMonth} />
-              )}
+              ) : null}
             </div>
           </div>
 

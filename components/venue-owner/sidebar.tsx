@@ -62,16 +62,16 @@ const sidebarItems = [
     href: "/venue-owner/reels",
     icon: <Video className="h-5 w-5" />,
   },
-  {
-    title: "Payments",
-    href: "/venue-owner/payments",
-    icon: <CreditCard className="h-5 w-5" />,
-  },
-  {
-    title: "Analytics",
-    href: "/venue-owner/analytics",
-    icon: <BarChart className="h-5 w-5" />,
-  },
+  // {
+  //   title: "Payments",
+  //   href: "/venue-owner/payments",
+  //   icon: <CreditCard className="h-5 w-5" />,
+  // },
+  // {
+  //   title: "Analytics",
+  //   href: "/venue-owner/analytics",
+  //   icon: <BarChart className="h-5 w-5" />,
+  // },
   // {
   //   title: "Messages",
   //   href: "/venue-owner/messages",

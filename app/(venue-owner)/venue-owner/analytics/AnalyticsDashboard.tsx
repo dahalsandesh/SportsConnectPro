@@ -2,8 +2,23 @@
 
 import { useGetVenueDashboardDataQuery } from "@/redux/api/venue-owner/venueApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, LineChart, Users, CreditCard, Calendar } from "lucide-react";
-import { format, subMonths, startOfMonth } from "date-fns";
+import { Calendar, CreditCard, Users, BarChart2, PieChart as PieChartIcon } from "lucide-react";
+import { format } from "date-fns";
+import { BarChart, PieChart, Bar, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-3 border rounded-lg shadow-lg">
+        <p className="font-medium">{payload[0].payload.category || label}</p>
+        <p className="text-sm">Count: {payload[0].value}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 export default function AnalyticsDashboard() {
   const {
@@ -12,37 +27,42 @@ export default function AnalyticsDashboard() {
     error,
   } = useGetVenueDashboardDataQuery();
 
-  // Generate static months for chart x-axis
-  const months: string[] = [];
-  const now = new Date();
-  for (let i = 5; i >= 0; i--) {
-    const d = subMonths(startOfMonth(now), i);
-    months.push(format(d, "yyyy-MM"));
-  }
-  // Mock chart data (replace with real data as needed)
-  const bookingsByMonth = months.map((month) => ({
-    date: month + "-01",
-    bookings: Math.floor(Math.random() * 20),
-  }));
-  const revenueByMonth = months.map((month) => ({
-    date: month + "-01",
-    revenue: Math.floor(Math.random() * 1000),
+  if (isLoading) return <div className="flex items-center justify-center h-64">Loading analytics...</div>;
+  if (error) return <div className="text-red-500 text-center p-4">Error loading analytics.</div>;
+  if (!dashboardData) return <div className="text-center p-4">No data available</div>;
+
+  // Prepare data for the booking status pie chart
+  const bookingStatusData = [
+    { name: 'Total Bookings', value: dashboardData.total_books, color: '#0088FE' },
+    { name: 'Rejected', value: dashboardData.rejected_books, color: '#FF8042' },
+    { name: 'Pending', value: dashboardData.pending_books, color: '#FFBB28' }
+  ];
+
+  // Prepare data for the post statistics bar chart
+  const postStatsData = dashboardData.post_statics.map((item: any) => ({
+    category: item.category,
+    count: item.post_count
   }));
 
-  if (isLoading) return <div>Loading analytics...</div>;
-  if (error) return <div>Error loading analytics.</div>;
+  // Prepare data for the reel statistics
+  const reelStatsData = dashboardData.reel_statics.map((item: any) => ({
+    category: item.category,
+    count: item.post_count
+  }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Analytics</h2>
+          <h2 className="text-2xl font-bold">Analytics Dashboard</h2>
           <p className="text-muted-foreground">
-            View venue performance and insights
+            View your venue's performance and insights
           </p>
         </div>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -52,70 +72,156 @@ export default function AnalyticsDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardData?.totalBookings || 0}
+              {dashboardData.total_books}
             </div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% from last month
-            </p>
           </CardContent>
         </Card>
+        
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">
+              Pending Bookings
+            </CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${dashboardData?.totalRevenue || 0}
+              {dashboardData.pending_books}
             </div>
-            <p className="text-xs text-muted-foreground">
-              +10.5% from last month
-            </p>
           </CardContent>
         </Card>
+        
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Courts
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardData?.activeUsers || 0}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              +5.2% from last month
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Booking Trends</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px] flex items-center justify-center">
-              <LineChart className="h-8 w-8 text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">
-                Booking trends chart will be displayed here
-              </span>
+              {dashboardData.total_courts}
             </div>
           </CardContent>
         </Card>
+        
         <Card>
-          <CardHeader>
-            <CardTitle>Revenue Distribution</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total Earnings
+            </CardTitle>
+            <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] flex items-center justify-center">
-              <BarChart className="h-8 w-8 text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">
-                Revenue distribution chart will be displayed here
-              </span>
+            <div className="text-2xl font-bold">
+              Rs. {dashboardData.total_earnings?.toLocaleString()}
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Charts */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Booking Status Pie Chart */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center space-x-2">
+              <PieChartIcon className="h-5 w-5 text-primary" />
+              <CardTitle>Booking Status</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={bookingStatusData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {bookingStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Post Statistics Bar Chart */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center space-x-2">
+              <BarChart2 className="h-5 w-5 text-primary" />
+              <CardTitle>Posts by Sport Category</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={postStatsData}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="category" />
+                  <YAxis />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Bar dataKey="count" fill="#8884d8" name="Posts" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Reel Statistics */}
+      {dashboardData.reel_statics && dashboardData.reel_statics.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center space-x-2">
+              <BarChart2 className="h-5 w-5 text-primary" />
+              <CardTitle>Reels by Category</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={reelStatsData}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="category" />
+                  <YAxis />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Bar dataKey="count" fill="#00C49F" name="Reels" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
