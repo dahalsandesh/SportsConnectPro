@@ -111,7 +111,7 @@ export function CreatePostDialog({
       // Append text fields with proper encoding
       formData.append('title', values.title);
       formData.append('description', values.description);
-      formData.append('category', values.categoryId);
+
       
       // Append image if selected
       if (selectedImage) {
@@ -135,7 +135,7 @@ export function CreatePostDialog({
       }
 
       // Use the RTK Query mutation
-      await createAdminPost(formData).unwrap();
+      await createAdminPost({ formData, userId: user.userId }).unwrap();
       
       // Reset form and state on success
       form.reset({
