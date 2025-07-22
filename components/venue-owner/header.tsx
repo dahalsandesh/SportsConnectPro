@@ -141,8 +141,8 @@ export function VenueOwnerHeader() {
                   { title: "Events", href: "/venue-owner/events", icon: <Trophy className="h-5 w-5" /> },
                   { title: "Posts & News", href: "/venue-owner/posts", icon: <NewspaperIcon className="h-5 w-5" /> },
                   { title: "Reels", href: "/venue-owner/reels", icon: <Video className="h-5 w-5" /> },
-                  { title: "Payments", href: "/venue-owner/payments", icon: <CreditCard className="h-5 w-5" /> },
-                  { title: "Analytics", href: "/venue-owner/analytics", icon: <BarChart className="h-5 w-5" /> },
+                  // { title: "Payments", href: "/venue-owner/payments", icon: <CreditCard className="h-5 w-5" /> },
+                  // { title: "Analytics", href: "/venue-owner/analytics", icon: <BarChart className="h-5 w-5" /> },
                 ].map((item) => (
                   <Link
                     key={item.href}
