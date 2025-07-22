@@ -48,10 +48,10 @@ export const venueApi = baseApi.injectEndpoints({
         { type: 'VenueImages', id: 'LIST' },
       ],
     }),
-    uploadVenueImage: builder.mutation<ApiResponse<{ imageUrl: string }>, { venueId: string; file: File }>({ 
-      query: ({ venueId, file }) => {
+    uploadVenueImage: builder.mutation<ApiResponse<{ imageUrl: string }>, { userId: string; file: File }>({ 
+      query: ({ userId, file }) => {
         const formData = new FormData();
-        formData.append('venueId', venueId);
+        formData.append('userId', userId);
         formData.append('image', file);
         
         return {
@@ -63,10 +63,10 @@ export const venueApi = baseApi.injectEndpoints({
           },
         };
       },
-      invalidatesTags: (result, error, { venueId }) => [
-        { type: 'Venues', id: venueId },
+      invalidatesTags: (result, error, { userId }) => [
+        { type: 'Venues', id: 'USER_' + userId },
         { type: 'VenueImages', id: 'LIST' },
-        { type: 'VenueImages', id: venueId },
+        { type: 'VenueImages', id: 'USER_' + userId },
       ],
     }),
     deleteVenueImage: builder.mutation<ApiResponse<null>, { imageId: string; userId: string }>({

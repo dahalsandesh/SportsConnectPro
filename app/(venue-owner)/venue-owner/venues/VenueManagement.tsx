@@ -191,21 +191,49 @@ export default function VenueManagement() {
   
   // Handle image upload
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.length || !venueData?.venueId || !userId) return;
+    if (!e.target.files?.length || !venueData?.venueId || !userId) {
+      console.error('Missing required data for image upload:', { 
+        hasFiles: !!e.target.files?.length,
+        venueId: venueData?.venueId,
+        userId
+      });
+      return;
+    }
+    
     setIsUploading(true);
     try {
-      const formData = new FormData();
-      Array.from(e.target.files).forEach((file) => {
-        formData.append('images', file); // API expects 'images' field for multiple
+      // Process each file individually
+      const uploadPromises = Array.from(e.target.files).map(async (file) => {
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('userId', userId);
+        
+        return uploadVenueImage({
+          userId: userId,
+          file: file
+        }).unwrap();
       });
-      formData.append('venueId', venueData.venueId);
-      formData.append('userId', userId);
-      await uploadVenueImage(formData).unwrap();
+      
+      // Wait for all uploads to complete
+      await Promise.all(uploadPromises);
+      
+      // Show success message
       toast({
         title: "Success",
         description: "Image uploaded successfully"
       });
-      await refetchVenue();
+      
+      // Refetch venue data to get the updated images
+      try {
+        await refetchVenue().unwrap();
+      } catch (error) {
+        console.error('Error refetching venue data:', error);
+        toast({
+          title: "Upload Complete",
+          description: "Image uploaded, but there was an issue refreshing the page. Please refresh manually.",
+          variant: "default"
+        });
+      }
     } catch (error) {
       console.error('Error uploading images:', error);
       toast({
