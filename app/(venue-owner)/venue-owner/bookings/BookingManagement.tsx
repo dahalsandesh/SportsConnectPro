@@ -208,15 +208,15 @@ export default function BookingManagement() {
                     <div>
                       <CardTitle className="text-lg font-semibold">{booking.BookerName}</CardTitle>
                       <div className="text-muted-foreground text-xs">
-  {format(new Date(booking.bookDate), "PPP")} |
-  {(() => {
-    if (!booking.timeSlot) return "";
-    const [startRaw, endRaw] = booking.timeSlot.split(" - ");
-    const start = startRaw?.split(".")[0];
-    const end = endRaw?.split(".")[0];
-    return formatTimeRange(start, end);
-  })()}
-</div>
+                        {format(new Date(booking.bookDate), "PPP")} |
+                        {(() => {
+                          if (!booking.timeSlot) return "";
+                          const [startRaw, endRaw] = booking.timeSlot.split(" - ");
+                          const start = startRaw?.split(".")[0];
+                          const end = endRaw?.split(".")[0];
+                          return formatTimeRange(start, end);
+                        })()}
+                      </div>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                       booking.status === "Pending"
