@@ -160,7 +160,7 @@ export default function DashboardPage() {
           <p className="text-muted-foreground">Welcome back, {user?.fullName || user?.userName || 'User'}!</p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="default" size="sm" asChild className="bg-primary text-primary-foreground">
+          <Button variant="ghost" size="sm" asChild className="bg-primary text-white">
             <Link href="/venues">New Booking</Link>
           </Button>
         </div>
@@ -216,7 +216,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-muted-foreground">
                   You don't have any upcoming bookings.
                 </p>
-                <Button className="mt-4" variant="default" asChild size="sm" color="primary">
+                <Button className="mt-4 text-white" variant="default" asChild size="sm" color="primary">
                   <Link href="/venues">Book a court</Link>
                 </Button>
               </div>

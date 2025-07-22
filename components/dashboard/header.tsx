@@ -261,18 +261,20 @@ export function DashboardHeader() {
                   </div>
                 ) : notificationDetails ? (
                   <>
-                    <div className="flex items-center justify-between p-4 border-b">
-                      <h3 className="text-lg font-semibold">Notification Details</h3>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8"
-                        onClick={closeDetails}
-                      >
-                        <X className="h-4 w-4" />
-                        <span className="sr-only">Close</span>
-                      </Button>
-                    </div>
+                    <DialogHeader className="border-b p-4">
+                      <div className="flex items-center justify-between">
+                        <DialogTitle className="text-lg">Notification Details</DialogTitle>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8"
+                          onClick={closeDetails}
+                        >
+                          <X className="h-4 w-4" />
+                          <span className="sr-only">Close</span>
+                        </Button>
+                      </div>
+                    </DialogHeader>
                     
                     <div className="flex-1 overflow-y-auto p-6 space-y-4">
                       <div className="space-y-1">
