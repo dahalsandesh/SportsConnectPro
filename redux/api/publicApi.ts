@@ -50,6 +50,20 @@ const publicApi = baseApi.injectEndpoints({
       providesTags: [{ type: 'PaymentTypes', id: 'LIST' }],
     }),
     
+    // Get recommended posts based on current post
+    getRecommendedPosts: builder.query<Array<{
+      id: string;
+      title: string;
+      desc: string;
+      category: string;
+      img: string;
+    }>, string>({
+      query: (postId) => ({
+        url: "/web/api/v1/adds/GetRecommendationNews",
+        params: { postId },
+      }),
+    }),
+    
     // Get ticket by ID (public)
     getTicketById: builder.query<any, string>({
       query: (ticketId) => ({
@@ -167,6 +181,7 @@ export const {
   useGetVenueByIdQuery,
   useGetCourtsQuery,
   useGetCourtByIdQuery,
+  useGetRecommendedPostsQuery,
   useCreateBookingMutation,
 } = publicApi;
 

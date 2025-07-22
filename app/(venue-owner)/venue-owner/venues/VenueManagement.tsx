@@ -21,6 +21,7 @@ import {
   useUploadVenueImageMutation,
   useDeleteVenueImageMutation,
 } from "@/redux/api/venue-owner/venueApi";
+import VenueLocationMapDialog from "@/components/venue-owner/VenueLocationMapDialog";
 import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
 import { 
   Plus, 
@@ -89,6 +90,7 @@ export default function VenueManagement() {
   const [isUploading, setIsUploading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingVenue, setEditingVenue] = useState<VenueDetails | null>(null);
+  const [isMapOpen, setIsMapOpen] = useState(false);
 
   // Get venue details
   const {
@@ -177,35 +179,30 @@ export default function VenueManagement() {
   // Handle image upload
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length || !venueData?.venueId || !userId) return;
-    
-    const file = e.target.files[0];
-    if (!file) return;
-    
     setIsUploading(true);
-    
     try {
-      await uploadVenueImage({
-        venueId: venueData.venueId,
-        userId: userId,
-        file
-      }).unwrap();
-      
+      const formData = new FormData();
+      Array.from(e.target.files).forEach((file) => {
+        formData.append('images', file); // API expects 'images' field for multiple
+      });
+      formData.append('venueId', venueData.venueId);
+      formData.append('userId', userId);
+      await uploadVenueImage(formData).unwrap();
       toast({
         title: "Success",
         description: "Image uploaded successfully"
       });
-      
       await refetchVenue();
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Error uploading images:', error);
       toast({
         title: "Error",
-        description: "Failed to upload image. Please try again.",
+        description: "Failed to upload images. Please try again.",
         variant: "destructive"
       });
     } finally {
       setIsUploading(false);
-      e.target.value = ''; // Reset file input
+      e.target.value = '';
     }
   };
   
@@ -324,6 +321,7 @@ export default function VenueManagement() {
                       type="file" 
                       className="hidden" 
                       accept="image/*"
+                      multiple
                       onChange={handleImageUpload}
                       disabled={isUploading}
                     />
@@ -379,6 +377,16 @@ export default function VenueManagement() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              <VenueLocationMapDialog
+                open={isMapOpen}
+                initialLat={editingVenue?.latitude ?? null}
+                initialLng={editingVenue?.longitude ?? null}
+                onClose={() => setIsMapOpen(false)}
+                onConfirm={(lat, lng) => {
+                  setEditingVenue(prev => ({ ...prev!, latitude: lat, longitude: lng }));
+                  setIsMapOpen(false);
+                }}
+              />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="flex items-start gap-2">
@@ -430,6 +438,47 @@ export default function VenueManagement() {
                         />
                       ) : (
                         <p className="text-muted-foreground">{phoneNumber}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Latitude/Longitude fields and Map Picker */}
+                  <div className="flex items-start gap-2">
+                    <MapPin className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="font-medium">Location (Latitude / Longitude)</p>
+                      {isEditing ? (
+                        <div className="flex items-center gap-2 mt-1">
+                          <Input
+                            type="number"
+                            step="any"
+                            value={editingVenue?.latitude ?? ''}
+                            onChange={e => setEditingVenue(prev => ({
+                              ...prev!,
+                              latitude: e.target.value ? parseFloat(e.target.value) : null
+                            }))}
+                            placeholder="Latitude"
+                            className="w-36"
+                          />
+                          <Input
+                            type="number"
+                            step="any"
+                            value={editingVenue?.longitude ?? ''}
+                            onChange={e => setEditingVenue(prev => ({
+                              ...prev!,
+                              longitude: e.target.value ? parseFloat(e.target.value) : null
+                            }))}
+                            placeholder="Longitude"
+                            className="w-36"
+                          />
+                          <Button type="button" variant="outline" size="sm" onClick={() => setIsMapOpen(true)}>
+                            Select on Map
+                          </Button>
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground">
+                          {editingVenue?.latitude && editingVenue?.longitude ? `${editingVenue.latitude}, ${editingVenue.longitude}` : 'Not set'}
+                        </p>
                       )}
                     </div>
                   </div>
