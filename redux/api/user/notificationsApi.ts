@@ -1,94 +1,68 @@
 import { baseApi } from "../baseApi"
-import type { 
-  ApiResponse, 
-  Notification, 
-  MarkAsReadRequest,
-  NotificationQueryParams
-} from "@/types/api"
 
-// Define the tag type for this API
-type NotificationTag = { type: 'Notifications', id: string | 'LIST' | 'UNREAD_COUNT' }
+export interface Notification {
+  NotificationID: string;
+  Message: string;
+  User_id: string;
+  Date: string;
+  IsRead: boolean;
+  CreatedAt: string;
+  UpdatedAt: string;
+  Title?: string;
+  Link?: string;
+}
 
-// Helper type for tag arrays
-type TagArray<T> = Array<T | { type: T; id: string | number }>
+interface NotificationsResponse {
+  count: number;
+  notifications: Notification[];
+}
 
 export const notificationsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Get notifications with filters
-    getNotifications: builder.query<Notification[], NotificationQueryParams | void>({
-      query: (params) => {
-        const queryParams = params || {};
-        return {
-          url: "/web/api/v1/notifications",
-          params: {
-            limit: 10,
-            ...queryParams,
-          } as Record<string, any>,
-        };
-      },
-      providesTags: (result = []): TagArray<'Notifications'> => [
-        { type: 'Notifications', id: 'LIST' },
-        ...(result?.map<NotificationTag>(({ id }) => ({ type: 'Notifications', id: String(id) })) || []),
-      ],
-    }),
-
-    // Get unread notifications count
-    getUnreadCount: builder.query<{ count: number }, void>({
-      query: () => "/web/api/v1/notifications/unread-count",
-      providesTags: (): TagArray<'Notifications'> => [
-        { type: 'Notifications', id: 'UNREAD_COUNT' }
-      ],
-    }),
-
-    // Mark notification as read
-    markAsRead: builder.mutation<ApiResponse<Notification>, MarkAsReadRequest & { id: string }>({
-      query: ({ id }) => ({
-        url: `/web/api/v1/notifications/${id}/read`,
-        method: "PATCH",
+    // Get all notifications with count
+    getNotifications: builder.query<NotificationsResponse, { userId: string }>({
+      query: ({ userId }) => ({
+        url: "/web/api/v1/user/GetNotification",
+        params: { userId },
+        headers: {
+          'Authorization': `token ${localStorage.getItem('token')}`
+        }
       }),
-      invalidatesTags: (result, error, { id }): TagArray<'Notifications'> => [
-        { type: 'Notifications', id: String(id) },
-        { type: 'Notifications', id: 'LIST' },
-        { type: 'Notifications', id: 'UNREAD_COUNT' },
-      ],
+      transformResponse: (response: any) => ({
+        count: response?.count || 0,
+        notifications: response?.notifications?.map((n: any) => ({
+          ...n,
+          // Map to match the Notification interface
+          NotificationID: n.NotificationID,
+          IsRead: n.IsRead || false,
+          CreatedAt: n.CreatedAt,
+          UpdatedAt: n.UpdatedAt || n.CreatedAt,
+        })) || []
+      }),
+      providesTags: ['Notifications'],
     }),
 
-    // Mark all notifications as read
-    markAllAsRead: builder.mutation<ApiResponse<{ count: number }>, void>({
-      query: () => ({
-        url: "/web/api/v1/notifications/mark-all-read",
-        method: "PATCH",
+    // Get notification by ID (auto-marks as read)
+    getNotificationById: builder.query<Notification, string>({
+      query: (notificationId) => ({
+        url: "/web/api/v1/user/GetNotificationById",
+        params: { notificationId },
       }),
-      invalidatesTags: (): TagArray<'Notifications'> => [
-        { type: 'Notifications', id: 'LIST' },
-        { type: 'Notifications', id: 'UNREAD_COUNT' },
-      ],
-    }),
-
-    // Delete a notification
-    deleteNotification: builder.mutation<ApiResponse<null>, { id: string }>({
-      query: ({ id }) => ({
-        url: `/web/api/v1/notifications/${id}`,
-        method: "DELETE",
+      transformResponse: (response: any) => ({
+        ...response,
+        IsRead: response?.IsRead || true, // Server marks as read on fetch
       }),
-      invalidatesTags: (result, error, { id }): TagArray<'Notifications'> => [
-        { type: 'Notifications', id: String(id) },
-        { type: 'Notifications', id: 'LIST' },
-        { type: 'Notifications', id: 'UNREAD_COUNT' },
-      ],
+      providesTags: (result, error, id) => [{ type: 'Notifications', id }],
     }),
   }),
   overrideExisting: false,
-})
+});
 
 // Export hooks for usage in functional components
 export const {
   useGetNotificationsQuery,
-  useGetUnreadCountQuery,
-  useMarkAsReadMutation,
-  useMarkAllAsReadMutation,
-  useDeleteNotificationMutation,
-} = notificationsApi
+  useLazyGetNotificationByIdQuery,
+} = notificationsApi;
 
 // Export endpoints for use in other parts of the application
-export const notificationsEndpoints = notificationsApi.endpoints
+export const notificationsEndpoints = notificationsApi.endpoints;

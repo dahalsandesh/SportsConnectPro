@@ -3,6 +3,9 @@ import type { RootState } from "../../store/reducers"
 import { getBaseUrl } from "../baseApi"
 import type { ApiResponse, PaginatedResponse } from "@/types/api"
 
+// Define the response type for bookings
+type BookingsResponse = PaginatedResponse<Booking>
+
 // Define tag types for cache invalidation
 export const BOOKINGS_TAG = 'Bookings' as const
 type BookingTag = { 
@@ -129,7 +132,18 @@ export const bookingsApi = createApi({
         ...(result?.map(({ bookingId }) => ({ type: BOOKINGS_TAG, id: bookingId } as const)) || []),
         { type: BOOKINGS_TAG, id: 'VENUE_COURT' },
       ],
-      transformResponse: (response: any) => response || []
+      transformResponse: (response: ApiResponse<Booking[]>): VenueOwnerBooking[] => {
+        const bookings = response.data || [];
+        return bookings.map(booking => ({
+          bookingId: booking.bookingId,
+          BookerName: booking.userName,
+          status: booking.status,
+          paymentMethod: booking.paymentMethod || 'Unknown',
+          totalPrice: booking.totalAmount,
+          bookDate: booking.bookingDate,
+          timeSlot: `${booking.startTime} - ${booking.endTime}`
+        }));
+      }
     }),
 
     // Get booking by ID
@@ -175,15 +189,10 @@ export const bookingsApi = createApi({
       page?: number;
       limit?: number;
       status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'REJECTED';
-    } | void>({
-      query: (params) => {
-        const queryParams = new URLSearchParams();
-        const safeParams = params || {};
-        const { page = 1, limit = 10, status } = safeParams as {
-          page?: number;
-          limit?: number;
-          status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'REJECTED';
-        };
+    }>({
+      query: (params = {}) => {
+        const { page = 1, limit = 10, status } = params;
+const queryParams = new URLSearchParams();
         
         queryParams.append('page', page.toString());
         queryParams.append('limit', limit.toString());

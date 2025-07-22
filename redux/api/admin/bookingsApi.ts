@@ -10,8 +10,15 @@ export const adminBookingsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Bookings"],
     }),
+    getBookingsByDate: builder.query<any[], { date: string }>({
+      query: ({ date }) => ({
+        url: "/web/api/v1/adminapp/GetBooking",
+        params: { date },
+      }),
+      providesTags: ["Bookings"],
+    }),
     // Add more endpoints as needed
   }),
 });
 
-export const { useGetAllBookingsQuery } = adminBookingsApi; 
+export const { useGetAllBookingsQuery, useGetBookingsByDateQuery } = adminBookingsApi; 
