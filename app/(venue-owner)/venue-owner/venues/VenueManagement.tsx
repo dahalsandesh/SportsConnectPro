@@ -40,6 +40,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useGetCitiesQuery } from "@/redux/api/venue-owner/venueApi";
 
 interface VenueDetails {
   venueId: string;
@@ -91,6 +93,10 @@ export default function VenueManagement() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingVenue, setEditingVenue] = useState<VenueDetails | null>(null);
   const [isMapOpen, setIsMapOpen] = useState(false);
+  
+  // Get cities for dropdown
+  const { data: citiesResponse = [], isLoading: isLoadingCities } = useGetCitiesQuery();
+  const cities = Array.isArray(citiesResponse) ? citiesResponse : [];
 
   // Get venue details
   const {
@@ -151,12 +157,19 @@ export default function VenueManagement() {
     }
     
     try {
-      await updateVenueDetails({
+      const updateData = {
         ...data,
         venueId: venueData.venueId,
         userId: userId,
-        isActive: data.isActive ?? venueData.isActive,
-      }).unwrap();
+        // Convert boolean to 1 or 0 for the API
+        isActive: (data.isActive ?? venueData.isActive) ? 1 : 0,
+        // Ensure cityId is included in the update
+        cityId: data.cityId || venueData.cityId,
+      };
+      
+      console.log('Updating venue with data:', updateData);
+      
+      await updateVenueDetails(updateData).unwrap();
       
       toast({
         title: "Success",
@@ -208,10 +221,10 @@ export default function VenueManagement() {
   
   // Handle image delete
   const handleDeleteImage = async (imageId: string) => {
-    if (!window.confirm('Are you sure you want to delete this image?')) return;
+    if (!window.confirm('Are you sure you want to delete this image?') || !userId) return;
     
     try {
-      await deleteVenueImage({ imageId }).unwrap();
+      await deleteVenueImage({ imageId, userId }).unwrap();
       toast({
         title: "Success",
         description: "Image deleted successfully"
@@ -403,22 +416,45 @@ export default function VenueManagement() {
                             }))}
                             className="mt-1"
                           />
-                          <div className="flex items-center gap-2">
-                            <Input 
-                              value={editingVenue?.cityName || ''}
-                              onChange={(e) => setEditingVenue(prev => ({
-                                ...prev!,
-                                cityName: e.target.value
-                              }))}
-                              placeholder="City"
-                              className="flex-1"
-                            />
+                          <div className="space-y-2">
+                            {isLoadingCities ? (
+                              <Skeleton className="h-10 w-full" />
+                            ) : (
+                              <Select
+                                value={editingVenue?.cityId || ''}
+                                onValueChange={(value) => {
+                                  const selectedCity = cities.find(city => city.CityID === value);
+                                  setEditingVenue(prev => ({
+                                    ...prev!,
+                                    cityId: value,
+                                    cityName: selectedCity?.CityName || ''
+                                  }));
+                                }}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select a city" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {cities.map((city) => (
+                                    <SelectItem key={city.CityID} value={city.CityID}>
+                                      {city.CityName}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )}
                           </div>
                         </div>
                       ) : (
-                        <p className="text-muted-foreground">
-                          {address}, {cityName}
-                        </p>
+                        <div className="space-y-1">
+                          <p className="text-muted-foreground">{address}</p>
+                          {cityName && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-muted-foreground">City:</span>
+                              <span className="font-medium">{cityName}</span>
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>

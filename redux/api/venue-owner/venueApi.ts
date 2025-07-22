@@ -69,10 +69,11 @@ export const venueApi = baseApi.injectEndpoints({
         { type: 'VenueImages', id: venueId },
       ],
     }),
-    deleteVenueImage: builder.mutation<ApiResponse<null>, { imageId: string }>({
-      query: ({ imageId }) => {
+    deleteVenueImage: builder.mutation<ApiResponse<null>, { imageId: string; userId: string }>({
+      query: ({ imageId, userId }) => {
         const formData = new FormData();
         formData.append('imageId', imageId);
+        formData.append('userId', userId);
         
         return {
           url: '/web/api/v1/venue/DeleteVenueImage',
@@ -165,9 +166,9 @@ export const {
 export const citiesApi = baseApi.injectEndpoints({
   overrideExisting: true,
   endpoints: (builder) => ({
-    getCities: builder.query<City[], void>({
+    getCities: builder.query<Array<{ CityID: string; CityName: string }>, void>({
       query: () => ({
-        url: '/web/api/v1/venue/GetAllCities',
+        url: '/web/api/v1/venue/GetCity',
         method: 'GET',
       }),
       providesTags: (result) => {
