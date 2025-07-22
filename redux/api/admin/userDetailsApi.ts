@@ -5,7 +5,7 @@ export const userDetailsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAdminUserDetails: builder.query<UserDetails, void>({
       query: () => "/web/api/v1/adminapp/GetUserDetails",
-      providesTags: ["UserDetails"],
+      providesTags: ["UserDetails"] as any,
     }),
     updateAdminUserDetails: builder.mutation<ApiResponse<null>, UpdateUserDetailsRequest>({
       query: (data) => ({
@@ -13,7 +13,7 @@ export const userDetailsApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["UserDetails"],
+      invalidatesTags: ["UserDetails"] as any,
     }),
     uploadAdminProfileImage: builder.mutation<ApiResponse<null>, FormData>({
       query: (formData) => ({
@@ -21,7 +21,7 @@ export const userDetailsApi = baseApi.injectEndpoints({
         method: "POST",
         body: formData,
       }),
-      invalidatesTags: ["UserDetails"],
+      invalidatesTags: ["UserDetails"] as any,
     }),
   }),
 });

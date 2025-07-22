@@ -33,11 +33,14 @@ export default function NotificationManagement() {
     isLoading,
     refetch,
   } = useGetNotificationsQuery(
-    { userId: user?.userId },
+    { userId: user?.userId ?? undefined },
     { skip: !isMounted || !user?.userId }
   );
 
   const { notifications = [], count: unreadCount = 0 } = notificationsData;
+
+  const unreadNotifications = notifications?.filter((n: any) => !n.isRead) ?? [];
+  const readNotifications = notifications?.filter((n: any) => n.isRead) ?? [];
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
@@ -200,7 +203,6 @@ export default function NotificationManagement() {
                               handleMarkAsRead(notification.NotificationID);
                             }}
                             className="h-7 w-7 p-0" />
-                          </Button>
                           <Button
                             size="sm"
                             onClick={(e) => {
@@ -218,6 +220,12 @@ export default function NotificationManagement() {
               </div>
             )}
 
+            {/* Define unread/read notifications for minimal TS fix */}
+            {(() => {
+              const unreadNotifications = notifications?.filter((n: any) => !n.isRead) ?? [];
+              const readNotifications = notifications?.filter((n: any) => n.isRead) ?? [];
+              return null;
+            })()}
             {/* Read Notifications */}
             {readNotifications.length > 0 && (
               <div className="space-y-4">

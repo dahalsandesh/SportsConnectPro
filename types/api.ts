@@ -157,6 +157,8 @@ export interface VenueNotification {
   message: string;
   isRead: boolean;
   createdAt: string;
+  userId?: string;
+  notificationId?: string;
 }
 
 export interface VenueNotificationsResponse {

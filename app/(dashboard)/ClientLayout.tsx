@@ -11,7 +11,7 @@ const publicPaths = ['/login', '/register'];
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
-  const { user, isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
+  const { user, isAuthenticated, loading: isLoading } = useAppSelector((state) => state.auth as any);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -23,9 +23,10 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     if (!publicPaths.includes(pathname)) {
       if (!isLoading && !isAuthenticated) {
         router.push('/login');
-      } else if (!isLoading && isAuthenticated && user?.userType !== UserType.NormalUsers) {
-        console.log('User type:', user?.userType, 'Expected:', UserType.NormalUsers);
-        router.push('/unauthorized');
+      } else if (!isLoading && isAuthenticated && ((user as any)?.userType === UserType.VenueUsers || (user as any)?.userType === UserType.VenueOwner)) {
+        router.push('/venue-owner');
+      } else if (!isLoading && isAuthenticated && (user as any)?.userType !== UserType.NormalUsers) {
+        router.push('/');
       }
     }
   }, [isAuthenticated, isLoading, user, router, pathname]);
@@ -45,8 +46,11 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   }
 
   // If not authenticated or wrong user type, show nothing (will redirect in useEffect)
-  if (!isAuthenticated || user?.userType !== UserType.NormalUsers) {
-    console.log('Rendering null - isAuthenticated:', isAuthenticated, 'userType:', user?.userType, 'expected:', UserType.NormalUsers);
+  if (!isAuthenticated) {
+    return null;
+  }
+  // Only allow NormalUsers to view dashboard content
+  if ((user as any)?.userType !== UserType.NormalUsers) {
     return null;
   }
 

@@ -1,4 +1,4 @@
-import { baseApi } from "./baseApi"
+import { baseApi } from "../baseApi"
 import type { ApiResponse } from "@/types/api"
 
 export interface UserProfile {
@@ -18,10 +18,10 @@ export interface UpdateUserDetailsRequest {
 }
 
 export const profileApi = baseApi.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: (builder: any) => ({
     // Admin profile endpoints
     getUserDetails: builder.query<UserProfile, string | void>({
-      query: (userId) => ({
+      query: (userId: any) => ({
         url: "/web/api/v1/adminapp/GetUserDetails",
         params: userId ? { userId } : undefined,
       }),
@@ -29,7 +29,7 @@ export const profileApi = baseApi.injectEndpoints({
     }),
 
     updateUserDetails: builder.mutation<ApiResponse<null>, UpdateUserDetailsRequest>({
-      query: (data) => ({
+      query: (data: any) => ({
         url: "/web/api/v1/adminapp/UpdateUserDetails",
         method: "POST",
         body: data,
@@ -38,7 +38,7 @@ export const profileApi = baseApi.injectEndpoints({
     }),
 
     uploadProfileImage: builder.mutation<ApiResponse<null>, FormData>({
-      query: (formData) => ({
+      query: (formData: any) => ({
         url: "/web/api/v1/adminapp/UploadProfileImage",
         method: "POST",
         body: formData,

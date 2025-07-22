@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { skipToken } from '@reduxjs/toolkit/query';
 import { useGetVenuesQuery } from "@/redux/api/venue-owner/venueApi";
 import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
 import { useGetTicketsQuery } from "@/redux/api/venue-owner/timeSlotsApi";
@@ -56,7 +57,7 @@ export default function AvailabilityManagement() {
           courtId: selectedCourt,
           date: format(selectedDate, "yyyy-MM-dd"),
         }
-      : null
+      : skipToken
   );
 
   const venues = Array.isArray(venuesData)
@@ -120,13 +121,13 @@ export default function AvailabilityManagement() {
               <div className="space-y-4">
                 {isLoadingSlots ? (
                   <div>Loading time slots...</div>
-                ) : timeSlots.length === 0 ? (
+                ) : (timeSlots ?? []).length === 0 ? (
                   <div className="text-center text-muted-foreground">
                     No time slots found for the selected court and date
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {timeSlots.map((slot: any) => (
+                    {(timeSlots ?? []).map((slot: any) => (
                       <div
                         key={slot.id}
                         className="flex items-center justify-between p-3 border rounded-lg">

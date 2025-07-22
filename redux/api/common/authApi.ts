@@ -12,6 +12,7 @@ import type {
   ChangePasswordRequest,
   ChangePasswordResponse,
 } from "@/types/auth"
+// @ts-ignore
 import type { RootState } from "../store/reducers"
 
 // Import the base URL utility

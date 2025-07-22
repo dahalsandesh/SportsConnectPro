@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useGetTimeSlotsQuery, useCreateTimeSlotsMutation, useUpdateTimeSlotMutation } from "@/redux/api/venue-owner/timeSlotsApi";
+import { useGetTicketsQuery, useCreateTicketsMutation, useUpdateTicketStatusMutation } from "@/redux/api/venue-owner/timeSlotsApi";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,9 +19,9 @@ export default function SlotManagement({ courtId, date }: SlotManagementProps) {
   const [editSlotId, setEditSlotId] = useState<string | null>(null);
   const [editSlot, setEditSlot] = useState<any>(null);
 
-  const { data: slots = [], isLoading, isError, refetch } = useGetTimeSlotsQuery({ courtId, date: selectedDate });
-  const [createTimeSlot, { isLoading: isCreating }] = useCreateTimeSlotMutation();
-  const [updateTimeSlot, { isLoading: isUpdating }] = useUpdateTimeSlotMutation();
+  const { data: slots = [], isLoading, isError, refetch } = useGetTicketsQuery({ courtId, date: selectedDate });
+  const [createTimeSlot, { isLoading: isCreating }] = useCreateTicketsMutation();
+  const [updateTimeSlot, { isLoading: isUpdating }] = useUpdateTicketStatusMutation();
 
   // Handle new slot input change
   const handleSlotChange = (idx: number, field: string, value: string) => {
@@ -45,10 +45,12 @@ export default function SlotManagement({ courtId, date }: SlotManagementProps) {
       await createTimeSlot({
         courtId,
         date: selectedDate,
-        startTime: slot.startTime,
-        endTime: slot.endTime,
-        price: slot.price ? Number(slot.price) : undefined,
-      });
+        ticketList: [{
+          startTime: slot.startTime,
+          endTime: slot.endTime,
+          specialPrice: slot.price ? Number(slot.price) : null
+        }]
+      } as any);
     }
     setNewSlots([{ startTime: "", endTime: "", price: "" }]);
     refetch();

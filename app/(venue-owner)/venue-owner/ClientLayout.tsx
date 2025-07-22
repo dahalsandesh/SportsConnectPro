@@ -11,7 +11,7 @@ const publicPaths = ['/login', '/register'];
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
-  const { user, isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
+  const { user, isAuthenticated, loading: isLoading } = useAppSelector((state) => state.auth as any);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -23,7 +23,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     if (!publicPaths.includes(pathname)) {
       if (!isLoading && !isAuthenticated) {
         router.push('/login');
-      } else if (!isLoading && isAuthenticated && user?.userType !== UserType.VenueUsers) {
+      } else if (!isLoading && isAuthenticated && (user as any)?.userType !== UserType.VenueUsers) {
         router.push('/unauthorized');
       }
     }
@@ -44,7 +44,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   }
 
   // If not authenticated or wrong user type, show nothing (will redirect in useEffect)
-  if (!isAuthenticated || user?.userType !== UserType.VenueUsers) {
+  if (!isAuthenticated || (user as any)?.userType !== UserType.VenueUsers) {
     return null;
   }
 

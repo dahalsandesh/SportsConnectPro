@@ -32,7 +32,6 @@ export const notificationsApi = baseApi.injectEndpoints({
       providesTags: (result, error, { notificationId }) => [{ type: 'AdminNotifications', id: notificationId }],
     }),
   }),
-  overrideExisting: true,
 });
 
 export const { 

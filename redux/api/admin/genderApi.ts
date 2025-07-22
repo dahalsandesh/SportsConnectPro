@@ -1,4 +1,4 @@
-import { baseApi } from "./baseApi"
+import { baseApi } from "../baseApi"
 import type { ApiResponse, CreateGenderRequest, DeleteGenderRequest, Gender } from "@/types/api"
 
 export const genderApi = baseApi.injectEndpoints({

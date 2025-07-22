@@ -1137,7 +1137,7 @@ export default function AvailabilityPage() {
                     onChange={(e) => {
                       if (!editingSlot) return;
                       setEditingSlot({
-                        ...editingSlot,
+                        ...editingSlot!,
                         startTime: e.target.value,
                         endTime: calculateEndTime(e.target.value)
                       });
@@ -1150,7 +1150,7 @@ export default function AvailabilityPage() {
                   <Label>End Time</Label>
                   <Input
                     type="time"
-                    value={editingSlot?.endTime || (editingSlot?.startTime ? calculateEndTime(editingSlot.startTime) : '')}
+                    value={editingSlot!.endTime || (editingSlot!.startTime ? calculateEndTime(editingSlot!.startTime) : '')}
                     disabled
                     className="mt-1 w-full bg-muted"
                   />

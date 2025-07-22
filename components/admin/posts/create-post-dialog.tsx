@@ -150,13 +150,13 @@ export function CreatePostDialog({
       toast({
         title: "Post created",
         description: "The post has been created successfully.",
-        variant: "success",
+        variant: "default",
       });
     } catch (error) {
       console.error('Error creating post:', error);
       toast({
         title: "Error",
-        description: error?.data?.message || "Failed to create post. Please try again.",
+        description: (error as any)?.data?.message || "Failed to create post. Please try again.",
         variant: "destructive",
       });
     }

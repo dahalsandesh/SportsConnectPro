@@ -7,7 +7,7 @@ const config: CapacitorConfig = {
   server: {
     url: "https://sportsconnectpro.vercel.app/",
     androidScheme: "https",
-  }
+  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,

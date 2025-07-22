@@ -9,6 +9,7 @@ interface AuthState {
     fullName: string | null
     phoneNumber: string | null
     userType: UserType | null
+    id: string | null
     userId: string | null
   }
   isAuthenticated: boolean
@@ -23,8 +24,8 @@ const initialState: AuthState = {
     fullName: null,
     phoneNumber: null,
     userType: null,
+    id: null,
     userId: null,
-  
   },
   isAuthenticated: false,
   loading: true,
@@ -54,19 +55,19 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action: PayloadAction<LoginResponse>) => {
-      const { token, email, userName, fullName, phoneNumber, userType, userId } = action.payload
-      state.token = token
-      state.user = { email, userName, fullName, phoneNumber, userType, userId }
-      state.isAuthenticated = true
-      state.loading = false
+      const { token, email, userName, fullName, phoneNumber, userType, userId, id } = action.payload as any;
+      state.token = token;
+      state.user = { email, userName, fullName, phoneNumber, userType, userId, id };
+      state.isAuthenticated = true;
+      state.loading = false;
 
       // Save to localStorage if in browser
       if (typeof window !== "undefined") {
-        localStorage.setItem("token", token)
+        localStorage.setItem("token", token);
         localStorage.setItem(
           "user",
-          JSON.stringify({ email, userName, fullName, phoneNumber, userType, userId })
-        )
+          JSON.stringify({ email, userName, fullName, phoneNumber, userType, userId, id })
+        );
       }
     },
     logout: (state) => {
@@ -77,7 +78,8 @@ const authSlice = createSlice({
         fullName: null,
         phoneNumber: null,
         userType: null,
-        // userId :null,
+        id: null,
+        userId: null,
       }
       state.isAuthenticated = false
       state.loading = false
