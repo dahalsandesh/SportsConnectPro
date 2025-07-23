@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Star, Users, Clock } from "lucide-react";
+import { MapPin, Star, Users, Clock, Navigation } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useGetVenuesQuery } from "@/redux/api/publicApi";
@@ -24,9 +24,27 @@ interface Venue {
   surface?: string; // Court surface type
 }
 
-export default function VenueList() {
-  const { data: venues = [], isLoading, isError } = useGetVenuesQuery();
-  
+interface VenueListProps {
+  venues: Array<{
+    venueID: string;
+    name: string;
+    venueImages: Array<{ image: string }>;
+    rating?: number;
+    reviews?: number;
+    location?: string;
+    city?: string;
+    pricePerHour?: number;
+    price?: number;
+    openingTime?: string;
+    closingTime?: string;
+    address?: string;
+    capacity?: number;
+    surface?: string;
+    distance?: number;
+  }>;
+}
+
+export default function VenueList({ venues = [] }: VenueListProps) {
   // Fallback images from the old static data
   const fallbackImages = [
     "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop&crop=center",
@@ -37,12 +55,8 @@ export default function VenueList() {
     "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop&crop=center",
   ];
 
-  if (isLoading) return <div className="text-center py-8">Loading venues...</div>;
-  if (isError) return <div className="text-center py-8 text-red-600">Failed to load venues. Please try again later.</div>;
-  
-  // Type guard to ensure venues is an array before mapping
-  if (!Array.isArray(venues)) {
-    return <div className="text-center py-8">No venues available</div>;
+  if (venues.length === 0) {
+    return <div className="text-center py-8">No venues found matching your criteria.</div>;
   }
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -73,9 +87,17 @@ export default function VenueList() {
                 <h3 className="text-xl font-bold mb-2 text-foreground">
                   {venue.name}
                 </h3>
-                <div className="flex items-center text-muted-foreground mb-2">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  <span className="text-sm">{venue.address}</span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-500">{venue.city || 'N/A'}</span>
+                  </div>
+                  {typeof venue.distance === 'number' && (
+                    <div className="flex items-center gap-2 text-sm text-green-600">
+                      <Navigation className="h-3 w-3" />
+                      {venue.distance.toFixed(1)} km away
+                    </div>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-2 mt-4">
                   <div className="flex items-center text-sm text-muted-foreground">
