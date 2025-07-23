@@ -35,7 +35,7 @@ const publicApi = baseApi.injectEndpoints({
         params.append('date', date);
         
         return {
-          url: "/web/api/v1/venue/GetTicket",
+          url: "/web/api/v1/GetTicket",
           params: Object.fromEntries(params),
         };
       },
