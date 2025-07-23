@@ -1,5 +1,5 @@
 // API Base URL - Matches admin/venue-owner configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/web/api/v1';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 // API Endpoints
 export const API_ENDPOINTS = {

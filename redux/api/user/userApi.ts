@@ -109,5 +109,5 @@ export const {
   useGetBookingsQuery,
   useGetDashboardStatsQuery,
   useGetNotificationsQuery,
-  useMarkNotificationAsReadMutation,
+
 } = userApi;
