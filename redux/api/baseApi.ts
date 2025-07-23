@@ -103,7 +103,8 @@ export const baseApi = createApi({
     "SportsEvents",
     "VenueEvents",
     "VenueImages",
-    "VenuePaymentMethods"
+    "VenuePaymentMethods",
+    "SecretKey"
   ],
   endpoints: () => ({}),
 })

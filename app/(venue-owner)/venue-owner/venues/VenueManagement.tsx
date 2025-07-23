@@ -22,7 +22,7 @@ import {
   useDeleteVenueImageMutation,
 } from "@/redux/api/venue-owner/venueApi";
 import VenueLocationMapDialog from "@/components/venue-owner/VenueLocationMapDialog";
-import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
+import { useGetCourtsQuery, useUpdateCourtMutation } from "@/redux/api/venue-owner/courtApi";
 import { 
   Plus, 
   MapPin, 
@@ -42,6 +42,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetCitiesQuery } from "@/redux/api/venue-owner/venueApi";
+import { AddCourtDialog } from "@/components/venue-owner/AddCourtDialog";
+import { EditCourtDialog } from "@/components/venue-owner/EditCourtDialog";
 
 interface VenueDetails {
   venueId: string;
@@ -58,11 +60,12 @@ interface VenueDetails {
   courts?: Array<{
     courtId: string;
     courtName: string;
-    sportType: string;
-    surfaceType: string;
-    isActive: boolean;
+    courtType: string;
+    courtCategory: string;
     hourlyRate: number;
-    capacity: number;
+    isActive: boolean;
+    courtImage: string[];
+    capacity?: number;
     desc?: string;
   }>;
 }
@@ -93,37 +96,33 @@ export default function VenueManagement() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingVenue, setEditingVenue] = useState<VenueDetails | null>(null);
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const [isAddCourtDialogOpen, setIsAddCourtDialogOpen] = useState(false);
+  const [editingCourt, setEditingCourt] = useState<any>(null);
   
   // Get cities for dropdown
   const { data: citiesResponse = [], isLoading: isLoadingCities } = useGetCitiesQuery();
   const cities = Array.isArray(citiesResponse) ? citiesResponse : [];
 
   // Get venue details
-  const {
-    data: venueData,
-    isLoading: isLoadingVenue,
+  const { 
+    data: venueData, 
+    isLoading: isLoadingVenue, 
     isError: isVenueError,
     error: venueError,
-    refetch: refetchVenue
-  } = useGetVenueDetailsQuery(
-    { userId: userId || '' },
-    { 
-      skip: !userId,
-      refetchOnMountOrArgChange: true
-    }
-  );
+    refetch: refetchVenue 
+  } = useGetVenueDetailsQuery();
 
-  // Get courts for the venue
-  const {
-    data: courtsData = [],
-    isLoading: isLoadingCourts,
+  // Court management
+  const { 
+    data: courtsData = [], 
+    isLoading: isLoadingCourts, 
     isError: isCourtsError,
-    refetch: refetchCourts
-  } = useGetCourtsQuery(undefined, { 
-    skip: !userId,
-    refetchOnMountOrArgChange: true
+    refetch: refetchCourts 
+  } = useGetCourtsQuery(undefined, {
+    skip: !venueData?.venueId,
   });
   
+  const [updateCourt] = useUpdateCourtMutation();
   const courts = Array.isArray(courtsData) ? courtsData : [];
 
   // Mutations
@@ -705,13 +704,7 @@ export default function VenueManagement() {
                 </div>
                 <Button 
                   size="sm" 
-                  onClick={() => {
-                    // TODO: Implement add court functionality
-                    toast({
-                      title: "Add Court",
-                      description: "Adding a new court will be available soon.",
-                    });
-                  }}
+                  onClick={() => setIsAddCourtDialogOpen(true)}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Court
@@ -744,13 +737,7 @@ export default function VenueManagement() {
                     </p>
                     <Button
                       className="mt-4"
-                      onClick={() => {
-                        // TODO: Implement add court functionality
-                        toast({
-                          title: "Add Court",
-                          description: "Adding a new court will be available soon.",
-                        });
-                      }}
+                      onClick={() => setIsAddCourtDialogOpen(true)}
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Add Court
@@ -762,7 +749,7 @@ export default function VenueManagement() {
                   {courts.map((court: any) => (
                     <Card key={court.courtId} className="overflow-hidden hover:shadow-md transition-shadow">
                       <div className="aspect-video bg-muted/50 relative">
-                        {court.courtImage?.length > 0 ? (
+                        {court.courtImage?.[0] ? (
                           <img 
                             src={court.courtImage[0]} 
                             alt={court.courtName}
@@ -773,22 +760,24 @@ export default function VenueManagement() {
                             <Users className="h-12 w-12 text-muted-foreground" />
                           </div>
                         )}
-                        <Badge 
-                          variant={court.isActive ? "default" : "secondary"} 
-                          className="absolute top-2 right-2"
-                        >
-                          {court.isActive ? "Active" : "Inactive"}
-                        </Badge>
+                        <div className="absolute top-2 right-2">
+                          <div className={`px-2 py-1 rounded-full text-xs font-medium ${court.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            {court.isActive ? 'Active' : 'Inactive'}
+                          </div>
+                        </div>
                       </div>
                       <div className="p-4">
                         <div className="flex justify-between items-start">
                           <h3 className="font-medium text-lg">{court.courtName}</h3>
                           <div className="flex items-center space-x-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8"
+                              onClick={() => setEditingCourt(court)}
+                              title="Edit court"
+                            >
                               <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
@@ -824,6 +813,26 @@ export default function VenueManagement() {
 
         {/* Schedule and Bookings tabs content removed as per request */}
       </Tabs>
+
+      {/* Add Court Dialog */}
+      <AddCourtDialog 
+        open={isAddCourtDialogOpen}
+        onOpenChange={setIsAddCourtDialogOpen}
+        venueId={venueData?.venueId || ''}
+        onSuccess={() => refetchCourts()}
+      />
+
+      {/* Edit Court Dialog */}
+      <EditCourtDialog 
+        open={!!editingCourt}
+        onOpenChange={(open) => !open && setEditingCourt(null)}
+        court={editingCourt}
+        venueId={venueData?.venueId || ''}
+        onSuccess={() => {
+          refetchCourts();
+          setEditingCourt(null);
+        }}
+      />
     </div>
   );
 }

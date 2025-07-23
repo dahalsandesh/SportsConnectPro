@@ -1,13 +1,33 @@
 import { baseApi } from "../baseApi";
 import type { ApiResponse, Venue, VenueDetails, UpdateVenueDetailsRequest, VenueImage, VenueDashboardData, City } from '@/types/api';
+import { getUserId } from '@/utils/auth';
+
+interface SecretKeyResponse {
+  id: string;
+  Venue_id: string;
+  PrivateSecretKey: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface CreateSecretKeyRequest {
+  secretKey: string;
+  userId: string;
+}
+
+interface UpdateSecretKeyRequest {
+  secretkeyId: string;
+  secretKey: string;
+}
 
 export const venueApi = baseApi.injectEndpoints({
   overrideExisting: true,
   endpoints: (builder) => ({
-    getVenueDetails: builder.query<VenueDetails, { userId: string }>({ 
-      query: ({ userId }) => {
+    getVenueDetails: builder.query<VenueDetails, void>({ 
+      query: () => {
+        const userId = getUserId();
         if (!userId) {
-          throw new Error('User ID is required to fetch venue details');
+          throw new Error('User ID not found in localStorage');
         }
         return {
           url: "/web/api/v1/venue/GetVenueDetails",
@@ -91,7 +111,35 @@ export const venueApi = baseApi.injectEndpoints({
     }),
 
     
-     getVenueDashboardData: builder.query<VenueDashboardData, { userId: string }>({ 
+     // Secret Key Endpoints
+    getSecretKey: builder.query<SecretKeyResponse, string>({
+      query: (userId) => ({
+        url: "/web/api/v1/venue/GetSecreteKey",
+        method: 'GET',
+        params: { userId },
+      }),
+      providesTags: ['SecretKey'],
+    }),
+    
+    createSecretKey: builder.mutation<SecretKeyResponse, CreateSecretKeyRequest>({
+      query: (data) => ({
+        url: "/web/api/v1/venue/CreateSecreteKey",
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['SecretKey'],
+    }),
+    
+    updateSecretKey: builder.mutation<SecretKeyResponse, UpdateSecretKeyRequest>({
+      query: (data) => ({
+        url: "/web/api/v1/venue/UpdateSecreteKey",
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['SecretKey'],
+    }),
+
+    getVenueDashboardData: builder.query<VenueDashboardData, { userId: string }>({ 
       query: ({ userId }) => ({
         url: "/web/api/v1/venue/GetDashboardData",
         method: 'GET',
@@ -154,6 +202,9 @@ export const venueApi = baseApi.injectEndpoints({
 export const {
     useGetVenuesQuery,
     useGetVenueDashboardDataQuery,
+    useGetSecretKeyQuery,
+    useCreateSecretKeyMutation,
+    useUpdateSecretKeyMutation,
     useGetVenueDetailsQuery,
     useUpdateVenueDetailsMutation,
     useUploadVenueImageMutation,

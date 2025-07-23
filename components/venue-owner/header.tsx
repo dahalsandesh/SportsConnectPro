@@ -33,6 +33,8 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useGetNotificationsQuery } from "@/redux/api/venue-owner/notificationsApi";
 import { useState, useEffect } from "react";
+import { Key } from "lucide-react";
+import { SecretKeyDialog } from "./SecretKeyDialog";
 import {
   LayoutDashboard,
   MapPin,
@@ -52,6 +54,7 @@ export function VenueOwnerHeader() {
   const { toast } = useToast();
   const [logoutApi] = useLogoutMutation();
   const [open, setOpen] = useState(false);
+  const [secretKeyDialogOpen, setSecretKeyDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Use mounted state to prevent hydration mismatch
@@ -141,7 +144,7 @@ export function VenueOwnerHeader() {
                   { title: "Events", href: "/venue-owner/events", icon: <Trophy className="h-5 w-5" /> },
                   { title: "Posts & News", href: "/venue-owner/posts", icon: <NewspaperIcon className="h-5 w-5" /> },
                   { title: "Reels", href: "/venue-owner/reels", icon: <Video className="h-5 w-5" /> },
-                  // { title: "Payments", href: "/venue-owner/payments", icon: <CreditCard className="h-5 w-5" /> },
+                  { title: "Payments", href: "/venue-owner/payments", icon: <CreditCard className="h-5 w-5" /> },
                   // { title: "Analytics", href: "/venue-owner/analytics", icon: <BarChart className="h-5 w-5" /> },
                 ].map((item) => (
                   <Link
@@ -307,6 +310,13 @@ export function VenueOwnerHeader() {
                   <span>Settings</span>
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setSecretKeyDialogOpen(true)}
+                className="cursor-pointer"
+              >
+                <Key className="mr-2 h-4 w-4" />
+                <span>Payment Secret Key</span>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={handleLogout}
@@ -318,6 +328,10 @@ export function VenueOwnerHeader() {
           </DropdownMenu>
         </div>
       </div>
+      <SecretKeyDialog 
+        open={secretKeyDialogOpen} 
+        onOpenChange={setSecretKeyDialogOpen} 
+      />
     </header>
   );
 }

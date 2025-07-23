@@ -5,8 +5,9 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard as LayoutDashboardIcon, Video } from "lucide-react"
-import {
+import { 
+  LayoutDashboard,
+  Video,
   Users,
   MapPin,
   Calendar,
@@ -18,6 +19,7 @@ import {
   HelpCircle,
   FileText,
   Newspaper,
+  Bot
 } from "lucide-react"
 
 interface SidebarItem {
@@ -35,7 +37,7 @@ export const sidebarItems: SidebarItem[] = [
   {
     title: "Dashboard",
     href: "/admin",
-    icon: <LayoutDashboardIcon className="h-5 w-5" />,
+    icon: <LayoutDashboard className="h-5 w-5" />,
   },
   {
     title: "Venues",
@@ -90,6 +92,11 @@ export const sidebarItems: SidebarItem[] = [
         title: "Cities",
         href: "/admin/settings/cities",
         icon: <MapPin className="h-4 w-4" />,
+      },
+      {
+        title: "AI model train",
+        href: "/admin/settings/ai-model-train",
+        icon: <Bot className="h-4 w-4" />,
       },
     ],
   },

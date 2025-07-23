@@ -9,8 +9,19 @@ export interface SportCategory {
 export const sportCategoryApi = baseApi.injectEndpoints({
   overrideExisting: true,
   endpoints: (builder) => ({
-    getSportCategories: builder.query<SportCategory[], void>({ // Removed ApiResponse since the endpoint returns array directly
-      query: () => "/web/api/v1/venue/GetSportCategory",
+    getSportCategories: builder.query<SportCategory[], void>({
+      query: () => ({
+        url: "/web/api/v1/venue/GetSportCategory",
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      }),
+      transformResponse: (response: SportCategory[]) => {
+        console.log('API Response (raw):', response);
+        // Ensure we always return an array
+        return Array.isArray(response) ? response : [];
+      },
       providesTags: ['SportCategories'],
       // Add error handling
       async onQueryStarted(arg, { queryFulfilled }) {
