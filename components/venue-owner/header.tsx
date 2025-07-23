@@ -35,6 +35,7 @@ import { useGetNotificationsQuery } from "@/redux/api/venue-owner/notificationsA
 import { useState, useEffect } from "react";
 import { Key } from "lucide-react";
 import { SecretKeyDialog } from "./SecretKeyDialog";
+import { VenueNotificationDetailsModal } from "./notification-details-modal";
 import {
   LayoutDashboard,
   MapPin,
@@ -56,6 +57,7 @@ export function VenueOwnerHeader() {
   const [open, setOpen] = useState(false);
   const [secretKeyDialogOpen, setSecretKeyDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [selectedNotificationId, setSelectedNotificationId] = useState<string | null>(null);
 
   // Use mounted state to prevent hydration mismatch
   useEffect(() => {
@@ -103,7 +105,17 @@ export function VenueOwnerHeader() {
     }
   };
 
-  // Notification handlers are now no-op functions since the API endpoints were removed
+  // Handle notification click
+  const handleNotificationClick = (notificationId: string) => {
+    setSelectedNotificationId(notificationId);
+  };
+
+  // Handle modal close
+  const handleNotificationModalClose = (open: boolean) => {
+    if (!open) {
+      setSelectedNotificationId(null);
+    }
+  };
 
   // Ensure notifications is an array before filtering
   const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead) : [];
@@ -212,13 +224,15 @@ export function VenueOwnerHeader() {
                         {unreadNotifications.map((notification: any) => (
                           <div
                             key={notification.notificationId}
-                            className="p-3 bg-muted rounded-lg space-y-2">
+                            className="p-3 bg-muted rounded-lg space-y-2 hover:bg-muted/80 transition-colors cursor-pointer"
+                            onClick={() => handleNotificationClick(notification.notificationId)}
+                          >
                             <div className="flex justify-between items-start">
                               <div>
                                 <p className="font-medium">
                                   {notification.title}
                                 </p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm text-muted-foreground line-clamp-2">
                                   {notification.message}
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-1">
@@ -241,13 +255,15 @@ export function VenueOwnerHeader() {
                         {readNotifications.map((notification: any) => (
                           <div
                             key={notification.notificationId}
-                            className="p-3 border rounded-lg space-y-2">
+                            className="p-3 border rounded-lg space-y-2 hover:bg-muted/50 transition-colors cursor-pointer"
+                            onClick={() => handleNotificationClick(notification.notificationId)}
+                          >
                             <div className="flex justify-between items-start">
                               <div>
                                 <p className="font-medium">
                                   {notification.title}
                                 </p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm text-muted-foreground line-clamp-2">
                                   {notification.message}
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-1">
@@ -331,6 +347,10 @@ export function VenueOwnerHeader() {
       <SecretKeyDialog 
         open={secretKeyDialogOpen} 
         onOpenChange={setSecretKeyDialogOpen} 
+      />
+      <VenueNotificationDetailsModal
+        notificationId={selectedNotificationId}
+        onOpenChange={handleNotificationModalClose}
       />
     </header>
   );

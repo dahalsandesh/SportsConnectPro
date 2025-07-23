@@ -47,28 +47,15 @@ export function NotificationBell() {
   const { data, isLoading, error, refetch } = useGetAdminNotificationsQuery(
     user?.userId ? { userId: user.userId } : undefined
   );
-  const [markAsRead] = useMarkNotificationAsReadMutation();
   const unreadCount = data?.notifications.filter((n) => !n.IsRead).length || 0;
 
-  const handleNotificationClick = (notificationId: string, isRead: boolean) => {
+  const handleNotificationClick = (notificationId: string) => {
     setSelectedNotificationId(notificationId);
-    if (!isRead) {
-      markAsRead({ notificationId });
-    }
   };
 
   const handleCloseModal = () => {
     setSelectedNotificationId(null);
     refetch(); // Refresh notifications when modal is closed
-  };
-
-  const handleMarkAsRead = async (notificationId: string) => {
-    try {
-      await markAsRead({ notificationId }).unwrap();
-      refetch();
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error);
-    }
   };
   return (
     <>
@@ -102,7 +89,7 @@ export function NotificationBell() {
           <div
             key={notification.NotificationID}
             className="flex items-start gap-2 p-3 border-b last:border-b-0 bg-background hover:bg-accent/50 transition-colors cursor-pointer"
-            onClick={() => handleNotificationClick(notification.NotificationID, notification.IsRead)}>
+            onClick={() => handleNotificationClick(notification.NotificationID)}>
             <div className="flex-shrink-0 mt-1">
               {!notification.IsRead ? (
                 <Bell className="h-4 w-4 text-primary" />
@@ -126,7 +113,6 @@ export function NotificationBell() {
       <NotificationDetailsModal
         notificationId={selectedNotificationId}
         onOpenChange={(open) => !open && setSelectedNotificationId(null)}
-        onMarkAsRead={handleMarkAsRead}
       />
     </>
   );

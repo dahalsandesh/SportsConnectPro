@@ -20,36 +20,23 @@ type NotificationDetails = {
 interface NotificationDetailsModalProps {
   notificationId: string | null
   onOpenChange: (open: boolean) => void
-  onMarkAsRead: (notificationId: string) => void
 }
 
 export function NotificationDetailsModal({
   notificationId,
   onOpenChange,
-  onMarkAsRead,
 }: NotificationDetailsModalProps) {
   const isOpen = !!notificationId
-
-  const handleOpenChange = (open: boolean) => {
-    if (!open && notificationId) {
-      onMarkAsRead(notificationId)
-    }
-    onOpenChange(open)
-  }
 
   const { data: notification, isLoading, isFetching } = useGetAdminNotificationByIdQuery(
     notificationId ? { notificationId } : skipToken,
     { skip: !notificationId }
   )
 
-  useEffect(() => {
-    if (notificationId && notification && !notification.IsRead) {
-      onMarkAsRead(notificationId)
-    }
-  }, [notificationId, notification, onMarkAsRead])
+
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Notification Details</DialogTitle>
