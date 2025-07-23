@@ -13,6 +13,7 @@ import FeaturedVenues from "@/components/featured-venues";
 import FeaturedCourts from "@/components/featured-courts";
 import HowItWorks from "@/components/how-it-works";
 import Testimonials from "@/components/testimonials";
+import NearestVenues from "./nearest-venues";
 import { SportsEvent } from "@/types/api";
 
 interface StatsCardProps {
@@ -182,6 +183,9 @@ export default function HomeContent() {
           </div>
         </div>
       </section>
+
+      {/* Nearest Venues */}
+      <NearestVenues />
 
       {/* Featured Venues */}
       <section className="py-16 bg-white">
