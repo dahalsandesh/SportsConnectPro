@@ -124,7 +124,17 @@ const publicApi = baseApi.injectEndpoints({
     }),
     
     // Create a new booking with multiple tickets
-    createBooking: builder.mutation<{ success: boolean; bookingId: string; payment_url?: string }, { 
+    createBooking: builder.mutation<{ 
+      success: boolean; 
+      bookingId?: string;
+      bookId?: string;
+      paymentStatus?: string;
+      price?: number;
+      amount?: number;
+      message?: string;
+      error?: string;
+      data?: any;
+    }, { 
       ticketIds: string[]; 
       paymentTypeId: string; 
       userId: string;
@@ -155,6 +165,29 @@ const publicApi = baseApi.injectEndpoints({
             totalPrice: body.totalPrice,
             courtId: body.courtId
           },
+        };
+      },
+      transformResponse: (response: any) => {
+        // Handle different response formats
+        if (!response) {
+          return { success: false, error: 'No response from server' };
+        }
+        
+        // If response already has success status, return as is
+        if (typeof response.success !== 'undefined' || response.bookingId || response.bookId) {
+          return response;
+        }
+        
+        // Handle case where response is wrapped in data property
+        if (response.data) {
+          return { ...response.data, success: response.data.success || false };
+        }
+        
+        // If we get here, the response format is unexpected
+        return { 
+          success: false, 
+          error: 'Unexpected response format',
+          data: response // Include original response for debugging
         };
       },
       invalidatesTags: (result, error, { ticketIds }) => [

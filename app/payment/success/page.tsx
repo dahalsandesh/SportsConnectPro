@@ -30,31 +30,69 @@ const PaymentDetails = ({ paymentData, status }: { paymentData: any, status: Pay
     processing: 'PROCESSING'
   };
 
+  // Format amount to display in NPR
+  const formatAmount = (amount: string | number) => {
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) / 100 : amount / 100;
+    return `NPR ${numAmount.toLocaleString('en-NP')}`;
+  };
+
   return (
-    <div className="mt-6 w-full max-w-md space-y-2 rounded-lg border bg-card p-6 text-left">
-      <h3 className="font-medium">Payment Details</h3>
-      <div className="grid grid-cols-2 gap-2 text-sm">
-        <div className="text-muted-foreground">Amount:</div>
-        <div className="font-medium">Rs. {paymentData.amount}</div>
-        
-        {paymentData.transaction_id && (
-          <>
-            <div className="text-muted-foreground">Transaction ID:</div>
-            <div className="font-mono text-sm">{paymentData.transaction_id}</div>
-          </>
-        )}
-        
-        <div className="text-muted-foreground">Status:</div>
-        <div className={`font-medium ${statusColors[status] || ''}`}>
-          {statusText[status] || paymentData.status?.toUpperCase()}
+    <div className="mt-6 w-full max-w-md space-y-4 rounded-lg border bg-card p-6 text-left">
+      <h3 className="text-lg font-semibold mb-4">Payment Receipt</h3>
+      
+      <div className="space-y-3">
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Status:</span>
+          <span className={`font-medium ${statusColors[status] || ''}`}>
+            {statusText[status] || (paymentData.status ? paymentData.status.toUpperCase() : 'UNKNOWN')}
+          </span>
         </div>
         
-        {paymentData.purchase_order_id && (
-          <>
-            <div className="text-muted-foreground">Order ID:</div>
-            <div className="font-mono text-sm">{paymentData.purchase_order_id}</div>
-          </>
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Amount Paid:</span>
+          <span className="font-medium">{formatAmount(paymentData.amount)}</span>
+        </div>
+        
+        {paymentData.transaction_id && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Transaction ID:</span>
+            <span className="font-mono text-sm">{paymentData.transaction_id}</span>
+          </div>
         )}
+        
+        {paymentData.pidx && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Payment ID (PIDX):</span>
+            <span className="font-mono text-sm">{paymentData.pidx}</span>
+          </div>
+        )}
+        
+        {paymentData.purchase_order_id && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Order ID:</span>
+            <span className="font-mono text-sm">{paymentData.purchase_order_id}</span>
+          </div>
+        )}
+        
+        {paymentData.purchase_order_name && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Service:</span>
+            <span className="text-right">{paymentData.purchase_order_name}</span>
+          </div>
+        )}
+        
+        {paymentData.mobile && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Mobile:</span>
+            <span>{paymentData.mobile}</span>
+          </div>
+        )}
+        
+        <div className="pt-2 mt-4 border-t">
+          <p className="text-sm text-muted-foreground">
+            A receipt has been sent to your registered email address.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -122,6 +160,7 @@ export default function PaymentSuccessPage() {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `token ${localStorage.getItem('token')}`,
               },
               body: JSON.stringify({
                 pidx,
@@ -136,36 +175,35 @@ export default function PaymentSuccessPage() {
             }
 
             const result = await response.json();
+            console.log('Payment verification response:', result);
             
-            if (result.success) {
-              // Update status based on verification if needed
-              if (result.data?.status) {
-                const verifiedStatus = determineStatus(result.data.status);
-                setStatus(verifiedStatus);
-                
-                // Show appropriate toast
-                if (verifiedStatus === 'success') {
-                  toast.success('Payment successful!');
-                } else if (verifiedStatus === 'pending') {
-                  toast.info('Payment is being processed');
-                }
-              }
+            if (response.ok) {
+              // Update payment data with the response
+              setPaymentData(prev => ({
+                ...prev,
+                status: 'Completed',
+                message: result.message || 'Payment Verified Successfully',
+                // Include any additional data from the response
+                ...(result.data || {})
+              }));
+              
+              // Set status to success since we got a 200 OK
+              setStatus('success');
+              toast.success('Payment verified successfully!');
               
               // Redirect to home after 30 seconds for success status
-              if (paymentStatus === 'success') {
-                const timer = setTimeout(() => {
-                  router.push('/');
-                }, 30000);
-                
-                return () => clearTimeout(timer);
-              }
+              const timer = setTimeout(() => {
+                router.push('/');
+              }, 30000);
+              
+              return () => clearTimeout(timer);
             } else {
               throw new Error(result.error || 'Payment verification failed');
             }
           } catch (error) {
             console.error('Payment verification error:', error);
             // Don't change status if verification fails, keep the original status
-            toast.error('Payment verification failed. Please contact support.');
+            toast.error('Payment verification failed. Please contact support.');n
           }
         } else {
           // For failed/cancelled/expired, show appropriate message

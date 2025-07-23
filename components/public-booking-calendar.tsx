@@ -200,15 +200,27 @@ export default function PublicBookingCalendar({
       
       console.log('Booking API response:', response);
       
+      // Check if the response contains a payment URL (for online payments like Khalti)
+      const responseData = response.data || response;
+      
+      if (responseData.payment_url) {
+        // Redirect to the payment URL for online payments
+        console.log('Redirecting to payment URL:', responseData.payment_url);
+        window.location.href = responseData.payment_url;
+        return;
+      }
+      
       // Check if the booking was successful
-      if (response && (response.status === true || response.bookId)) {
-        console.log('Booking successful, preparing confirmation data');
+      if ((response && (response.status === true || response.bookId || response.bookingId)) || 
+          (responseData && (responseData.status === true || responseData.bookId || responseData.bookingId))) {
+        
+        console.log('Booking successful, preparing confirmation data:', responseData);
         
         // Prepare booking confirmation data
         const confirmationData = {
-          status: response.paymentStatus?.toLowerCase() === 'pending' ? 'pending' : 'success',
-          bookingId: response.bookId || 'N/A',
-          amount: response.price || totalPrice,
+          status: responseData.paymentStatus?.toLowerCase() === 'pending' ? 'pending' : 'success',
+          bookingId: responseData.bookingId || responseData.bookId || 'N/A',
+          amount: responseData.price || responseData.amount || totalPrice,
           paymentMethod: paymentMethod,
           venueName: selectedCourt?.name || 'Unknown Venue',
           courtName: selectedCourt?.name || 'Unknown Court',
@@ -217,7 +229,7 @@ export default function PublicBookingCalendar({
             const slot = availableSlots.find((s: TimeSlot) => s.id === slotId);
             return slot ? `${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}` : '';
           }).filter(Boolean),
-          message: response.paymentStatus?.toLowerCase() === 'pending' 
+          message: responseData.paymentStatus?.toLowerCase() === 'pending' 
             ? 'Your booking is pending payment. Please complete the payment to confirm your slot.'
             : 'Your booking has been confirmed!',
         };
@@ -240,6 +252,21 @@ export default function PublicBookingCalendar({
         // Handle case where status is not true or bookId is missing
         console.error('Unexpected booking response:', response);
         
+        // Extract error message if available in the response
+        let errorMessage = 'Failed to process your booking. Please try again later.';
+        if (response?.message) {
+          errorMessage = response.message;
+        } else if (response?.error) {
+          errorMessage = response.error;
+        } else if (response?.data?.message) {
+          errorMessage = response.data.message;
+        } else if (response?.data?.error) {
+          errorMessage = response.data.error;
+        }
+        
+        // Show error toast to user
+        toast.error(errorMessage);
+        
         // Redirect to confirmation page with error state
         const errorData = {
           status: 'failed',
@@ -248,6 +275,7 @@ export default function PublicBookingCalendar({
           paymentMethod: paymentMethod,
           venueName: selectedCourt?.name || 'Unknown Venue',
           courtName: selectedCourt?.name || 'Unknown Court',
+          message: errorMessage,
           date: selectedDate,
           timeSlots: selectedSlots.map(slotId => {
             const slot = availableSlots.find((s: TimeSlot) => s.id === slotId);
