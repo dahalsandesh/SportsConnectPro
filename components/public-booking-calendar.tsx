@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
+import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/redux/store/hooks";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -57,6 +57,7 @@ export default function PublicBookingCalendar({
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [isBooking, setIsBooking] = useState(false);
   const searchParams = useSearchParams();
+  const { toast } = useToast();
   
   useEffect(() => {
     // Check for booking state in URL parameters
@@ -173,44 +174,83 @@ export default function PublicBookingCalendar({
     }
     
     try {
+      console.log('Starting booking process...');
       setIsBooking(true);
       
       // Get courtId from URL
       const courtId = window.location.pathname.split('/').pop();
+      console.log('Court ID from URL:', courtId);
       
-      // Send single request with all ticket IDs
-      const result = await createBooking({ 
+      // Prepare booking data
+      const bookingData = { 
         ticketIds: selectedSlots,
         paymentTypeId: selectedPaymentType,
         userId: user.userId,
         totalPrice: totalPrice,
         courtId: courtId || ''
-      }).unwrap();
+      };
       
-      // Handle payment URL if present
-      if (result?.payment_url) {
-        // Store the booking data in localStorage
-        localStorage.setItem('pendingBooking', JSON.stringify({
-          ticketIds: selectedSlots,
-          paymentTypeId: selectedPaymentType,
-          totalPrice,
-          timestamp: new Date().toISOString()
-        }));
+      console.log('Sending booking request with data:', bookingData);
+      
+      // Send single request with all ticket IDs
+      const response = await createBooking(bookingData).unwrap();
+      
+      console.log('Booking API response:', response);
+      
+      // Check if the booking was successful
+      if (response && (response.status === true || response.bookId)) {
+        console.log('Booking successful, showing success message');
         
-        // Redirect to the payment URL
-        window.location.href = result.payment_url;
-        return;
+        // Show success toast using the correct toast implementation
+        toast({
+          title: 'Booking Successful!',
+          description: `Your booking has been confirmed. ${selectedPaymentType === 'cash' ? 'Please pay at the venue.' : ''}\n\nBooking ID: ${response.bookId}\nAmount: Rs. ${response.price}\nPayment Status: ${response.paymentStatus}`,
+          variant: 'default',
+        });
+        
+        console.log('Success toast shown, refreshing slots...');
+        
+        // Refresh the slots to show them as booked
+        try {
+          await refetchSlots();
+          console.log('Slots refreshed successfully');
+        } catch (refreshError) {
+          console.error('Error refreshing slots:', refreshError);
+        }
+        
+        // Reset form
+        setSelectedSlots([]);
+        setSelectedPaymentType("");
+        
+      } else {
+        // Handle case where status is not true or bookId is missing
+        console.error('Unexpected booking response:', response);
+        toast({
+          title: 'Booking Confirmation Pending',
+          description: 'Your booking was created but there was an issue with the confirmation. Please check your bookings or contact support.',
+          variant: 'destructive',
+        });
       }
       
-      // If no payment URL, it's a direct booking
-      toast.success(`Successfully booked ${selectedSlots.length} time slot(s)!`);
-      await refetchSlots();
-      setSelectedSlots([]);
-      setSelectedPaymentType("");
-      
-    } catch (error) {
+    } catch (error: any) {
       console.error('Booking error:', error);
-      toast.error(error?.data?.message || 'Failed to process booking');
+      
+      // Handle different types of errors
+      const errorMessage = error?.data?.message || 
+                         error?.error || 
+                         (typeof error === 'string' ? error : 'Failed to process booking');
+      
+      toast.error(`Booking failed: ${errorMessage}`, {
+        duration: 10000,
+        closeButton: true,
+      });
+      
+      // Try to refetch slots in case of error to ensure UI is in sync
+      try {
+        await refetchSlots();
+      } catch (refetchError) {
+        console.error('Error refetching slots:', refetchError);
+      }
     } finally {
       setIsBooking(false);
     }

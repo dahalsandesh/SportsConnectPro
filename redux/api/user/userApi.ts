@@ -49,7 +49,8 @@ export const userApi = createApi({
       },
       transformResponse: (response: any) => {
         console.log('Bookings response:', response);
-        return response?.data || [];
+        // Return the response directly as it's already an array of bookings
+        return Array.isArray(response) ? response : [];
       },
       providesTags: ['Bookings'],
     }),
@@ -66,7 +67,8 @@ export const userApi = createApi({
       },
       transformResponse: (response: any) => {
         console.log('Dashboard stats response:', response);
-        return response?.data || {};
+        // Return the response directly as it contains the stats object
+        return response || {};
       },
       providesTags: ['Dashboard'],
     }),

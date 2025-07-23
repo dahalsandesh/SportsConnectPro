@@ -62,7 +62,13 @@ export default function DashboardPage() {
   
   // Fetch dashboard stats
   const { 
-    data: stats, 
+    data: stats = {
+      booking_count: 0,
+      booking_pending_count: 0,
+      booking_reject_count: 0,
+      booking_success_count: 0,
+      total_revenue: 0
+    }, 
     isLoading: isStatsLoading, 
     error: statsError,
     refetch: refetchStats
@@ -82,9 +88,16 @@ export default function DashboardPage() {
     { skip: !userId || !isClient }
   );
 
-  // Filter bookings by status
-  const upcomingBookings = allBookings.filter(b => b.status === 'Pending' || b.status === 'Success');
-  const pastBookings = allBookings.filter(b => b.status === 'Rejected' || b.status === 'Cancelled');
+  // Ensure recentBookings is always an array and take first 3
+  const recentBookings = Array.isArray(allBookings) ? allBookings.slice(0, 3) : [];
+  
+  // Log data for debugging (only in development)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Dashboard stats:', stats);
+      console.log('All bookings:', allBookings);
+    }
+  }, [stats, allBookings]);
   
   // Refetch data when user changes and queries are ready
   useEffect(() => {
@@ -108,11 +121,8 @@ export default function DashboardPage() {
   const isLoading = isStatsLoading || isBookingsLoading;
   const hasError = statsError || bookingsError;
   
-  // Calculate stats
-  const totalSpent = stats?.total_revenue || 0;
-  const upcomingCount = upcomingBookings.length;
-  const pastCount = pastBookings.length;
-  const cancelledCount = stats?.booking_reject_count || 0;
+  // Calculate stats from API response
+  // These are now directly used from the stats object in the JSX
 
   if (isLoading) {
     return (
@@ -169,76 +179,97 @@ export default function DashboardPage() {
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <DashboardStatCard
+          title="Total Bookings"
+          value={stats.booking_count}
+          icon={<Calendar className="h-4 w-4" />}
+          description="All time"
+        />
+        <DashboardStatCard
+          title="Pending"
+          value={stats.booking_pending_count}
+          icon={<Clock className="h-4 w-4" />}
+          description="Awaiting confirmation"
+        />
+        <DashboardStatCard
+          title="Confirmed"
+          value={stats.booking_success_count}
+          icon={<CheckCircle className="h-4 w-4" />}
+          description="Successful bookings"
+        />
+        <DashboardStatCard
           title="Total Spent"
-          value={`$${totalSpent.toFixed(2)}`}
+          value={`Rs. ${(stats.total_revenue || 0).toLocaleString()}`}
           icon={<DollarSign className="h-4 w-4" />}
           description="All time"
         />
-        <DashboardStatCard
-          title="Upcoming Bookings"
-          value={upcomingCount}
-          icon={<Calendar className="h-4 w-4" />}
-          description={`${pastCount} past bookings`}
-        />
-        <DashboardStatCard
-          title="Cancelled"
-          value={cancelledCount}
-          icon={<Clock className="h-4 w-4" />}
-          description="All time"
-        />
-        <DashboardStatCard
-          title="Active Now"
-          value="0"
-          icon={<CheckCircle className="h-4 w-4" />}
-          description="Currently playing"
-        />
       </div>
 
-      {/* Bookings Tabs */}
-      <Tabs defaultValue="upcoming" className="space-y-4">
+      {/* Recent Bookings */}
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <TabsList>
-            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-            <TabsTrigger value="past">Past</TabsTrigger>
-          </TabsList>
+          <h2 className="text-xl font-semibold">Recent Bookings</h2>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/dashboard/bookings">View All Bookings</Link>
+            <Link href="/dashboard/bookings">View All</Link>
           </Button>
         </div>
-
-        <TabsContent value="upcoming" className="space-y-4">
-          {upcomingBookings?.length > 0 ? (
-            <BookingList bookings={upcomingBookings} />
-          ) : (
-            <div className="flex h-[200px] items-center justify-center rounded-md border border-dashed">
-              <div className="text-center">
-                <h3 className="text-lg font-medium">No upcoming bookings</h3>
-                <p className="text-sm text-muted-foreground">
-                  You don't have any upcoming bookings.
-                </p>
-                <Button className="mt-4 text-white" variant="default" asChild size="sm" color="primary">
-                  <Link href="/venues">Book a court</Link>
-                </Button>
-              </div>
+        
+        {recentBookings?.length > 0 ? (
+          <div className="space-y-4">
+            {recentBookings.map((booking: any) => {
+              const [startTime, endTime] = booking.ticket.split(' - ').map((time: string) => {
+                try {
+                  const [hours, minutes] = time.split(':').map(Number);
+                  return new Date(0, 0, 0, hours, minutes).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                } catch (e) {
+                  return time;
+                }
+              });
+              
+              const statusVariant = booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
+                                  booking.status === 'Success' ? 'bg-green-100 text-green-800' : 
+                                  'bg-red-100 text-red-800';
+              
+              return (
+                <Card key={booking.bookingId} className="overflow-hidden">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-medium">Booking #{booking.bookingId?.split('-')[0]}</span>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${statusVariant}`}>
+                            {booking.status}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {startTime} - {endTime} • {booking.paymentMethod}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">Rs. {booking.price?.toLocaleString()}</div>
+                        <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
+                          <Link href={`/dashboard/bookings/${booking.bookingId}`}>View</Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex h-[150px] items-center justify-center rounded-md border border-dashed">
+            <div className="text-center">
+              <h3 className="text-lg font-medium">No bookings yet</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Your bookings will appear here.
+              </p>
+              <Button className="text-white" asChild size="sm">
+                <Link href="/venues">Book a court</Link>
+              </Button>
             </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="past" className="space-y-4">
-          {pastBookings?.length > 0 ? (
-            <BookingList bookings={pastBookings} />
-          ) : (
-            <div className="flex h-[200px] items-center justify-center rounded-md border border-dashed">
-              <div className="text-center">
-                <h3 className="text-lg font-medium">No past bookings</h3>
-                <p className="text-sm text-muted-foreground">
-                  Your past bookings will appear here.
-                </p>
-              </div>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
