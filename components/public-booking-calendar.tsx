@@ -177,10 +177,6 @@ export default function PublicBookingCalendar({
       console.log('Starting booking process...');
       setIsBooking(true);
       
-      // Get courtId from URL
-      const courtId = window.location.pathname.split('/').pop();
-      console.log('Court ID from URL:', courtId);
-      
       // Get payment method name
       const paymentMethod = paymentTypes.find(pt => pt.PaymentTypeID === selectedPaymentType)?.PaymentTypeName || 'Cash';
       
@@ -190,7 +186,7 @@ export default function PublicBookingCalendar({
         paymentTypeId: selectedPaymentType,
         userId: user.userId,
         totalPrice: totalPrice,
-        courtId: courtId || ''
+        courtId: selectedCourtId // Use the selected court ID from props
       };
       
       console.log('Sending booking request with data:', bookingData);

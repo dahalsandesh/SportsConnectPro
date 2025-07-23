@@ -40,10 +40,11 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
 
   const courtOptions = useMemo(() => 
     courts.map(court => ({
-      courtId: court.courtId || court.courtID, // Handle both cases
+      courtId: court.courtId || court.courtID || court.id, // Handle multiple possible ID fields
       name: court.name,
       sportCategory: court.sportCategory,
-      hourlyRate: court.hourlyRate
+      hourlyRate: court.hourlyRate || court.rate || 1000, // Default to 1000 if not provided
+      id: court.courtId || court.courtID || court.id // Ensure id is set for the API
     })),
     [courts]
   );
@@ -169,11 +170,17 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
                 </select>
               </div>
             )}
-            <PublicBookingCalendar 
-              courts={courtOptions} 
-              defaultCourtId={selectedCourtId}
-              className="mt-4"
-            />
+            {selectedCourtId ? (
+              <PublicBookingCalendar 
+                courts={courtOptions} 
+                defaultCourtId={selectedCourtId}
+                className="mt-4"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-64">
+                <p className="text-muted-foreground">Select a court to view availability</p>
+              </div>
+            )}
           </div>
         </TabsContent>
       </Tabs>
