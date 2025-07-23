@@ -181,6 +181,9 @@ export default function PublicBookingCalendar({
       const courtId = window.location.pathname.split('/').pop();
       console.log('Court ID from URL:', courtId);
       
+      // Get payment method name
+      const paymentMethod = paymentTypes.find(pt => pt.PaymentTypeID === selectedPaymentType)?.PaymentTypeName || 'Cash';
+      
       // Prepare booking data
       const bookingData = { 
         ticketIds: selectedSlots,
@@ -199,16 +202,31 @@ export default function PublicBookingCalendar({
       
       // Check if the booking was successful
       if (response && (response.status === true || response.bookId)) {
-        console.log('Booking successful, showing success message');
+        console.log('Booking successful, preparing confirmation data');
         
-        // Show success toast using the correct toast implementation
-        toast({
-          title: 'Booking Successful!',
-          description: `Your booking has been confirmed. ${selectedPaymentType === 'cash' ? 'Please pay at the venue.' : ''}\n\nBooking ID: ${response.bookId}\nAmount: Rs. ${response.price}\nPayment Status: ${response.paymentStatus}`,
-          variant: 'default',
-        });
+        // Prepare booking confirmation data
+        const confirmationData = {
+          status: response.paymentStatus?.toLowerCase() === 'pending' ? 'pending' : 'success',
+          bookingId: response.bookId || 'N/A',
+          amount: response.price || totalPrice,
+          paymentMethod: paymentMethod,
+          venueName: selectedCourt?.name || 'Unknown Venue',
+          courtName: selectedCourt?.name || 'Unknown Court',
+          date: selectedDate,
+          timeSlots: selectedSlots.map(slotId => {
+            const slot = availableSlots.find((s: TimeSlot) => s.id === slotId);
+            return slot ? `${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}` : '';
+          }).filter(Boolean),
+          message: response.paymentStatus?.toLowerCase() === 'pending' 
+            ? 'Your booking is pending payment. Please complete the payment to confirm your slot.'
+            : 'Your booking has been confirmed!',
+        };
         
-        console.log('Success toast shown, refreshing slots...');
+        // Store booking data in session storage
+        sessionStorage.setItem('lastBooking', JSON.stringify(confirmationData));
+        
+        // Redirect to confirmation page with booking data
+        router.push(`/booking/confirmation?booking=${encodeURIComponent(JSON.stringify(confirmationData))}`);
         
         // Refresh the slots to show them as booked
         try {
@@ -218,18 +236,28 @@ export default function PublicBookingCalendar({
           console.error('Error refreshing slots:', refreshError);
         }
         
-        // Reset form
-        setSelectedSlots([]);
-        setSelectedPaymentType("");
-        
       } else {
         // Handle case where status is not true or bookId is missing
         console.error('Unexpected booking response:', response);
-        toast({
-          title: 'Booking Confirmation Pending',
-          description: 'Your booking was created but there was an issue with the confirmation. Please check your bookings or contact support.',
-          variant: 'destructive',
-        });
+        
+        // Redirect to confirmation page with error state
+        const errorData = {
+          status: 'failed',
+          bookingId: 'N/A',
+          amount: totalPrice,
+          paymentMethod: paymentMethod,
+          venueName: selectedCourt?.name || 'Unknown Venue',
+          courtName: selectedCourt?.name || 'Unknown Court',
+          date: selectedDate,
+          timeSlots: selectedSlots.map(slotId => {
+            const slot = availableSlots.find((s: TimeSlot) => s.id === slotId);
+            return slot ? `${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}` : '';
+          }).filter(Boolean),
+          message: 'There was an issue confirming your booking. Please try again or contact support.',
+        };
+        
+        sessionStorage.setItem('lastBooking', JSON.stringify(errorData));
+        router.push(`/booking/confirmation?booking=${encodeURIComponent(JSON.stringify(errorData))}`);
       }
       
     } catch (error: any) {
@@ -240,10 +268,31 @@ export default function PublicBookingCalendar({
                          error?.error || 
                          (typeof error === 'string' ? error : 'Failed to process booking');
       
+      // Show error toast
       toast.error(`Booking failed: ${errorMessage}`, {
         duration: 10000,
         closeButton: true,
       });
+      
+      // Prepare error data for confirmation page
+      const errorData = {
+        status: 'failed',
+        bookingId: 'N/A',
+        amount: totalPrice,
+        paymentMethod: paymentTypes.find(pt => pt.PaymentTypeID === selectedPaymentType)?.PaymentTypeName || 'Unknown',
+        venueName: selectedCourt?.name || 'Unknown Venue',
+        courtName: selectedCourt?.name || 'Unknown Court',
+        date: selectedDate,
+        timeSlots: selectedSlots.map(slotId => {
+          const slot = availableSlots.find((s: TimeSlot) => s.id === slotId);
+          return slot ? `${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}` : '';
+        }).filter(Boolean),
+        message: `Booking failed: ${errorMessage}`,
+      };
+      
+      // Store in session storage and redirect
+      sessionStorage.setItem('lastBooking', JSON.stringify(errorData));
+      router.push(`/booking/confirmation?booking=${encodeURIComponent(JSON.stringify(errorData))}`);
       
       // Try to refetch slots in case of error to ensure UI is in sync
       try {
