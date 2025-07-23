@@ -36,24 +36,32 @@ const getNotificationIcon = (notification: VenueNotification): JSX.Element => {
 };
 
 interface NotificationDetailsModalProps {
-  notificationId: string | null
-  onOpenChange: (open: boolean) => void
+  notificationId: string | null;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function VenueNotificationDetailsModal({
   notificationId,
   onOpenChange,
-}: NotificationDetailsModalProps) {
-  const isOpen = !!notificationId
+}: NotificationDetailsModalProps): JSX.Element {
+  const isOpen = !!notificationId;
 
   const { data: notification, isLoading } = useGetNotificationByIdQuery(
-    notificationId || "",
+    notificationId ?? skipToken,
     {
       skip: !notificationId,
     }
-  )
+  );
 
-  // No need for mark as read effect since the backend handles it on fetch
+  // Safely get notification properties
+  const getNotificationField = (field: keyof VenueNotification, fallback: string = 'N/A'): string => {
+    if (!notification) return fallback;
+    const value = notification[field as keyof typeof notification];
+    return value ? String(value) : fallback;
+  };
+
+  // Check if notification has been read
+  const isRead = notification?.IsRead ?? notification?.isRead ?? false;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -75,7 +83,7 @@ export function VenueNotificationDetailsModal({
                 {/* Main Message */}
                 <div className="rounded-lg bg-muted/30 p-4">
                   <p className="text-foreground">
-                    {notification.Message || notification.message || 'No message content'}
+                    {getNotificationField('Message', getNotificationField('message', 'No message content'))}
                   </p>
                 </div>
 
@@ -83,15 +91,15 @@ export function VenueNotificationDetailsModal({
                 <div className="space-y-3 rounded-lg border p-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-muted-foreground">Status</span>
-                    <Badge variant={notification.IsRead ? "outline" : "default"} className="ml-2">
-                      {notification.IsRead ? "Read" : "Unread"}
+                    <Badge variant={isRead ? "outline" : "default"} className="ml-2">
+                      {isRead ? "Read" : "Unread"}
                     </Badge>
                   </div>
                   
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-muted-foreground">Type</span>
                     <span className="text-sm font-medium">
-                      {notification.Title || notification.title || 'General'}
+                      {getNotificationField('Title', getNotificationField('title', 'General'))}
                     </span>
                   </div>
                   
@@ -99,36 +107,40 @@ export function VenueNotificationDetailsModal({
                     <span className="text-sm font-medium text-muted-foreground">Date</span>
                     <div className="flex items-center gap-1 text-sm">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span>{getFormattedDate(notification.CreatedAt || notification.createdAt)}</span>
+                      <span>{getFormattedDate(new Date(notification.CreatedAt || notification.createdAt || ''))}</span>
                     </div>
                   </div>
                   
-                  {notification.UpdatedAt && (
+                  {(notification.UpdatedAt || notification.updatedAt) && (
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-muted-foreground">Last Updated</span>
                       <div className="flex items-center gap-1 text-sm">
                         <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span>{getFormattedDate(notification.UpdatedAt || notification.updatedAt)}</span>
+                        <span>{getFormattedDate(new Date(notification.UpdatedAt || notification.updatedAt || ''))}</span>
                       </div>
                     </div>
                   )}
                 </div>
 
                 {/* Additional Details - Only show if there are other properties */}
-                {notification.NotificationID && (
+                {(notification.NotificationID || notification.User_id) && (
                   <div className="space-y-3">
                     <h4 className="text-sm font-medium">Additional Details</h4>
                     <div className="space-y-2 rounded-md border p-3 text-sm">
                       {notification.NotificationID && (
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Notification ID:</span>
-                          <span className="font-mono text-xs">{notification.NotificationID}</span>
+                          <span className="font-mono text-xs break-all max-w-[200px] text-right">
+                            {notification.NotificationID}
+                          </span>
                         </div>
                       )}
                       {notification.User_id && (
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">User ID:</span>
-                          <span className="font-mono text-xs">{notification.User_id}</span>
+                          <span className="font-mono text-xs break-all max-w-[200px] text-right">
+                            {notification.User_id}
+                          </span>
                         </div>
                       )}
                     </div>
