@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { MainHeader } from "@/components/layout/main-header"
 import { MainFooter } from "@/components/layout/main-footer"
 import { Toaster } from "@/components/ui/toaster"
+import BackButtonHandler from "@/components/back-button-handler";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -15,6 +16,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden">
+      <BackButtonHandler />
       {/* Header - Only show on public routes */}
       {showPublicLayout && <MainHeader />}
 

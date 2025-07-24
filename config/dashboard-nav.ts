@@ -30,6 +30,11 @@ export const dashboardNavItems: NavItem[] = [
     href: "/dashboard/bookings",
     icon: Calendar,
   },
+  {
+    title: "Registered Events",
+    href: "/dashboard/registered-events",
+    icon: Calendar,
+  },
   // {
   //   title: "Notifications",
   //   href: "/dashboard/notifications",

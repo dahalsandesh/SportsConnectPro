@@ -9,9 +9,29 @@ import { useGetVenueByIdQuery } from "@/redux/api/publicApi";
 import CourtCard from "@/components/court-card";
 import PublicBookingCalendar from "@/components/public-booking-calendar";
 import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+
+// Configure NProgress
+NProgress.configure({ showSpinner: false });
 
 export default function VenueDetailsClient({ venueId }: { venueId: string }) {
+  const router = useRouter();
   const { data: venue, isLoading, isError } = useGetVenueByIdQuery(venueId);
+  
+  // Handle loading state with NProgress
+  useEffect(() => {
+    if (isLoading) {
+      NProgress.start();
+    } else {
+      NProgress.done();
+    }
+    
+    return () => {
+      NProgress.done();
+    };
+  }, [isLoading]);
   const fallbackVenueImages = [
     "/placeholder.svg?height=600&width=800",
     "/placeholder.svg?height=600&width=800",
@@ -49,8 +69,17 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
     [courts]
   );
 
-  if (isLoading) return <div>Loading venue details...</div>;
-  if (isError || !venue) return <div>Failed to load venue details.</div>;
+  if (isError || !venue) return (
+    <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="text-center space-y-4">
+        <h2 className="text-2xl font-bold">Failed to load venue details</h2>
+        <p className="text-muted-foreground">Please try again later</p>
+        <Button onClick={() => router.refresh()} variant="outline">
+          Retry
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -82,10 +111,12 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
               <span className="ml-1 text-gray-400">({venue.reviews || 0} reviews)</span>
             </div>
           </div>
-          <div className="flex items-center mt-2 text-gray-500">
-            <Phone className="h-4 w-4 mr-1" />
-            <span>{venue.phone || 'N/A'}</span>
-          </div>
+          {venue.phoneNumber && (
+            <div className="flex items-center mt-2 text-gray-500">
+              <Phone className="h-4 w-4 mr-1" />
+              <span>{venue.phoneNumber}</span>
+            </div>
+          )}
           <div className="flex items-center mt-2 text-gray-500">
             <Mail className="h-4 w-4 mr-1" />
             <span>{venue.email || 'N/A'}</span>
@@ -118,18 +149,21 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
             <h2 className="text-xl font-bold mb-2">About</h2>
             <p className="text-muted-foreground mb-4">{venue.description || 'No description available.'}</p>
             <div className="flex flex-wrap gap-4">
-              <div>
-                <span className="font-semibold">Surface:</span> {venue.surfaceType || 'N/A'}
-              </div>
-              <div>
-                <span className="font-semibold">Capacity:</span> {venue.capacity || 'N/A'}
-              </div>
-              <div>
-                <span className="font-semibold">Open:</span> {venue.openingTime || '6:00 AM'} - {venue.closingTime || '10:00 PM'}
-              </div>
-              <div>
-                <span className="font-semibold">Price:</span> Rs. {venue.pricePerHour || venue.price || 'N/A'} / hour
-              </div>
+              {venue.openingTime && venue.closingTime && (
+                <div>
+                  <span className="font-semibold">Open:</span> {venue.openingTime} - {venue.closingTime}
+                </div>
+              )}
+              {venue.address && (
+                <div>
+                  <span className="font-semibold">Address:</span> {venue.address}
+                </div>
+              )}
+              {venue.city && (
+                <div>
+                  <span className="font-semibold">City:</span> {venue.city}
+                </div>
+              )}
             </div>
           </div>
         </TabsContent>
