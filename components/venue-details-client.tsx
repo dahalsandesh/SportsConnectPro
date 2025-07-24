@@ -9,9 +9,29 @@ import { useGetVenueByIdQuery } from "@/redux/api/publicApi";
 import CourtCard from "@/components/court-card";
 import PublicBookingCalendar from "@/components/public-booking-calendar";
 import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+
+// Configure NProgress
+NProgress.configure({ showSpinner: false });
 
 export default function VenueDetailsClient({ venueId }: { venueId: string }) {
+  const router = useRouter();
   const { data: venue, isLoading, isError } = useGetVenueByIdQuery(venueId);
+  
+  // Handle loading state with NProgress
+  useEffect(() => {
+    if (isLoading) {
+      NProgress.start();
+    } else {
+      NProgress.done();
+    }
+    
+    return () => {
+      NProgress.done();
+    };
+  }, [isLoading]);
   const fallbackVenueImages = [
     "/placeholder.svg?height=600&width=800",
     "/placeholder.svg?height=600&width=800",
@@ -49,8 +69,17 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
     [courts]
   );
 
-  if (isLoading) return <div>Loading venue details...</div>;
-  if (isError || !venue) return <div>Failed to load venue details.</div>;
+  if (isError || !venue) return (
+    <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="text-center space-y-4">
+        <h2 className="text-2xl font-bold">Failed to load venue details</h2>
+        <p className="text-muted-foreground">Please try again later</p>
+        <Button onClick={() => router.refresh()} variant="outline">
+          Retry
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">

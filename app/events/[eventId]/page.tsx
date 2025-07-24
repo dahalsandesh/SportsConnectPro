@@ -6,8 +6,10 @@ import { Calendar, Clock, MapPin, Trophy, Users, ArrowLeft } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState, use } from 'react';
+import { toast } from 'sonner';
+import { RegisterButton } from "@/components/events/register-button";
 
 interface EventDetail {
   eventId: string;
@@ -138,6 +140,7 @@ export default function EventDetailPage({
                 className="object-cover"
                 priority
               />
+
               {event.type && (
                 <div className="absolute top-2 right-2">
                   <Badge className="bg-blue-600 hover:bg-blue-700 text-white border-0">
@@ -204,9 +207,10 @@ export default function EventDetailPage({
               </div>
               
               <div className="mt-8 space-y-4">
-                <Button className="w-full bg-green-600 hover:bg-green-700">
-                  Register Now
-                </Button>
+                <RegisterButton 
+                  eventId={event.eventId}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                />
                 
                 <div className="text-center text-sm text-muted-foreground">
                   Have questions?{' '}

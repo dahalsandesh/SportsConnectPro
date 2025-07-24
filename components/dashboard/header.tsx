@@ -118,7 +118,7 @@ export function DashboardHeader() {
               <div className="flex h-full flex-col">
                 <div className="flex h-16 items-center border-b px-4">
                   <Link 
-                    href="/dashboard" 
+                    href="/" 
                     className="flex items-center gap-2 font-semibold"
                     onClick={() => setOpen(false)}
                   >
