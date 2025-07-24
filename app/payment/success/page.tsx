@@ -156,11 +156,19 @@ export default function PaymentSuccessPage() {
         // Only verify with our backend for pending or success status
         if (paymentStatus === 'success' || paymentStatus === 'pending') {
           try {
+            // Get token directly from localStorage
+            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            
+            if (!token) {
+              console.error('No authentication token found');
+              throw new Error('Authentication required. Please log in again.');
+            }
+            
             const response = await fetch('http://127.0.0.1:8000/web/api/v1/user/VerifyPayment', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `token ${localStorage.getItem('token')}`,
+                'Authorization': `Token ${token}`, // Using 'Token' prefix as per standard
               },
               body: JSON.stringify({
                 pidx,
