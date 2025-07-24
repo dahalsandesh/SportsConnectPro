@@ -21,8 +21,8 @@ export function RegisterButton({ eventId, className }: RegisterButtonProps) {
     // Check if user is logged in
     const userData = localStorage.getItem('user');
     if (!userData) {
-      // Redirect to login with return URL
-      router.push(`/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`);
+      const currentUrl = window.location.href;
+      router.push(`/login?redirect=${encodeURIComponent(currentUrl)}`);
       return;
     }
 
@@ -34,17 +34,23 @@ export function RegisterButton({ eventId, className }: RegisterButtonProps) {
         userId: user.userId,
         eventId,
       }).unwrap();
-
-      if (result.success) {
-        toast.success('Successfully registered for the event!');
-        // Optionally refresh the page or update the UI
-        window.location.reload();
+      
+      // Show success message
+      const successMessage = result?.message || 'Successfully registered for the event!';
+      toast.success(successMessage);
+      
+    } catch (error: any) {
+      // Extract the error message from the error object
+      const errorData = error?.data || {};
+      let errorMessage = errorData?.message || error?.message || 'An error occurred while registering for the event';
+      const isAlreadyRegistered = error.status === 409 || errorData.message?.includes('Already Registered');
+      
+      // Show the toast
+      if (isAlreadyRegistered) {
+        toast.info('Already registered for this event');
       } else {
-        toast.error(result.message || 'Failed to register for the event');
+        toast.error(errorMessage);
       }
-    } catch (error) {
-      console.error('Error registering for event:', error);
-      toast.error('An error occurred while registering for the event');
     } finally {
       setIsRegistering(false);
     }

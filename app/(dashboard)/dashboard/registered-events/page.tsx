@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { RegisteredEventsList } from '@/app/dashboard/registered-events/_components/registered-events-list';
+import { RegisteredEventsList } from './_components/registered-events-list';
 
 export default function RegisteredEventsPage() {
   const router = useRouter();

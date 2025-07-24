@@ -36,7 +36,7 @@ export function RegisteredEventsList({ userId }: RegisteredEventsListProps) {
     );
   }
 
-  if (!data?.data?.length) {
+  if (!data?.length) {
     return (
       <div className="rounded-lg border border-dashed p-8 text-center">
         <p className="text-muted-foreground">
@@ -48,30 +48,33 @@ export function RegisteredEventsList({ userId }: RegisteredEventsListProps) {
 
   return (
     <div className="space-y-4">
-      {data.data.map((event) => (
-        <Card key={event.id} className="overflow-hidden">
+      {data.map((event, index) => (
+        <Card key={`${event.coutName}-${index}`} className="overflow-hidden">
           <div className="md:flex">
             <div className="p-6 flex-1">
               <CardHeader className="p-0 mb-4">
                 <div className="flex justify-between items-start">
-                  <CardTitle className="text-xl">{event.title}</CardTitle>
+                  <div>
+                    <CardTitle className="text-xl">{event.eventName}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{event.coutName}</p>
+                  </div>
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     Registered
                   </span>
                 </div>
               </CardHeader>
-              <CardContent className="p-0 space-y-2">
+              <CardContent className="p-0 space-y-2 mt-4">
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Calendar className="mr-2 h-4 w-4" />
                   {format(new Date(event.date), 'PPP')}
                 </div>
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Clock className="mr-2 h-4 w-4" />
-                  {event.time}
+                  {event.time.split(':').slice(0, 2).join(':')} {/* Format time to HH:MM */}
                 </div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <MapPin className="mr-2 h-4 w-4" />
-                  {event.location}
+                <div className="mt-2 pt-2 border-t">
+                  <p className="text-sm text-muted-foreground">Booking Reference:</p>
+                  <p className="font-mono text-sm">{event.token}</p>
                 </div>
               </CardContent>
             </div>

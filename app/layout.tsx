@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { ReduxProvider } from '@/redux/provider';
 import { NotificationProvider } from '@/components/notification-provider';
 import { cn } from '@/lib/utils';
+import { Toaster } from 'sonner';
 import ClientLayout from './ClientLayout';
 import './globals.css';
 
@@ -58,6 +59,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
             <NotificationProvider>
               <ClientLayout>{children}</ClientLayout>
+              <Toaster position="top-right" richColors />
             </NotificationProvider>
           </ThemeProvider>
         </ReduxProvider>

@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { createContext, useContext, useState, useEffect } from "react"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 
 type NotificationType = "success" | "error" | "info" | "warning"
 
@@ -24,7 +24,6 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([])
-  const { toast } = useToast()
 
   const addNotification = (type: NotificationType, title: string, message: string) => {
     const id = Math.random().toString(36).substring(2, 9)
