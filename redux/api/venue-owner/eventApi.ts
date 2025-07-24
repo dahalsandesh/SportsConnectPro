@@ -1,8 +1,36 @@
 import { baseApi } from "../baseApi";
 import type { ApiResponse, SportsEvent } from '@/types/api';
 
+export interface RegisteredUser {
+  userId: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  registeredAt: string;
+  // Add other relevant fields
+}
+
 export const eventApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    getRegisteredUsers: builder.query<RegisteredUser[], { eventId: string }>({
+      query: ({ eventId }) => {
+        // Get userId from localStorage
+        let userId = '';
+        if (typeof window !== 'undefined') {
+          const user = localStorage.getItem('user');
+          if (user) {
+            const userData = JSON.parse(user);
+            userId = userData.userId || '';
+          }
+        }
+        return {
+          url: "/web/api/v1/venue/GetRegisteredEventsUsers",
+          params: { eventId, userId }
+        };
+      },
+      providesTags: (result, error, { eventId }) => 
+        result ? [{ type: 'RegisteredUsers', id: eventId }] : [],
+    }),
     createSportsEvent: builder.mutation<ApiResponse<null>, FormData>({
       query: (formData) => ({
         url: "/web/api/v1/venue/CreateEvent",
@@ -42,12 +70,17 @@ export const eventApi = baseApi.injectEndpoints({
         method: "POST",
         body: { eventId },
       }),
-      invalidatesTags: (result, error, { eventId }) => [{ type: 'SportsEvents', id: eventId }, {type: 'SportsEvents', id: 'LIST'}],
+      invalidatesTags: (result, error, { eventId }) => [
+        { type: 'SportsEvents', id: eventId },
+        { type: 'SportsEvents', id: 'LIST' },
+        { type: 'RegisteredUsers', id: eventId }
+      ],
     }),
   }),
 });
 
 export const {
+    useGetRegisteredUsersQuery,
     useCreateSportsEventMutation,
     useGetSportsEventsQuery,
     useGetSportsEventByIdQuery,

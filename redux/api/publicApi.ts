@@ -108,12 +108,16 @@ const publicApi = baseApi.injectEndpoints({
       }),
       providesTags: (result, error, id) => [{ type: "Venues", id }],
     }),
-    getCourts: builder.query<any[], void>({
-      query: () => "/web/api/v1/GetCourt",
+    // Public courts endpoint - using different tag type to avoid conflicts with venue-owner courts
+    getPublicCourts: builder.query<Court[], { venueId?: string }>({
+      query: (params) => ({
+        url: "/web/api/v1/GetCourt",
+        params,
+      }),
       providesTags: (result) =>
         result
-          ? [...result.map((court: any) => ({ type: 'Courts' as const, id: court.courtID })), { type: 'Courts', id: 'LIST' }]
-          : [{ type: 'Courts', id: 'LIST' }],
+          ? [...result.map((court) => ({ type: 'PublicCourts' as const, id: court.courtID })), { type: 'PublicCourts', id: 'LIST' }]
+          : [{ type: 'PublicCourts', id: 'LIST' }],
     }),
     getCourtById: builder.query<any, string>({
       query: (courtId) => ({

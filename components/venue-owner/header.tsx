@@ -154,10 +154,10 @@ export function VenueOwnerHeader() {
                   { title: "Bookings", href: "/venue-owner/bookings", icon: <Calendar className="h-5 w-5" /> },
                   { title: "Time Slots", href: "/venue-owner/availability", icon: <Clock className="h-5 w-5" /> },
                   { title: "Events", href: "/venue-owner/events", icon: <Trophy className="h-5 w-5" /> },
+                  { title: "Registered Users", href: "/venue-owner/registered-users", icon: <User className="h-5 w-5" /> },
                   { title: "Posts & News", href: "/venue-owner/posts", icon: <NewspaperIcon className="h-5 w-5" /> },
                   { title: "Reels", href: "/venue-owner/reels", icon: <Video className="h-5 w-5" /> },
                   { title: "Payments", href: "/venue-owner/payments", icon: <CreditCard className="h-5 w-5" /> },
-                  // { title: "Analytics", href: "/venue-owner/analytics", icon: <BarChart className="h-5 w-5" /> },
                 ].map((item) => (
                   <Link
                     key={item.href}
@@ -172,12 +172,12 @@ export function VenueOwnerHeader() {
               </nav>
             </SheetContent>
           </Sheet>
-          <Link href="/venue-owner" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <span className="text-xl font-bold">SportConnect Pro</span>
           </Link>
         </div>
         <div className="hidden lg:flex lg:items-center lg:gap-2">
-          <Link href="/venue-owner" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <span className="text-xl font-bold">SportConnect Pro</span>
           </Link>
         </div>

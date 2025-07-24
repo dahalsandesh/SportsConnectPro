@@ -32,10 +32,17 @@ export default function VenueRegistrationForm() {
   const businessFileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    fetch('/web/api/v1/user/GetCity').then(r=>r.json()).then(data=>{
-      setCities(data.data||[])
+    const token = localStorage.getItem('token')
+    fetch('http://localhost:8000/web/api/v1/user/GetCity', {
+      headers: {
+        Authorization: `token ${token}`,
+      },
     })
-  },[])
+      .then((r) => r.json())
+      .then((data) => {
+        setCities(data.data || [])
+      })
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
