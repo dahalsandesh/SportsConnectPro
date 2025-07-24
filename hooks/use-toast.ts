@@ -8,8 +8,8 @@ import type {
   ToastProps,
 } from "@/components/ui/toast"
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_LIMIT = 5
+const TOAST_REMOVE_DELAY = 5000 // 5 seconds
 
 type ToasterToast = ToastProps & {
   id: string
@@ -144,28 +144,51 @@ type Toast = Omit<ToasterToast, "id">
 
 function toast({ ...props }: Toast) {
   const id = genId()
+  console.log('Creating toast:', { id, ...props });
 
-  const update = (props: ToasterToast) =>
-    dispatch({
+  const update = (props: ToasterToast) => {
+    console.log('Updating toast:', { id, ...props });
+    return dispatch({
       type: "UPDATE_TOAST",
       toast: { ...props, id },
-    })
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+    });
+  };
+  
+  const dismiss = () => {
+    console.log('Dismissing toast:', id);
+    return dispatch({ type: "DISMISS_TOAST", toastId: id });
+  };
 
+  // Auto-dismiss after delay
+  const timeout = setTimeout(() => {
+    console.log('Auto-dismissing toast:', id);
+    dismiss();
+  }, TOAST_REMOVE_DELAY);
+
+  // Clear timeout if toast is dismissed manually
+  const onOpenChange = (open: boolean) => {
+    console.log('Toast open state changed:', { id, open });
+    if (!open) {
+      clearTimeout(timeout);
+      dismiss();
+    }
+  };
+
+  const toastData = {
+    ...props,
+    id,
+    open: true,
+    onOpenChange,
+  };
+
+  console.log('Dispatching ADD_TOAST:', toastData);
   dispatch({
     type: "ADD_TOAST",
-    toast: {
-      ...props,
-      id,
-      open: true,
-      onOpenChange: (open) => {
-        if (!open) dismiss()
-      },
-    },
-  })
+    toast: toastData,
+  });
 
   return {
-    id: id,
+    id,
     dismiss,
     update,
   }

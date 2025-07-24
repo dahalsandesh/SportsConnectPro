@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { ReduxProvider } from '@/redux/provider';
 import { NotificationProvider } from '@/components/notification-provider';
 import { cn } from '@/lib/utils';
+import { Toaster } from 'sonner';
 import ClientLayout from './ClientLayout';
 import BackButtonHandler from '@/components/back-button-handler';
 import './globals.css';
@@ -66,6 +67,7 @@ export default function RootLayout({
                 <BackButtonHandler />
                 {children}
               </ClientLayout>
+              <Toaster position="top-right" richColors />
             </NotificationProvider>
           </ThemeProvider>
         </ReduxProvider>
