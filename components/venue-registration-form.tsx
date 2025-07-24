@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -17,14 +17,25 @@ export default function VenueRegistrationForm() {
   const [formData, setFormData] = useState({
     venueName: "",
     address: "",
-    city: "",
-    phone: "",
+    cityId: "",
+    phoneNumber: "",
     email: "",
-    description: "",
-    openingTime: "",
-    closingTime: "",
+    panNumber: "",
     agreeTerms: false,
   })
+  const [cities, setCities] = useState<{ cityId: string; cityName: string }[]>([])
+  const [files, setFiles] = useState<{ panFile: File | null; govFile: File | null; businessFile: File | null }>({ panFile: null, govFile: null, businessFile: null })
+  const [applicationId, setApplicationId] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const panFileRef = useRef<HTMLInputElement>(null)
+  const govFileRef = useRef<HTMLInputElement>(null)
+  const businessFileRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    fetch('/web/api/v1/user/GetCity').then(r=>r.json()).then(data=>{
+      setCities(data.data||[])
+    })
+  },[])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -33,6 +44,18 @@ export default function VenueRegistrationForm() {
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fileType: keyof typeof files) => {
+    if (e.target.files && e.target.files[0]) {
+      setFiles(prev => ({ ...prev, [fileType]: e.target.files![0] }))
+    }
+  }
+  const removeFile = (fileType: keyof typeof files) => {
+    setFiles(prev => ({ ...prev, [fileType]: null }))
+    if (fileType === 'panFile' && panFileRef.current) panFileRef.current.value = ''
+    if (fileType === 'govFile' && govFileRef.current) govFileRef.current.value = ''
+    if (fileType === 'businessFile' && businessFileRef.current) businessFileRef.current.value = ''
   }
 
   const handleCheckboxChange = (checked: boolean) => {
@@ -47,17 +70,74 @@ export default function VenueRegistrationForm() {
     setStep((prev) => prev - 1)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Form submitted:", formData)
-    nextStep()
+    if (step === 1) {
+      if (!formData.venueName || !formData.address || !formData.cityId || !formData.phoneNumber || !formData.email || !formData.panNumber) {
+        alert('Please fill all required fields')
+        return
+      }
+      setStep(2)
+      return
+    }
+    if (step === 2) {
+      if (!files.panFile || !files.govFile || !files.businessFile) {
+        alert('Please upload all required documents')
+        return
+      }
+      setIsLoading(true)
+      try {
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+        if (!API_BASE_URL) throw new Error('API base URL is not set (NEXT_PUBLIC_API_URL)');
+        const response = await fetch(`${API_BASE_URL}/web/api/v1/user/CreateVenueApplication`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: (() => {
+              if (typeof window !== 'undefined') {
+                try {
+                  const userStr = localStorage.getItem('user');
+                  if (userStr) {
+                    const userObj = JSON.parse(userStr);
+                    return userObj.userId || '';
+                  }
+                } catch (e) {
+                  // fallback
+                }
+              }
+              return '';
+            })(),
+            venueName: formData.venueName,
+            phoneNumber: formData.phoneNumber,
+            address: formData.address,
+            cityId: formData.cityId,
+            email: formData.email,
+            panNumber: formData.panNumber,
+          })
+        })
+        const data = await response.json()
+        if (!data.data?.applicationId) throw new Error('No applicationId')
+        setApplicationId(data.data.applicationId)
+        // 2. Upload docs
+        const fd = new FormData()
+        fd.append('applicationId', data.data.applicationId)
+        fd.append('panFile', files.panFile)
+        fd.append('govFile', files.govFile)
+        fd.append('businessFile', files.businessFile)
+        await fetch(`${API_BASE_URL}/web/api/v1/user/UploadVenueApplicationDoc`, { method:'POST', body: fd })
+        setStep(3)
+      } catch (err) {
+        alert('Submission failed')
+      } finally {
+        setIsLoading(false)
+      }
+    }
   }
 
   const steps = [
     { number: 1, title: "Basic Info", icon: Info, description: "Venue details" },
     { number: 2, title: "Documents", icon: FileText, description: "Upload files" },
-    { number: 3, title: "Setup", icon: Clock, description: "Court & timing" },
-    { number: 4, title: "Complete", icon: Check, description: "Confirmation" },
+    { number: 3, title: "Success", icon: Check, description: "Confirmation" },
   ]
 
   return (
@@ -146,15 +226,14 @@ export default function VenueRegistrationForm() {
                   <Label htmlFor="city" className="text-foreground">
                     City *
                   </Label>
-                  <Select value={formData.city} onValueChange={(value) => handleSelectChange("city", value)}>
+                  <Select value={formData.cityId} onValueChange={(value) => handleSelectChange("cityId", value)}>
                     <SelectTrigger className="bg-background text-foreground border-border">
-                      <SelectValue placeholder="Select city" />
+                      <SelectValue placeholder={cities.length ? "Select city" : "Loading cities..."} />
                     </SelectTrigger>
                     <SelectContent className="bg-background border-border">
-                      <SelectItem value="kathmandu">Kathmandu</SelectItem>
-                      <SelectItem value="lalitpur">Lalitpur</SelectItem>
-                      <SelectItem value="bhaktapur">Bhaktapur</SelectItem>
-                      <SelectItem value="pokhara">Pokhara</SelectItem>
+                      {cities.map(city => (
+                        <SelectItem key={city.cityId} value={city.cityId}>{city.cityName}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
