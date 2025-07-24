@@ -164,7 +164,8 @@ export default function AvailabilityPage() {
       
       console.log('Toggling time slot status with payload:', payload);
       
-      const response = await fetch('http://127.0.0.1:8000/web/api/v1/venue/UpdateTicket', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://10.0.2.2:8000';
+      const response = await fetch(`${apiUrl}/web/api/v1/venue/UpdateTicket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -454,7 +455,8 @@ export default function AvailabilityPage() {
       
       console.log('Updating time slot with payload:', payload);
       
-      const response = await fetch('http://127.0.0.1:8000/web/api/v1/venue/UpdateTicket', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://10.0.2.2:8000';
+      const response = await fetch(`${apiUrl}/web/api/v1/venue/UpdateTicket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1197,7 +1199,8 @@ export default function AvailabilityPage() {
                             
                             console.log('Deactivating time slot with payload:', payload);
                             
-                            const response = await fetch('http://127.0.0.1:8000/web/api/v1/venue/UpdateTicket', {
+                            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://10.0.2.2:8000';
+      const response = await fetch(`${apiUrl}/web/api/v1/venue/UpdateTicket`, {
                               method: 'POST',
                               headers: {
                                 'Content-Type': 'application/json',

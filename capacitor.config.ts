@@ -5,8 +5,15 @@ const config: CapacitorConfig = {
   appName: "SportConnect Pro",
   webDir: "out",
   server: {
-    url: "https://sportsconnectpro.vercel.app/",
-    androidScheme: "https",
+    // For development - uncomment the one you need
+    // url: "http://10.0.2.2:3000", // Android Emulator
+    url: "http://192.168.18.250:3000", // Local network for mobile testing
+    androidScheme: "http",
+    cleartext: true, // Allow HTTP traffic
+    allowNavigation: [
+      "http://10.0.2.2:8000", // For Android Emulator
+      "http://192.168.18.250:8000" // For mobile devices on local network
+    ]
   },
   plugins: {
     SplashScreen: {

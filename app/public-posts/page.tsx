@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useGetPublicPostsQuery } from '@/redux/api/publicApi';
 import Link from 'next/link';
+import Image from 'next/image';
+import { getImageUrl } from '@/lib/image-utils';
 
 const PublicPostsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,11 +69,13 @@ const PublicPostsPage = () => {
           >
             <div className="flex flex-col md:flex-row gap-4 items-center">
               {post.postImage && (
-                <div className="w-full md:w-40 h-28 flex-shrink-0">
-                  <img 
-                    src={post.postImage} 
-                    alt={post.title} 
-                    className="w-full h-full object-cover rounded-md" 
+                <div className="w-full md:w-40 h-28 flex-shrink-0 relative">
+                  <Image 
+                    src={getImageUrl(post.postImage)}
+                    alt={post.title || 'Post image'}
+                    fill
+                    className="object-cover rounded-md"
+                    sizes="(max-width: 768px) 100vw, 160px"
                   />
                 </div>
               )}

@@ -32,7 +32,7 @@ import {
   ChevronDown,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useLogoutMutation } from "@/redux/api/common/authApi"
 import { logout } from "@/redux/features/authSlice"
 import { useAppDispatch } from "@/hooks/redux"
@@ -146,28 +146,30 @@ export function MainHeader() {
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-300 border-b",
         "bg-background/95 backdrop-blur-md shadow-sm border-border/40",
-        // Ensure visibility
-        "visible opacity-100 block",
+        // Ensure visibility and prevent horizontal scroll
+        "visible opacity-100 block overflow-x-hidden",
       )}
       style={{
         visibility: "visible",
         opacity: 1,
         display: "block",
-        minHeight: "64px",
+        minHeight: "56px", // Reduced height for mobile
       }}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+      <div className="w-full px-2 sm:px-4 max-w-[100vw]">
+        <div className="flex h-14 sm:h-16 items-center justify-between relative">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center space-x-2 focus-ring rounded-md p-1"
-            style={{ visibility: "visible", opacity: 1 }}
-          >
-            <span className="text-xl font-bold text-primary">Sport</span>
-            <span className="text-xl font-bold text-foreground">Connect</span>
-            <span className="text-xl font-bold text-primary">Pro</span>
-          </Link>
+          <div className="flex-shrink-0">
+            <Link
+              href="/"
+              className="flex items-center space-x-1 focus-ring rounded-md p-1"
+              style={{ visibility: "visible", opacity: 1 }}
+            >
+              <span className="text-lg sm:text-xl font-bold text-primary">Sport</span>
+              <span className="text-lg sm:text-xl font-bold text-foreground">Connect</span>
+              <span className="text-lg sm:text-xl font-bold text-primary">Pro</span>
+            </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
@@ -214,7 +216,7 @@ export function MainHeader() {
           </nav>
 
           {/* Desktop Auth Buttons */}
-          <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-4">
             <ThemeToggle />
             {!isMounted ? (
               // Render skeleton or null during SSR
@@ -301,17 +303,27 @@ export function MainHeader() {
           </div>
 
           {/* Mobile Menu */}
-          <div className="flex items-center md:hidden">
-            <ThemeToggle />
+          <div className="flex items-center sm:hidden">
+            <ThemeToggle className="mr-1" />
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="ml-2 h-9 w-9">
+                <Button variant="ghost" size="icon" className="h-9 w-9">
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                <nav className="flex flex-col gap-4 mt-8">
+              <SheetContent 
+                side="right" 
+                className="w-[280px] sm:w-[320px] p-0 flex flex-col"
+              >
+                <SheetHeader className="p-4 border-b border-border">
+                  <SheetTitle className="flex items-center space-x-2">
+                    <span className="text-lg font-bold text-primary">Sport</span>
+                    <span className="text-lg font-bold text-foreground">Connect</span>
+                    <span className="text-lg font-bold text-primary">Pro</span>
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="flex-1 overflow-y-auto p-4">
                   {mainNavItems.map((item) => (
                     <Link
                       key={item.href}
@@ -328,6 +340,7 @@ export function MainHeader() {
                     </Link>
                   ))}
                   <div className="h-px bg-border my-2" />
+                  <div className="space-y-2">
                   {isAuthenticated ? (
                     <>
                       <div className="flex items-center gap-4 p-2">
@@ -388,6 +401,7 @@ export function MainHeader() {
                       </Button>
                     </div>
                   )}
+                  </div>
                 </nav>
               </SheetContent>
             </Sheet>

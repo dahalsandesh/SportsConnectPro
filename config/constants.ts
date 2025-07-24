@@ -1,5 +1,9 @@
-// API Base URL - Matches admin/venue-owner configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// API Base URL - Supports both emulator and mobile testing
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (typeof window !== 'undefined' && window.location.hostname === '10.0.2.2' 
+    ? 'http://10.0.2.2:8000'  // Android Emulator
+    : 'http://192.168.18.250:8000' // Local network for mobile testing
+  );
 
 // API Endpoints
 export const API_ENDPOINTS = {

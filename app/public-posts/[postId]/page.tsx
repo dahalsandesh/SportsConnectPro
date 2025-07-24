@@ -3,6 +3,7 @@ import React from 'react';
 import { useGetPublicPostByIdQuery, useGetRecommendedPostsQuery } from '@/redux/api/publicApi';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getImageUrl } from '@/lib/image-utils';
 
 interface PublicPostDetailPageProps {
   params: { postId: string };
@@ -49,7 +50,7 @@ const PublicPostDetailPage = ({ params }: PublicPostDetailPageProps) => {
           {post.postImage && (
             <div className="w-full h-96 relative mb-8 rounded-xl overflow-hidden shadow-lg">
               <Image
-                src={post.postImage}
+                src={getImageUrl(post.postImage)}
                 alt={post.title}
                 fill
                 className="object-cover"
@@ -96,11 +97,12 @@ const PublicPostDetailPage = ({ params }: PublicPostDetailPageProps) => {
                   <div className="flex gap-3 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors">
                     <div className="w-20 h-16 relative flex-shrink-0">
                       <Image
-                        src={`http://localhost:8000/media/${recPost.img}`}
+                        src={getImageUrl(recPost.img)}
                         alt={recPost.title}
                         fill
                         className="object-cover rounded-md"
                         sizes="80px"
+                        priority
                       />
                     </div>
                     <div className="flex-1 min-w-0">

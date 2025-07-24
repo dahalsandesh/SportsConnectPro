@@ -5,6 +5,7 @@ import { ReduxProvider } from '@/redux/provider';
 import { NotificationProvider } from '@/components/notification-provider';
 import { cn } from '@/lib/utils';
 import ClientLayout from './ClientLayout';
+import BackButtonHandler from '@/components/back-button-handler';
 import './globals.css';
 
 const inter = Inter({
@@ -52,12 +53,19 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${poppins.variable}`}>
-      <body className="min-h-screen bg-background font-sans antialiased">
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn(
+        "min-h-screen bg-background font-sans antialiased",
+        inter.variable,
+        poppins.variable
+      )}>
         <ReduxProvider>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <NotificationProvider>
-              <ClientLayout>{children}</ClientLayout>
+              <ClientLayout>
+                <BackButtonHandler />
+                {children}
+              </ClientLayout>
             </NotificationProvider>
           </ThemeProvider>
         </ReduxProvider>

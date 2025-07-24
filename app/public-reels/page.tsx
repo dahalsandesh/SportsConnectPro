@@ -2,6 +2,7 @@
 import React from 'react';
 import { useGetPublicReelsQuery } from '@/redux/api/publicApi';
 import Link from 'next/link';
+import { getImageUrl } from '@/lib/image-utils';
 
 import { useRef, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -40,11 +41,14 @@ const ReelCard: React.FC<ReelCardProps> = ({ reel, isActive, onClick }) => {
     <div ref={cardRef} className="relative group block w-full rounded-2xl overflow-hidden shadow-lg bg-background cursor-pointer" onClick={onClick}>
       <video
         ref={videoRef}
-        src={reel.video_url}
+        src={getImageUrl(reel.video_url)}
         controls
         loop
+        muted
+        playsInline
         className="w-full h-[65vw] md:h-[60vh] object-cover bg-black"
         style={{ maxHeight: 520 }}
+        poster={reel.thumbnail ? getImageUrl(reel.thumbnail) : undefined}
       />
       {/* Overlayed title and caption */}
       <div className="absolute bottom-0 left-0 w-full px-4 pb-6 pt-10 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/30 to-transparent">

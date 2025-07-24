@@ -38,7 +38,8 @@ export default function AIModelTrainPage() {
       setIsTraining(true);
       setError(null);
       
-      const response = await fetch('http://127.0.0.1:8000/web/api/v1/adds/TrainModels', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://10.0.2.2:8000';
+      const response = await fetch(`${apiUrl}/web/api/v1/adds/TrainModels`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',

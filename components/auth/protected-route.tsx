@@ -36,7 +36,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
             router.replace("/venue-owner")
             break
           case UserType.SuperUsers:
-            router.replace("http://localhost:8000/admin")
+            router.replace(`${process.env.NEXT_PUBLIC_API_URL || 'http://10.0.2.2:8000'}/admin`)
             break
           default:
             router.replace("/dashboard")

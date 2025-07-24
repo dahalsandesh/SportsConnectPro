@@ -14,13 +14,15 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const showPublicLayout = !isAdmin && !isVenueOwner && !isDashboard;
 
   return (
-    <div className="relative flex min-h-screen flex-col">
+    <div className="relative flex min-h-screen flex-col overflow-x-hidden">
       {/* Header - Only show on public routes */}
       {showPublicLayout && <MainHeader />}
 
-      {/* Main Content */}
-      <main className={`flex-1 relative z-10 ${!showPublicLayout ? 'pt-0' : ''}`}>
-        {children}
+      {/* Main Content - Prevent horizontal overflow */}
+      <main className={`flex-1 relative z-10 w-full ${!showPublicLayout ? 'pt-0' : ''}`}>
+        <div className="w-full max-w-full overflow-x-hidden">
+          {children}
+        </div>
       </main>
 
       {/* Footer - Only show on public routes */}

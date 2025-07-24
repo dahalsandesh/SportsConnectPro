@@ -156,7 +156,8 @@ export default function PaymentSuccessPage() {
         // Only verify with our backend for pending or success status
         if (paymentStatus === 'success' || paymentStatus === 'pending') {
           try {
-            const response = await fetch('http://127.0.0.1:8000/web/api/v1/user/VerifyPayment', {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://10.0.2.2:8000';
+            const response = await fetch(`${apiUrl}/web/api/v1/user/VerifyPayment`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
