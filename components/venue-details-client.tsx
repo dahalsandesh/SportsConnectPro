@@ -82,10 +82,12 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
               <span className="ml-1 text-gray-400">({venue.reviews || 0} reviews)</span>
             </div>
           </div>
-          <div className="flex items-center mt-2 text-gray-500">
-            <Phone className="h-4 w-4 mr-1" />
-            <span>{venue.phone || 'N/A'}</span>
-          </div>
+          {venue.phoneNumber && (
+            <div className="flex items-center mt-2 text-gray-500">
+              <Phone className="h-4 w-4 mr-1" />
+              <span>{venue.phoneNumber}</span>
+            </div>
+          )}
           <div className="flex items-center mt-2 text-gray-500">
             <Mail className="h-4 w-4 mr-1" />
             <span>{venue.email || 'N/A'}</span>
@@ -118,18 +120,21 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
             <h2 className="text-xl font-bold mb-2">About</h2>
             <p className="text-muted-foreground mb-4">{venue.description || 'No description available.'}</p>
             <div className="flex flex-wrap gap-4">
-              <div>
-                <span className="font-semibold">Surface:</span> {venue.surfaceType || 'N/A'}
-              </div>
-              <div>
-                <span className="font-semibold">Capacity:</span> {venue.capacity || 'N/A'}
-              </div>
-              <div>
-                <span className="font-semibold">Open:</span> {venue.openingTime || '6:00 AM'} - {venue.closingTime || '10:00 PM'}
-              </div>
-              <div>
-                <span className="font-semibold">Price:</span> Rs. {venue.pricePerHour || venue.price || 'N/A'} / hour
-              </div>
+              {venue.openingTime && venue.closingTime && (
+                <div>
+                  <span className="font-semibold">Open:</span> {venue.openingTime} - {venue.closingTime}
+                </div>
+              )}
+              {venue.address && (
+                <div>
+                  <span className="font-semibold">Address:</span> {venue.address}
+                </div>
+              )}
+              {venue.city && (
+                <div>
+                  <span className="font-semibold">City:</span> {venue.city}
+                </div>
+              )}
             </div>
           </div>
         </TabsContent>
