@@ -134,7 +134,7 @@ export function AdminSidebar() {
     <aside className="hidden w-64 flex-col border-r bg-muted/40 lg:flex">
       <div className="flex h-14 items-center border-b px-4">
         <Link href="/admin" className="flex items-center gap-2 font-semibold">
-          <span>SportsConnect Pro</span>
+          <span>Admin Panel</span>
         </Link>
       </div>
       <nav className="flex-1 overflow-y-auto py-4">

@@ -173,8 +173,8 @@ export function AdminHeader() {
             <SheetContent side="left" className="w-[300px] p-0">
               <div className="flex h-full flex-col">
                 <div className="p-4">
-                  <Link href="/admin" className="text-lg font-semibold">
-                    Admin Panel
+                  <Link href="/" className="text-lg font-semibold">
+                    SportsConnect Pro
                   </Link>
                 </div>
                 <nav className="flex-1 space-y-1 p-4">
@@ -203,8 +203,8 @@ export function AdminHeader() {
               </div>
             </SheetContent>
           </Sheet>
-          <Link href="/admin" className="hidden md:block text-lg font-semibold">
-            Admin Panel
+          <Link href="/" className="hidden md:block text-lg font-semibold">
+            SportsConnect Pro
           </Link>
         </div>
         <div className="flex items-center gap-4">
