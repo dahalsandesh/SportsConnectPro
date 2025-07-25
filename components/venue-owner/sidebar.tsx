@@ -161,10 +161,10 @@ export function VenueOwnerSidebarContent() {
           </Button>
         ))}
         <div className="mt-4">
-          <div className="font-semibold text-xs text-muted-foreground px-2 mb-1">
+          {/* <div className="font-semibold text-xs text-muted-foreground px-2 mb-1">
             My Venues
-          </div>
-          {isLoading && (
+          </div> */}
+          {/* {isLoading && (
             <div className="text-xs text-muted-foreground px-2">
               Loading venues...
             </div>
@@ -173,11 +173,11 @@ export function VenueOwnerSidebarContent() {
             <div className="text-xs text-red-500 px-2">
               Failed to load venues.
             </div>
-          )}
+          )} */}
         
           {!isLoading && !isError && venue && (
             <div className="mb-1">
-              <Button
+              {/* <Button
                 variant="ghost"
                 className={cn(
                   "w-full justify-between text-left px-2 py-1 text-sm",
@@ -187,11 +187,11 @@ export function VenueOwnerSidebarContent() {
                   setOpenVenueId(
                     openVenueId === venue.venueId ? null : venue.venueId
                   )
-                }>
-                <span>{venue.venueName}</span>
-                <span>{openVenueId === venue.venueId ? "-" : "+"}</span>
-              </Button>
-              {openVenueId === venue.venueId && (
+                }> */}
+                {/* <span>{venue.venueName}</span>
+                <span>{openVenueId === venue.venueId ? "-" : "+"}</span> */}
+              {/* </Button> */}
+              {/* {openVenueId === venue.venueId && (
                 <div key={`${venue.venueId}-nav`} className="ml-4 mt-1 flex flex-col gap-1">
                   <Link
                     href={`/venue-owner/venues/${venue.venueId}`}
@@ -214,7 +214,7 @@ export function VenueOwnerSidebarContent() {
                     Media
                   </Link>
                 </div>
-              )}
+              )} */}
             </div>
           )}
         </div>

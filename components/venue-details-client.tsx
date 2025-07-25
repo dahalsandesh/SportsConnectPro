@@ -19,6 +19,7 @@ NProgress.configure({ showSpinner: false });
 export default function VenueDetailsClient({ venueId }: { venueId: string }) {
   const router = useRouter();
   const { data: venue, isLoading, isError } = useGetVenueByIdQuery(venueId);
+  const [selectedCourtId, setSelectedCourtId] = useState<string>('');
   
   // Handle loading state with NProgress
   useEffect(() => {
@@ -32,54 +33,65 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
       NProgress.done();
     };
   }, [isLoading]);
-  const fallbackVenueImages = [
+
+  // Handle default values and data processing
+  const fallbackVenueImages = useMemo(() => [
     "/placeholder.svg?height=600&width=800",
     "/placeholder.svg?height=600&width=800",
     "/placeholder.svg?height=600&width=800",
     "/placeholder.svg?height=600&width=800",
-  ];
+  ], []);
+
   const fallbackCourtImage = "/placeholder.svg?height=300&width=400";
 
   // Extract venue data or use defaults
   const venueData = venue || {};
-  const venueImages = venueData.venueImages?.length > 0
-    ? venueData.venueImages.map((img: any) => img.image)
-    : fallbackVenueImages;
-  const courts = venueData.courts || [];
+  const venueImages = useMemo(() => 
+    venueData.venueImages?.length > 0
+      ? venueData.venueImages.map((img: any) => img.image)
+      : fallbackVenueImages,
+    [venueData.venueImages, fallbackVenueImages]
+  );
 
-  // Initialize state at the top level
-  const [selectedCourtId, setSelectedCourtId] = useState<string>('');
+  const courts = useMemo(() => venueData.courts || [], [venueData.courts]);
   
   // Update selectedCourtId when courts data is available
   useEffect(() => {
-    if (courts.length > 0) {
+    if (courts.length > 0 && !selectedCourtId) {
       const firstCourtId = courts[0]?.courtId || courts[0]?.courtID || '';
       setSelectedCourtId(firstCourtId);
     }
-  }, [courts]);
+  }, [courts, selectedCourtId]);
 
   const courtOptions = useMemo(() => 
     courts.map(court => ({
-      courtId: court.courtId || court.courtID || court.id, // Handle multiple possible ID fields
+      courtId: court.courtId || court.courtID || court.id,
       name: court.name,
       sportCategory: court.sportCategory,
-      hourlyRate: court.hourlyRate || court.rate || 1000, // Default to 1000 if not provided
-      id: court.courtId || court.courtID || court.id // Ensure id is set for the API
+      hourlyRate: court.hourlyRate || court.rate || 1000,
+      id: court.courtId || court.courtID || court.id
     })),
     [courts]
   );
 
-  if (isError || !venue) return (
-    <div className="flex flex-col items-center justify-center min-h-[50vh]">
-      <div className="text-center space-y-4">
-        <h2 className="text-2xl font-bold">Failed to load venue details</h2>
-        <p className="text-muted-foreground">Please try again later</p>
-        <Button onClick={() => router.refresh()} variant="outline">
+  // Handle loading and error states after all hooks
+  if (isLoading) {
+    return null; // The loading state is handled by the page component
+  }
+
+  if (isError || !venue) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h2 className="text-2xl font-bold text-destructive mb-4">Error loading venue details</h2>
+        <p className="text-muted-foreground mb-4">
+          Sorry, we couldn't load the venue details. Please try again later.
+        </p>
+        <Button onClick={() => window.location.reload()}>
           Retry
         </Button>
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

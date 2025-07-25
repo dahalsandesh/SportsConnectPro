@@ -2,6 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
+/* NProgress Customization */
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  background: hsl(142 76% 36%); /* Using primary color from theme */
+  position: fixed;
+  z-index: 1031;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px; /* Thicker bar */
+  border-radius: 0 2px 2px 0; /* Rounded corners on the right side */
+}
+
+/* Fancy blur effect */
+#nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0px;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px hsl(142 76% 36%), 0 0 5px hsl(142 76% 36%);
+  opacity: 1;
+  transform: rotate(3deg) translate(0px, -4px);
+}
+
+/* Optional: Customize the spinner (if you want to show it) */
+#nprogress .spinner {
+  display: none; /* Hidden by default */
+}
+
+/* Optional: Customize the spinner icon (if shown) */
+#nprogress .spinner-icon {
+  width: 24px;
+  height: 24px;
+  border: solid 3px transparent;
+  border-top-color: hsl(142 76% 36%);
+  border-left-color: hsl(142 76% 36%);
+  border-radius: 50%;
+}
+
+/* Optional: Add a subtle animation to the progress bar */
+@keyframes nprogress-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+#nprogress .bar {
+  animation: nprogress-pulse 2s ease-in-out infinite;
+}
+
 @layer base {
   :root {
     /* Light theme colors with enhanced contrast */

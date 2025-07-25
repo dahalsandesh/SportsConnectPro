@@ -73,7 +73,7 @@ export default function FeaturedVenues() {
                 <div className="absolute top-2 right-2">
                   <Badge className="bg-green-600 text-white border-0 shadow-md">
                     <Star className="h-3 w-3 mr-1 fill-current" />
-                    {venue.rating || '4.5'} ({venue.reviews || 0})
+                    {venue.rating || 'N/A'} ({venue.reviews || 0})
                   </Badge>
                 </div>
               </div>
@@ -81,17 +81,17 @@ export default function FeaturedVenues() {
                 <h3 className="text-xl font-bold mb-2 text-foreground">{venue.name}</h3>
                 <div className="flex items-center text-muted-foreground mb-2">
                   <MapPin className="h-4 w-4 mr-1" />
-                  <span className="text-sm">{venue.address || 'Kathmandu, Nepal'}</span>
+                  <span className="text-sm">{venue.address || 'Location not specified'}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 mt-4">
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Users className="h-4 w-4 mr-1" />
-                    <span>{venue.capacity || '5v5'}</span>
+                    <span>{venue.capacity || 'N/A'}</span>
                   </div>
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Clock className="h-4 w-4 mr-1" />
                     <span>
-                      {venue.openingTime || '6:00 AM'} - {venue.closingTime || '10:00 PM'}
+                      {venue.openingTime ? `${venue.openingTime} - ${venue.closingTime || ''}` : 'N/A'}
                     </span>
                   </div>
                 </div>
@@ -102,9 +102,11 @@ export default function FeaturedVenues() {
                     </span>
                     <span className="text-muted-foreground text-sm">/hour</span>
                   </div>
-                  <Badge variant="outline" className="border-green-600 text-green-600 bg-green-50 dark:bg-green-950">
-                    {venue.surfaceType || 'Artificial Grass'}
-                  </Badge>
+                  {venue.surfaceType && (
+                    <Badge variant="outline" className="border-green-600 text-green-600 bg-green-50 dark:bg-green-950">
+                      {venue.surfaceType}
+                    </Badge>
+                  )}
                 </div>
               </CardContent>
             </Card>
