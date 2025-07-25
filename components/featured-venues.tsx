@@ -70,10 +70,15 @@ export default function FeaturedVenues() {
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
+                <div className="absolute top-2 left-2">
+                  <Badge variant="outline" className="text-xs bg-primary/10 hover:bg-primary/20">
+                    View Venue
+                  </Badge>
+                </div>
                 <div className="absolute top-2 right-2">
                   <Badge className="bg-green-600 text-white border-0 shadow-md">
                     <Star className="h-3 w-3 mr-1 fill-current" />
-                    {venue.rating || 'N/A'} ({venue.reviews || 0})
+                    {venue.rating || '4.5'} ({venue.reviews || 0})
                   </Badge>
                 </div>
               </div>
@@ -81,13 +86,13 @@ export default function FeaturedVenues() {
                 <h3 className="text-xl font-bold mb-2 text-foreground">{venue.name}</h3>
                 <div className="flex items-center text-muted-foreground mb-2">
                   <MapPin className="h-4 w-4 mr-1" />
-                  <span className="text-sm">{venue.address || 'Location not specified'}</span>
+                  <span className="text-sm">{venue.address || ''}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 mt-4">
-                  <div className="flex items-center text-sm text-muted-foreground">
+                  {/* <div className="flex items-center text-sm text-muted-foreground">
                     <Users className="h-4 w-4 mr-1" />
-                    <span>{venue.capacity || 'N/A'}</span>
-                  </div>
+                    {/* <span>{venue.capacity || 'N/A'}</span> */}
+                  {/* </div>  */}
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Clock className="h-4 w-4 mr-1" />
                     <span>
@@ -96,11 +101,8 @@ export default function FeaturedVenues() {
                   </div>
                 </div>
                 <div className="mt-4 flex justify-between items-center">
-                  <div>
-                    <span className="text-green-600 font-bold text-lg">
-                      Rs. {venue.pricePerHour || venue.price || 'N/A'}
-                    </span>
-                    <span className="text-muted-foreground text-sm">/hour</span>
+                  <div className="text-sm text-muted-foreground">
+                    {venue.city || ''}
                   </div>
                   {venue.surfaceType && (
                     <Badge variant="outline" className="border-green-600 text-green-600 bg-green-50 dark:bg-green-950">
