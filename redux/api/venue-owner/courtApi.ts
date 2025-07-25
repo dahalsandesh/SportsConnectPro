@@ -23,9 +23,22 @@ export const courtApi = baseApi.injectEndpoints({
             userId = userData.userId || '';
           }
         }
+        
+        // Use the full URL to ensure it's not overridden
+        const url = "/web/api/v1/venue/GetCourt";
+        const params = { userId };
+        
+        // Debug logging
+        console.log('Fetching venue owner courts with URL:', url);
+        console.log('Using params:', params);
+        
         return {
-          url: "/web/api/v1/venue/GetCourt",
-          params: { userId }
+          url,
+          params,
+          // Ensure this request is not cached or overridden
+          headers: {
+           Authorization: `token ${localStorage.getItem('token')}`,
+          }
         };
       },
       providesTags: (result) =>

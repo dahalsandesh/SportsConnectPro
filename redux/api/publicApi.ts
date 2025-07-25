@@ -108,12 +108,26 @@ const publicApi = baseApi.injectEndpoints({
       }),
       providesTags: (result, error, id) => [{ type: "Venues", id }],
     }),
-    getCourts: builder.query<any[], void>({
-      query: () => "/web/api/v1/GetCourt",
+    // Public courts endpoint - using different tag type to avoid conflicts with venue-owner courts
+    // Get public courts
+    getPublicCourts: builder.query<Court[], { venueId?: string }>({
+      query: (params) => ({
+        url: "/web/api/v1/GetCourt",
+        params,
+      }),
       providesTags: (result) =>
         result
-          ? [...result.map((court: any) => ({ type: 'Courts' as const, id: court.courtID })), { type: 'Courts', id: 'LIST' }]
-          : [{ type: 'Courts', id: 'LIST' }],
+          ? [...result.map((court) => ({ type: 'PublicCourts' as const, id: court.courtID })), { type: 'PublicCourts', id: 'LIST' }]
+          : [{ type: 'PublicCourts', id: 'LIST' }],
+    }),
+    
+    // Get single court by ID (public)
+    getPublicCourtById: builder.query<Court, string>({
+      query: (courtId) => ({
+        url: "/web/api/v1/GetCourtById",
+        params: { courtId },
+      }),
+      providesTags: (result, error, id) => [{ type: 'PublicCourts', id }],
     }),
     getCourtById: builder.query<any, string>({
       query: (courtId) => ({
@@ -199,6 +213,7 @@ const publicApi = baseApi.injectEndpoints({
 });
 
 // Export the API slice and its hooks
+// Export hooks with their original names
 export const {
   useGetPaymentTypesQuery,
   useGetCountDataQuery,
@@ -212,11 +227,15 @@ export const {
   useGetPublicReelByIdQuery,
   useGetVenuesQuery,
   useGetVenueByIdQuery,
-  useGetCourtsQuery,
-  useGetCourtByIdQuery,
+  useGetPublicCourtsQuery,
+  useGetPublicCourtByIdQuery,
   useGetRecommendedPostsQuery,
   useCreateBookingMutation,
 } = publicApi;
+
+// For backward compatibility, export aliases for the courts queries
+export const useGetCourtsQuery = useGetPublicCourtsQuery;
+export const useGetCourtByIdQuery = useGetPublicCourtByIdQuery;
 
 export { publicApi };
 export default publicApi;

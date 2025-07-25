@@ -1,15 +1,56 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import { ChevronRight } from "lucide-react"
-import VenueRegistrationForm from "@/components/venue-registration-form"
-import Image from "next/image"
+"use client";
 
-export const metadata: Metadata = {
-  title: "Register Your Venue | FutsalConnectPro",
-  description: "Register your futsal venue on our platform and increase your bookings",
-}
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import VenueRegistrationForm from "@/components/venue-registration-form";
+import Image from "next/image";
+import { Loader2 } from "lucide-react";
+
+// Metadata is now handled through a metadata export in a layout or page config
+// since this is a client component, we'll use a layout file for metadata
 
 export default function RegisterVenuePage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if user is logged in by checking localStorage
+    const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    
+    if (!user) {
+      // Show toast message
+      toast({
+        title: "Authentication Required",
+        description: "You need to be logged in to register a venue.",
+        variant: "default",
+      });
+      
+      // Redirect to login with callback URL after a small delay
+      const timer = setTimeout(() => {
+        router.push(`/login?redirect=${encodeURIComponent('/register-venue')}`);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+    
+    setIsLoading(false);
+  }, [router, toast]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section with Background Image */}
@@ -34,27 +75,42 @@ export default function RegisterVenuePage() {
           </div>
 
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Register Your Futsal Venue</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+              Register Your Venue
+            </h1>
             <p className="text-xl text-green-100 max-w-2xl mx-auto mb-8">
-              Join our platform and increase your bookings. Easy management, more visibility, and secure payments.
+              Join our platform and increase your bookings. Easy management,
+              more visibility, and secure payments.
             </p>
 
             {/* Benefits Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
                 <div className="text-3xl mb-3">📈</div>
-                <h3 className="text-lg font-semibold mb-2 text-white">Increase Bookings</h3>
-                <p className="text-green-100 text-sm">Reach more customers and boost your revenue</p>
+                <h3 className="text-lg font-semibold mb-2 text-white">
+                  Increase Bookings
+                </h3>
+                <p className="text-green-100 text-sm">
+                  Reach more customers and boost your revenue
+                </p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
                 <div className="text-3xl mb-3">⚡</div>
-                <h3 className="text-lg font-semibold mb-2 text-white">Easy Management</h3>
-                <p className="text-green-100 text-sm">Streamlined booking and venue management</p>
+                <h3 className="text-lg font-semibold mb-2 text-white">
+                  Easy Management
+                </h3>
+                <p className="text-green-100 text-sm">
+                  Streamlined booking and venue management
+                </p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
                 <div className="text-3xl mb-3">💳</div>
-                <h3 className="text-lg font-semibold mb-2 text-white">Secure Payments</h3>
-                <p className="text-green-100 text-sm">Safe and reliable payment processing</p>
+                <h3 className="text-lg font-semibold mb-2 text-white">
+                  Secure Payments
+                </h3>
+                <p className="text-green-100 text-sm">
+                  Safe and reliable payment processing
+                </p>
               </div>
             </div>
           </div>
@@ -71,7 +127,9 @@ export default function RegisterVenuePage() {
           {/* Additional Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
             <div className="bg-card border border-border rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-4 text-foreground">Why Choose Us?</h3>
+              <h3 className="text-xl font-semibold mb-4 text-foreground">
+                Why Choose Us?
+              </h3>
               <ul className="space-y-3 text-muted-foreground">
                 <li className="flex items-start">
                   <span className="text-green-600 mr-2">✓</span>
@@ -93,7 +151,9 @@ export default function RegisterVenuePage() {
             </div>
 
             <div className="bg-card border border-border rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-4 text-foreground">Getting Started</h3>
+              <h3 className="text-xl font-semibold mb-4 text-foreground">
+                Getting Started
+              </h3>
               <div className="space-y-3 text-muted-foreground">
                 <div className="flex items-start">
                   <span className="bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">
@@ -125,5 +185,5 @@ export default function RegisterVenuePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

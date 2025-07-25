@@ -53,6 +53,11 @@ const sidebarItems = [
     icon: <Trophy className="h-5 w-5" />,
   },
   {
+    title: "Registered Users",
+    href: "/venue-owner/registered-users",
+    icon: <Users className="h-5 w-5" />,
+  },
+  {
     title: "Posts & News",
     href: "/venue-owner/posts",
     icon: <NewspaperIcon className="h-5 w-5" />,
