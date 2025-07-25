@@ -288,7 +288,7 @@ export function VenueOwnerHeader() {
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              {/* <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+              <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                 <Avatar className="h-9 w-9">
                   {user.profileImage ? (
                     <AvatarImage
@@ -300,7 +300,7 @@ export function VenueOwnerHeader() {
                     {initials}
                   </AvatarFallback>
                 </Avatar>
-              </Button> */}
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>
