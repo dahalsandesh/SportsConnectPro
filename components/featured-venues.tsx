@@ -70,11 +70,11 @@ export default function FeaturedVenues() {
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
-                <div className="absolute top-2 left-2">
+                {/* <div className="absolute top-2 left-2">
                   <Badge variant="outline" className="text-xs bg-primary/10 hover:bg-primary/20">
                     View Venue
                   </Badge>
-                </div>
+                </div> */}
                 <div className="absolute top-2 right-2">
                   <Badge className="bg-green-600 text-white border-0 shadow-md">
                     <Star className="h-3 w-3 mr-1 fill-current" />

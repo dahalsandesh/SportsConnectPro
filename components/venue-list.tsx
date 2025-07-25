@@ -72,12 +72,12 @@ export default function VenueList({ venues = [] }: VenueListProps) {
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
-                <Badge 
+                {/* <Badge 
                   variant="outline" 
                   className="text-xs bg-primary/10 hover:bg-primary/20 absolute top-2 left-2"
                 >
                   View Venue
-                </Badge>
+                </Badge> */}
                 <div className="absolute top-2 right-2">
                   <Badge className="bg-green-600 text-white border-0 shadow-md">
                     <Star className="h-3 w-3 mr-1 fill-current" />
