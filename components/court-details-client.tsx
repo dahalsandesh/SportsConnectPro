@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useGetCourtByIdQuery } from "@/redux/api/publicApi";
+import { useGetPublicCourtByIdQuery } from "@/redux/api/publicApi";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,7 +10,7 @@ import PublicBookingCalendar from "@/components/public-booking-calendar";
 import { Users, Clock, MapPin, Star, ChevronRight } from "lucide-react";
 
 export default function CourtDetailsClient({ courtId }: { courtId: string }) {
-  const { data: court, isLoading, isError } = useGetCourtByIdQuery(courtId);
+  const { data: court, isLoading, isError } = useGetPublicCourtByIdQuery(courtId);
   const fallbackImage =
     "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=400&h=300&fit=crop&crop=center";
 

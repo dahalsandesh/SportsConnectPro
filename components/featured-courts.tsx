@@ -11,7 +11,7 @@ const fallbackImages = [
 ];
 
 export default function FeaturedCourts() {
-  const { data: courts = [], isLoading, isError } = useGetCourtsQuery();
+  const { data: courts = [], isLoading, isError } = useGetCourtsQuery({});
 
   if (isLoading) {
     return (

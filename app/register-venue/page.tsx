@@ -1,16 +1,56 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import VenueRegistrationForm from "@/components/venue-registration-form";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Register Your Venue | FutsalConnectPro",
-  description:
-    "Register your futsal venue on our platform and increase your bookings",
-};
+// Metadata is now handled through a metadata export in a layout or page config
+// since this is a client component, we'll use a layout file for metadata
 
 export default function RegisterVenuePage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if user is logged in by checking localStorage
+    const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    
+    if (!user) {
+      // Show toast message
+      toast({
+        title: "Authentication Required",
+        description: "You need to be logged in to register a venue.",
+        variant: "default",
+      });
+      
+      // Redirect to login with callback URL after a small delay
+      const timer = setTimeout(() => {
+        router.push(`/login?redirect=${encodeURIComponent('/register-venue')}`);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+    
+    setIsLoading(false);
+  }, [router, toast]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section with Background Image */}
