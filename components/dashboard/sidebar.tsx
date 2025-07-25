@@ -12,9 +12,9 @@ export function DashboardSidebar() {
   return (
     <aside className="hidden w-64 flex-col border-r bg-muted/40 lg:flex">
       <div className="flex h-14 items-center border-b px-4">
-        <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
-          <span className="text-primary">Sports</span>
-          <span>Connect</span>
+        <Link href="/" className="flex items-center gap-2 font-semibold">
+          <span className="text-primary">SportsConnect</span>
+          <span>Pro</span>
         </Link>
       </div>
       <div className="flex-1 overflow-auto py-4">
