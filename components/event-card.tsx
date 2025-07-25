@@ -56,7 +56,7 @@ export default function EventCard({ event, className }: EventCardProps) {
     >
       <div className="relative h-48 w-full">
         <Image
-          src={event.image || "/event-placeholder.jpg"}
+          src={getImageUrl(event.image || "/event-placeholder.jpg")}
           alt={event.title}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"

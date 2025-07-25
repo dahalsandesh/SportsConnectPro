@@ -8,6 +8,7 @@ import { Loader2, Edit, MapPin, Phone, Mail, Clock, PlusCircle, Image as ImageIc
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useGetVenueDetailsQuery, useUpdateVenueDetailsMutation, useUploadVenueImageMutation, useDeleteVenueImageMutation } from "@/redux/api/venue-owner/venueApi";
+import { getImageUrl } from '@/lib/image-utils';
 import { useGetCourtsQuery } from "@/redux/api/venue-owner/courtApi";
 import EditVenueDialog from "./EditVenueDialog";
 
@@ -234,22 +235,6 @@ export default function VenueCardWithCourts() {
                 </label>
               </div>
             </div>
-            {venueImages.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {venueImages.map((image: any) => (
-                  <div key={image.id} className="relative group">
-                    <div className="aspect-video rounded-md overflow-hidden bg-gray-100">
-                      <img
-                        src={image.image}
-                        alt={`Venue ${venueName}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <button
-                      onClick={() => handleDeleteImage(image.id)}
-                      className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Delete image"
-                    >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -349,26 +334,43 @@ export default function VenueCardWithCourts() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {courts.map((court: any) => (
-                <Card key={court.courtId} className="p-4 hover:shadow-md transition-shadow">
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-start">
-                      <h4 className="font-medium text-lg">{court.courtName}</h4>
-                      <Badge variant={court.isActive ? "default" : "secondary"}>
-                        {court.isActive ? "Active" : "Inactive"}
-                      </Badge>
+                <Card key={court.id}>
+                  <CardHeader>
+                    <CardTitle>{court.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium">Address</p>
+                          <p className="text-sm text-muted-foreground">{court.address}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <Phone className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium">Phone</p>
+                          <p className="text-sm text-muted-foreground">{court.phoneNumber}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <Clock className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium">Opening Hours</p>
+                          <p className="text-sm text-muted-foreground">
+                            {court.openingTime && court.closingTime 
+                              ? `${court.openingTime} - ${court.closingTime}`
+                              : 'Not specified'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <p className="font-medium">Description</p>
+                        <p className="text-sm text-muted-foreground">{court.desc}</p>
+                      </div>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {court.surfaceType} • Capacity: {court.capacity}
-                    </p>
-                    <p className="text-sm font-medium">
-                      ${court.hourlyRate}/hour
-                    </p>
-                    {court.desc && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {court.desc}
-                      </p>
-                    )}
-                  </div>
+                  </CardContent>
                 </Card>
               ))}
             </div>

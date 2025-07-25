@@ -229,7 +229,7 @@ const VenueNewsMedia: React.FC = () => {
                     />
                   ) : (
                     <img
-                      src={post.mediaUrl}
+                      src={getImageUrl(post.mediaUrl)}
                       alt={post.title}
                       className="w-full h-full object-cover"
                     />

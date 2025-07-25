@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Users, Star } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { getImageUrl } from "@/lib/image-utils";
 
 export interface Court {
   courtID: string;
@@ -46,7 +47,7 @@ export default function CourtCard({
     >
       <div className="relative h-48">
         <Image
-          src={imageUrl}
+          src={getImageUrl(imageUrl)}
           alt={court.name}
           fill
           className="object-cover"

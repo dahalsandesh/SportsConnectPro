@@ -70,7 +70,7 @@ export default function CourtDetailsClient({ courtId }: { courtId: string }) {
           <div className="grid grid-cols-1 gap-4">
             {images.slice(0, 1).map((img: any, idx: number) => (
               <div key={idx} className="relative h-64 w-full rounded-lg overflow-hidden">
-                <Image src={img.image} alt={court.name} fill className="object-cover" />
+                <Image src={getImageUrl(img.image)} alt={court.name} fill className="object-cover" />
               </div>
             ))}
           </div>

@@ -3,6 +3,7 @@ import type { Post, Reel, Court, Event, TimeSlot, PaymentType } from '@/types/ap
 
 // Create the public API slice
 const publicApi = baseApi.injectEndpoints({
+  tagTypes: ['PublicCourts'],
   overrideExisting: true,
   endpoints: (builder) => ({
 

@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { getImageUrl } from '@/lib/image-utils';
 import Link from "next/link";
 import { MapPin, Phone, Mail, Clock, Star, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -125,7 +126,7 @@ export default function VenueDetailsClient({ venueId }: { venueId: string }) {
         <div className="w-full md:w-2/3 grid grid-cols-2 gap-2">
           {venueImages.map((img: string, idx: number) => (
             <div key={idx} className="relative h-40 w-full rounded-lg overflow-hidden">
-              <Image src={img} alt={venue.name} fill className="object-cover" />
+              <Image src={getImageUrl(img)} alt={venue.name} fill className="object-cover" />
             </div>
           ))}
         </div>

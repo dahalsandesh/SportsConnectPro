@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { Geolocation, PermissionStatus as GeoPermissionStatus } from '@capacitor/geolocation';
 import { useGetVenuesQuery } from '@/redux/api/publicApi';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,6 +10,7 @@ import { MapPin, Navigation, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Image from 'next/image';
+import { getImageUrl } from '@/lib/image-utils';
 
 interface Venue {
   venueID: string;
@@ -53,31 +56,75 @@ export default function NearestVenues() {
   const { data: venues = [], isLoading: isLoadingVenues } = useGetVenuesQuery();
 
   const getLocation = async () => {
-    if (!navigator.geolocation) {
-      setLocationError('Geolocation is not supported by your browser');
-      return;
-    }
-
     setIsLoadingLocation(true);
     setLocationError(null);
 
-    // First check if we have permission
-    let permissionStatus: PermissionStatus;
+    // Helper to handle errors consistently
+    const fail = (error: any) => {
+      handleGeolocationError(error);
+      setIsLoadingLocation(false);
+    };
+
+    // Check if running on Capacitor native platform (iOS/Android)
+    if (Capacitor.isNativePlatform()) {
+      try {
+        // Always request permission before accessing location
+        const permStatus = await Geolocation.requestPermissions();
+        if (
+          permStatus.location === 'denied' ||
+          permStatus.location === 'restricted' ||
+          permStatus.location === 'prompt'
+        ) {
+          throw {
+            code: 'PERMISSION_DENIED',
+            message: 'Location permission not granted. Please enable location access in your app settings.'
+          };
+        }
+        // Now get current position
+        const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 10000 });
+        if (!position?.coords?.latitude || !position?.coords?.longitude) {
+          throw {
+            code: 'POSITION_UNAVAILABLE',
+            message: 'Could not retrieve coordinates from device.'
+          };
+        }
+        setUserLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        setShowNearestVenues(true);
+        setIsLoadingLocation(false);
+        return;
+      } catch (error: any) {
+        // If plugin is not implemented (e.g., running in browser), fallback to browser geolocation
+        if (error?.code === 'UNIMPLEMENTED') {
+          // Fallback to browser geolocation below
+        } else {
+          // Log error for debugging
+          console.error('Capacitor geolocation error:', error);
+          fail(error);
+          return;
+        }
+      }
+      // If UNIMPLEMENTED, fall through to browser geolocation
+    }
+
+    // Fallback: Web (browser)
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by your browser or this environment.');
+      setIsLoadingLocation(false);
+      return;
+    }
     try {
-      // Using the Permissions API if available
+      let permissionStatus: PermissionStatus;
       if (navigator.permissions) {
         permissionStatus = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
       } else {
-        // Fallback for browsers that don't support permissions API
         permissionStatus = { state: 'prompt' } as PermissionStatus;
       }
-
-      // If permission was previously denied, show specific message
       if (permissionStatus.state === 'denied') {
-        throw new Error('PERMISSION_DENIED');
+        throw { code: 'PERMISSION_DENIED', message: 'PERMISSION_DENIED' };
       }
-
-      // Request location
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUserLocation({
@@ -87,34 +134,52 @@ export default function NearestVenues() {
           setShowNearestVenues(true);
           setIsLoadingLocation(false);
         },
-        (error) => {
-          handleGeolocationError(error);
-        },
+        (error) => fail(error),
         {
           enableHighAccuracy: true,
           timeout: 10000,
-          maximumAge: 0
+          maximumAge: 0,
         }
       );
     } catch (error) {
-      handleGeolocationError(error);
+      fail(error);
     }
   };
 
   const handleGeolocationError = (error: any) => {
-    let errorMessage = 'Unable to retrieve your location. ';
-    
-    if (error.code === error.PERMISSION_DENIED || error.message === 'PERMISSION_DENIED') {
-      errorMessage = 'Location permission is required to find nearby venues. Please enable location access in your browser settings and try again.';
-    } else if (error.code === error.POSITION_UNAVAILABLE) {
-      errorMessage = 'Your position is currently unavailable. Please check your internet connection and try again.';
-    } else if (error.code === error.TIMEOUT) {
-      errorMessage = 'The request to get your location timed out. Please try again.';
+    let errorMessage = 'Unable to retrieve your location.';
+    // Normalize error code for Capacitor and browser
+    const code = error?.code || error?.message || error;
+    if (
+      code === 'PERMISSION_DENIED' ||
+      code === 1 ||
+      code === 'permission_denied' ||
+      code === 'PERMISSION_DENIED_ERROR'
+    ) {
+      errorMessage =
+        'Location permission is required to find nearby venues. Please enable location access in your app or browser settings and try again.';
+    } else if (code === 2 || code === 'POSITION_UNAVAILABLE') {
+      errorMessage =
+        'Your position is currently unavailable. Please check your internet connection and try again.';
+    } else if (code === 3 || code === 'TIMEOUT') {
+      errorMessage =
+        'The request to get your location timed out. Please try again.';
+    } else if (code === 'UNIMPLEMENTED') {
+      errorMessage =
+        'Geolocation is not available in this environment. Please use a supported device or browser.';
+    } else if (typeof error === 'object' && Object.keys(error).length === 0) {
+      errorMessage =
+        'An unknown error occurred. Please ensure your device/location settings are enabled and try again.';
+    } else if (typeof error === 'string') {
+      errorMessage = error;
     } else {
-      errorMessage = 'An error occurred while trying to get your location. Please try again later.';
+      errorMessage =
+        'An error occurred while trying to get your location. Please try again later.';
     }
-    
     console.error('Geolocation error:', error);
+    if (typeof window !== 'undefined') {
+      alert('Geolocation error: ' + JSON.stringify(error));
+    }
     setLocationError(errorMessage);
     setIsLoadingLocation(false);
   };
@@ -227,18 +292,18 @@ export default function NearestVenues() {
               <Card key={venue.venueID} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 <div className="relative h-48 w-full">
                   {venue.venueImages?.length > 0 ? (
-                    <Image
-                      src={venue.venueImages[0].image}
-                      alt={venue.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center">
-                      <MapPin className="h-12 w-12 text-muted-foreground/50" />
-                    </div>
-                  )}
+  <Image
+    src={getImageUrl(venue.venueImages[0].image)}
+    alt={venue.name}
+    fill
+    className="object-cover"
+    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  />
+) : (
+  <div className="w-full h-full bg-muted flex items-center justify-center">
+    <MapPin className="h-12 w-12 text-muted-foreground/50" />
+  </div>
+)}
                   <div className="absolute bottom-2 right-2 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm font-medium">
                     {venue.distance} km away
                   </div>

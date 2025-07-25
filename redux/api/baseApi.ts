@@ -3,7 +3,7 @@ import type { RootState } from "../store/reducers"
 
 // Get base URL from environment variables with fallback
 export const getBaseUrl = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_HOST || 'http://10.0.2.2:8000';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://192.168.18.250:8000';
   // Ensure the URL has a protocol and doesn't end with a slash
   let url = baseUrl.trim();
   if (!url.startsWith('http')) {
@@ -105,7 +105,8 @@ export const baseApi = createApi({
     "VenueImages",
     "VenuePaymentMethods",
     "SecretKey",
-    "RegisteredEvents"
+    "RegisteredEvents",
+    "PublicCourts"
   ],
   endpoints: () => ({}),
 })

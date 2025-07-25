@@ -8,24 +8,27 @@ const API_BASE_URL = 'http://192.168.18.250:8000';
 export const getImageUrl = (imagePath: string | null | undefined): string => {
   if (!imagePath) return '';
   
-  // If it's already a full URL, ensure it's using the correct base
-  if (imagePath.startsWith('http')) {
-    // Replace any localhost or 127.0.0.1 with the correct IP
-    const url = new URL(imagePath);
-    if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
-      // Use the API URL from environment
-      url.hostname = process.env.NEXT_PUBLIC_API_URL ? new URL(process.env.NEXT_PUBLIC_API_URL).hostname : url.hostname;
-      url.hostname = '192.168.18.250';
-      url.port = '8000';
-      return url.toString();
-    }
+  // Handle case where the URL already contains the correct IP
+  if (imagePath.includes('192.168.18.250')) {
     return imagePath;
   }
   
-  // Remove any leading slashes to prevent double slashes
+  // Handle localhost and 127.0.0.1 URLs
+  if (imagePath.includes('localhost') || imagePath.includes('127.0.0.1')) {
+    return imagePath
+      .replace('http://localhost:8000', 'http://192.168.18.250:8000')
+      .replace('http://127.0.0.1:8000', 'http://192.168.18.250:8000');
+  }
+  
+  // If it's a full URL that doesn't need modification
+  if (imagePath.startsWith('http')) {
+    return imagePath;
+  }
+  
+  // For relative paths
   const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
   
-  // If it's a path containing 'media', use it as is
+  // If it's already a full path with media
   if (cleanPath.includes('media/')) {
     return `${API_BASE_URL}/${cleanPath}`;
   }
