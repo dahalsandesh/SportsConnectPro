@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   authors: [{ name: "SportConnect Pro Team" }],
   creator: "SportConnect Pro",
   publisher: "SportConnect Pro",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_HOST || "http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_HOST),
     generator: 'v0.dev'
 }
 

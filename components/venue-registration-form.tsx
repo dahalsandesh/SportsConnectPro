@@ -59,7 +59,7 @@ export default function VenueRegistrationForm() {
   useEffect(() => {
     const token = localStorage.getItem('token')
     
-    fetch('http://localhost:8000/web/api/v1/user/GetCity', {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/web/api/v1/user/GetCity`, {
       headers: {
         Authorization: `token ${token}`,
       },
@@ -180,7 +180,7 @@ export default function VenueRegistrationForm() {
         const user = JSON.parse(userStr);
         
         // Submit basic info
-        const response = await fetch('http://127.0.0.1:8000/web/api/v1/user/CreateVenueApplication', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/web/api/v1/user/CreateVenueApplication`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -240,7 +240,7 @@ export default function VenueRegistrationForm() {
           formDataUpload.append('businessFile', files.businessFile);
         }
         
-        const response = await fetch('http://127.0.0.1:8000/web/api/v1/user/UploadVenueApplicationDoc', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/web/api/v1/user/UploadVenueApplicationDoc`, {
           method: 'POST',
           headers: {
             'Authorization': `token ${localStorage.getItem('token')}`

@@ -13,6 +13,8 @@ export const getImageUrl = (imagePath: string | null | undefined): string => {
     // Replace any localhost or 127.0.0.1 with the correct IP
     const url = new URL(imagePath);
     if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+      // Use the API URL from environment
+      url.hostname = process.env.NEXT_PUBLIC_API_URL ? new URL(process.env.NEXT_PUBLIC_API_URL).hostname : url.hostname;
       url.hostname = '192.168.18.250';
       url.port = '8000';
       return url.toString();
