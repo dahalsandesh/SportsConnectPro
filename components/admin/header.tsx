@@ -250,16 +250,16 @@ export function AdminHeader() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/admin/profile" className="cursor-pointer">
+                  {/* <Link href="/admin/profile" className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
-                  </Link>
+                  </Link> */}
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/admin/settings" className="cursor-pointer">
+                  {/* <Link href="/admin/settings" className="cursor-pointer">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
-                  </Link>
+                  </Link> */}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem

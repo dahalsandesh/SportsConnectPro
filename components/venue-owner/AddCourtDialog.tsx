@@ -134,7 +134,7 @@ export function AddCourtDialog({ open, onOpenChange, venueId, onSuccess }: AddCo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Add New Court</DialogTitle>
           <DialogDescription>
@@ -143,7 +143,7 @@ export function AddCourtDialog({ open, onOpenChange, venueId, onSuccess }: AddCo
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 overflow-y-auto pr-2 max-h-[calc(90vh-200px)]">
             <FormField
               control={form.control}
               name="courtName"
@@ -256,13 +256,8 @@ export function AddCourtDialog({ open, onOpenChange, venueId, onSuccess }: AddCo
               )}
             />
             
-            <DialogFooter className="gap-2 sm:gap-0">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={isSubmitting}
-              >
+            <DialogFooter className="pt-4 border-t sticky bottom-0 bg-background">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>

@@ -11,17 +11,13 @@ interface Venue {
   venueID: string;
   name: string;
   venueImages: Array<{ image: string }>;
+  address?: string;
+  city?: string;
+  openingTime?: string | null;
+  closingTime?: string | null;
+  description?: string;
   rating?: number;
   reviews?: number;
-  location?: string;
-  city?: string;
-  pricePerHour?: number;
-  price?: number; // Some components might use price instead of pricePerHour
-  openingTime?: string;
-  closingTime?: string;
-  address?: string; // For location display
-  capacity?: number; // For venue capacity
-  surface?: string; // Court surface type
 }
 
 interface VenueListProps {
@@ -64,7 +60,7 @@ export default function VenueList({ venues = [] }: VenueListProps) {
         const image =
           venue.venueImages && venue.venueImages.length > 0
             ? venue.venueImages[0].image
-            : fallbackImages[i % fallbackImages.length] || "/placeholder.svg";
+            : "/placeholder.svg";
         return (
           <Link href={`/venues/${venue.venueID}`} key={venue.venueID}>
             <Card className="overflow-hidden h-full transition-all duration-300 hover:scale-[1.02] hover:shadow-xl bg-card border-border">
@@ -76,6 +72,12 @@ export default function VenueList({ venues = [] }: VenueListProps) {
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
+                {/* <Badge 
+                  variant="outline" 
+                  className="text-xs bg-primary/10 hover:bg-primary/20 absolute top-2 left-2"
+                >
+                  View Venue
+                </Badge> */}
                 <div className="absolute top-2 right-2">
                   <Badge className="bg-green-600 text-white border-0 shadow-md">
                     <Star className="h-3 w-3 mr-1 fill-current" />
@@ -99,31 +101,23 @@ export default function VenueList({ venues = [] }: VenueListProps) {
                     </div>
                   )}
                 </div>
-                <div className="grid grid-cols-2 gap-2 mt-4">
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Users className="h-4 w-4 mr-1" />
-                    <span>{venue.capacity || "N/A"}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4 mr-1" />
-                    <span>
-                      {venue.openingTime || "N/A"} -{" "}
-                      {venue.closingTime || "N/A"}
-                    </span>
-                  </div>
+                <div className="flex items-center text-sm text-muted-foreground mt-2">
+                  <Clock className="h-4 w-4 mr-1 flex-shrink-0" />
+                  <span className="truncate">
+                    {venue.openingTime && venue.closingTime 
+                      ? `${venue.openingTime} - ${venue.closingTime}` 
+                      : 'Check availability'}
+                  </span>
                 </div>
                 <div className="mt-4 flex justify-between items-center">
-                  <div>
-                    <span className="text-green-600 font-bold text-lg">
-                      Rs. {venue.price || "N/A"}
-                    </span>
-                    <span className="text-muted-foreground text-sm">/hour</span>
+                  <div className="text-sm text-muted-foreground">
+                    {venue.city || ''}
                   </div>
-                  <Badge
+                  {/* <Badge
                     variant="outline"
                     className="border-green-600 text-green-600 bg-green-50 dark:bg-green-950">
                     {venue.surface || "N/A"}
-                  </Badge>
+                  </Badge> */}
                 </div>
               </CardContent>
             </Card>

@@ -45,30 +45,30 @@ export const dashboardNavItems: NavItem[] = [
   //   href: "/dashboard/profile",
   //   icon: UserIcon,
   // },
-  {
-    title: "Help",
-    href: "/dashboard/help",
-    icon: Settings,
-  },
+  // {
+  //   title: "Help",
+  //   href: "/dashboard/help",
+  //   icon: Settings,
+  // },
 ]
 
 export const dashboardHeaderConfig = {
   logo: {
-    text: "Sports Connect",
-    href: "/dashboard",
+    text: "SportsConnect Pro",
+    href: "/",
   },
   navItems: dashboardNavItems,
   userMenu: {
-    profile: {
-      label: "Profile",
-      href: "/dashboard/profile",
-      icon: UserIcon,
-    },
-    settings: {
-      label: "Settings",
-      href: "/dashboard/settings",
-      icon: Settings,
-    },
+    // profile: {
+    //   label: "Profile",
+    //   href: "/dashboard/profile",
+    //   icon: UserIcon,
+    // },
+    // settings: {
+    //   label: "Settings",
+    //   href: "/dashboard/settings",
+    //   icon: Settings,
+    // },
     logout: {
       label: "Log out",
       icon: LogOut,

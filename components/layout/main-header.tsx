@@ -266,10 +266,10 @@ export function MainHeader() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard/settings" className="cursor-pointer">
+                      {/* <Link href="/dashboard/settings" className="cursor-pointer">
                         <Settings className="mr-2 h-4 w-4" />
                         <span>Settings</span>
-                      </Link>
+                      </Link> */}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -370,13 +370,13 @@ export function MainHeader() {
                         <Calendar className="mr-2 h-4 w-4" />
                         My Bookings
                       </Link>
-                      <Link
+                      {/* <Link
                         href="/dashboard/settings"
                         className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent transition-colors"
                       >
                         <Settings className="mr-2 h-4 w-4" />
                         Settings
-                      </Link>
+                      </Link> */}
                       <button
                         onClick={handleLogout}
                         className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent text-left w-full transition-colors text-destructive"

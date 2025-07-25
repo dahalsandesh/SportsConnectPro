@@ -1,0 +1,45 @@
+/* Make the progress bar thicker and green */
+#nprogress {
+  pointer-events: none;
+  position: relative;
+  z-index: 9999;
+}
+
+#nprogress .bar {
+  background: #10b981 !important; /* Using your theme's green color */
+  position: fixed;
+  z-index: 1031;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px !important; /* Thicker bar */
+  border-radius: 0 2px 2px 0;
+}
+
+/* Fancy blur effect */
+#nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0px;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px #10b981, 0 0 5px #10b981;
+  opacity: 1;
+  transform: rotate(3deg) translate(0px, -4px);
+}
+
+/* Optional: Hide the spinner */
+#nprogress .spinner {
+  display: none !important;
+}
+
+/* Optional: Add a subtle animation to the progress bar */
+@keyframes nprogress-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+#nprogress .bar {
+  animation: nprogress-pulse 2s ease-in-out infinite;
+}

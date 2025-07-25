@@ -315,16 +315,16 @@ export function VenueOwnerHeader() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/venue-owner/profile" className="cursor-pointer">
+                {/* <Link href="/venue-owner/profile" className="cursor-pointer">
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
-                </Link>
+                </Link> */}
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/venue-owner/settings" className="cursor-pointer">
+                {/* <Link href="/venue-owner/settings" className="cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
-                </Link>
+                </Link> */}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSecretKeyDialogOpen(true)}

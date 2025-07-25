@@ -106,6 +106,8 @@ export const baseApi = createApi({
     "VenuePaymentMethods",
     "SecretKey",
     "RegisteredEvents",
+    
+    // Public API tags
     "PublicCourts"
   ],
   endpoints: () => ({}),
