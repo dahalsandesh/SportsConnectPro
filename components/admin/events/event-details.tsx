@@ -14,7 +14,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ eventId }) => {
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-2">{data.title}</h2>
-      <img src={data.image} alt={data.title} className="w-full max-w-md mb-4 rounded" />
+      <img src={getImageUrl(data.image)} alt={data.title} className="w-full max-w-md mb-4 rounded" />
       <div className="mb-2"><b>Date:</b> {data.date} <b>Time:</b> {data.time}</div>
       <div className="mb-2"><b>Max Seats:</b> {data.maxSeat}</div>
     </div>

@@ -1,6 +1,7 @@
 "use client"
 import Image from "next/image"
 import Link from "next/link"
+import { getImageUrl } from "@/lib/image-utils";
 import { MapPin, Star, Users, Clock } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -55,9 +56,9 @@ export default function FeaturedVenues() {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {featuredVenues.map((venue, index) => {
         // Use venue image if available, otherwise use fallback
-        const imageUrl = venue.venueImages?.[0]?.image || 
-                        fallbackImages[index % fallbackImages.length] || 
-                        "/placeholder.svg"
+        const imageUrl = venue.venueImages?.[0]?.image ?
+          getImageUrl(venue.venueImages[0].image) :
+          (fallbackImages[index % fallbackImages.length] || "/placeholder.svg");
                         
         return (
           <Link href={`/venues/${venue.venueID}`} key={venue.venueID}>

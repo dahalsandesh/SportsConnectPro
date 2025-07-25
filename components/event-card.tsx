@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-utils";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users } from "lucide-react";

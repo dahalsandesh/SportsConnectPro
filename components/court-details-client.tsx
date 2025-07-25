@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-utils";
 import Link from "next/link";
 import { useGetPublicCourtByIdQuery } from "@/redux/api/publicApi";
 import { Badge } from "@/components/ui/badge";

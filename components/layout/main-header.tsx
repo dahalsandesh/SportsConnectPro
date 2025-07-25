@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useAppSelector } from "@/hooks/redux"
-import { UserType } from "@/types/auth"
-import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useAppSelector } from "@/hooks/redux";
+import { UserType } from "@/types/auth";
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,8 +14,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Menu,
   User,
@@ -30,14 +30,20 @@ import {
   HelpCircle,
   Building2,
   ChevronDown,
-} from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { useLogoutMutation } from "@/redux/api/common/authApi"
-import { logout } from "@/redux/features/authSlice"
-import { useAppDispatch } from "@/hooks/redux"
-import { useToast } from "@/components/ui/use-toast"
-import { ThemeToggle } from "@/components/theme-toggle"
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { useLogoutMutation } from "@/redux/api/common/authApi";
+import { logout } from "@/redux/features/authSlice";
+import { useAppDispatch } from "@/hooks/redux";
+import { useToast } from "@/components/ui/use-toast";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const mainNavItems = [
   {
@@ -82,64 +88,66 @@ const mainNavItems = [
     href: "/public-reels",
     // icon: <Building2 className="h-4 w-4 mr-2" />,
   },
-]
+];
 
 export function MainHeader() {
-  const [isMounted, setIsMounted] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth)
-  const dispatch = useAppDispatch()
-  const pathname = usePathname()
-  const { toast } = useToast()
-  const [logoutApi] = useLogoutMutation()
+  const [isMounted, setIsMounted] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const pathname = usePathname();
+  const { toast } = useToast();
+  const [logoutApi] = useLogoutMutation();
 
   useEffect(() => {
-    setIsMounted(true)
-    return () => setIsMounted(false)
-  }, [])
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
 
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogout = async () => {
     try {
-      await logoutApi().unwrap()
-      dispatch(logout())
+      await logoutApi().unwrap();
+      dispatch(logout());
       toast({
         title: "Logged out",
         description: "You have been logged out successfully",
-      })
+      });
     } catch (error) {
-      console.error("Logout failed:", error)
-      dispatch(logout())
+      console.error("Logout failed:", error);
+      dispatch(logout());
     }
-  }
+  };
 
   // Get user initials for avatar
   const initials = user?.fullName
-    ? `${user.fullName.split(" ")[0][0]}${user.fullName.split(" ")[1]?.[0] || ""}`
-    : user?.userName?.[0] || "U"
+    ? `${user.fullName.split(" ")[0][0]}${
+        user.fullName.split(" ")[1]?.[0] || ""
+      }`
+    : user?.userName?.[0] || "U";
 
   // Determine dashboard link based on user type
   const getDashboardLink = () => {
-    if (!isAuthenticated) return "/login"
+    if (!isAuthenticated) return "/login";
 
     switch (user?.userType) {
       case UserType.Admin:
-        return "/admin"
+        return "/admin";
       case UserType.VenueOwner:
-        return "/venue-owner"
+        return "/venue-owner";
       default:
-        return "/dashboard"
+        return "/dashboard";
     }
-  }
+  };
 
   return (
     <header
@@ -147,7 +155,7 @@ export function MainHeader() {
         "sticky top-0 z-50 w-full transition-all duration-300 border-b",
         "bg-background/95 backdrop-blur-md shadow-sm border-border/40",
         // Ensure visibility and prevent horizontal scroll
-        "visible opacity-100 block overflow-x-hidden",
+        "visible opacity-100 block overflow-x-hidden"
       )}
       style={{
         visibility: "visible",
@@ -165,15 +173,21 @@ export function MainHeader() {
               className="flex items-center space-x-1 focus-ring rounded-md p-1"
               style={{ visibility: "visible", opacity: 1 }}
             >
-              <span className="text-lg sm:text-xl font-bold text-primary">Sport</span>
-              <span className="text-lg sm:text-xl font-bold text-foreground">Connect</span>
-              <span className="text-lg sm:text-xl font-bold text-primary">Pro</span>
+              <span className="text-lg sm:text-xl font-bold text-primary">
+                Sport
+              </span>
+              <span className="text-lg sm:text-xl font-bold text-foreground">
+                Connect
+              </span>
+              <span className="text-lg sm:text-xl font-bold text-primary">
+                Pro
+              </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
-            {mainNavItems.map((item) => (
+            {mainNavItems.map((item) =>
               item.dropdown ? (
                 <DropdownMenu key={item.title}>
                   <DropdownMenuTrigger asChild>
@@ -181,7 +195,10 @@ export function MainHeader() {
                       className={cn(
                         "text-sm font-medium transition-colors hover:text-primary focus-ring rounded-md px-3 py-2 flex items-center gap-1",
                         "text-foreground/70 hover:text-primary",
-                        pathname.startsWith('/public-posts') || pathname.startsWith('/public-reels') ? "text-primary font-semibold" : ""
+                        pathname.startsWith("/public-posts") ||
+                          pathname.startsWith("/public-reels")
+                          ? "text-primary font-semibold"
+                          : ""
                       )}
                     >
                       {item.icon}
@@ -189,10 +206,20 @@ export function MainHeader() {
                       <ChevronDown className="h-4 w-4 ml-1" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="bg-background border-border text-foreground shadow-lg rounded-md">
+                  <DropdownMenuContent
+                    align="start"
+                    className="bg-background border-border text-foreground shadow-lg rounded-md"
+                  >
                     {item.dropdown.map((sub) => (
-                      <DropdownMenuItem asChild key={sub.href} className="hover:bg-accent hover:text-primary focus:bg-accent focus:text-primary">
-                        <Link href={sub.href} className="block w-full px-4 py-2 text-sm">
+                      <DropdownMenuItem
+                        asChild
+                        key={sub.href}
+                        className="hover:bg-accent hover:text-primary focus:bg-accent focus:text-primary"
+                      >
+                        <Link
+                          href={sub.href}
+                          className="block w-full px-4 py-2 text-sm"
+                        >
                           {sub.title}
                         </Link>
                       </DropdownMenuItem>
@@ -205,14 +232,16 @@ export function MainHeader() {
                   href={item.href}
                   className={cn(
                     "text-sm font-medium transition-colors hover:text-primary focus-ring rounded-md px-3 py-2",
-                    pathname === item.href ? "text-primary font-semibold" : "text-foreground/70 hover:text-primary",
+                    pathname === item.href
+                      ? "text-primary font-semibold"
+                      : "text-foreground/70 hover:text-primary"
                   )}
                   style={{ visibility: "visible", opacity: 1 }}
                 >
                   {item.title}
                 </Link>
               )
-            ))}
+            )}
           </nav>
 
           {/* Desktop Auth Buttons */}
@@ -231,7 +260,10 @@ export function MainHeader() {
                 </Button> */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-2 h-9 px-2 focus-ring">
+                    <Button
+                      variant="ghost"
+                      className="flex items-center gap-2 h-9 px-2 focus-ring"
+                    >
                       <Avatar className="h-7 w-7">
                         <AvatarFallback className="bg-primary text-primary-foreground text-xs font-medium">
                           {initials}
@@ -249,18 +281,26 @@ export function MainHeader() {
                         <p className="text-sm font-medium leading-none text-foreground">
                           {user?.fullName || user?.userName}
                         </p>
-                        <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user?.email}
+                        </p>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href={getDashboardLink()} className="cursor-pointer">
+                      <Link
+                        href={getDashboardLink()}
+                        className="cursor-pointer"
+                      >
                         <User className="mr-2 h-4 w-4" />
                         <span>Dashboard</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard/bookings" className="cursor-pointer">
+                      <Link
+                        href="/dashboard/bookings"
+                        className="cursor-pointer"
+                      >
                         <Calendar className="mr-2 h-4 w-4" />
                         <span>My Bookings</span>
                       </Link>
@@ -284,16 +324,19 @@ export function MainHeader() {
               </>
             ) : (
               <>
-                <Link 
-                  href="/login" 
-                  className={buttonVariants({ variant: 'ghost', className: 'h-9' })}
+                <Link
+                  href="/login"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    className: "h-9",
+                  })}
                 >
                   <LogIn className="mr-2 h-4 w-4" />
                   Log in
                 </Link>
-                <Link 
-                  href="/signup" 
-                  className={buttonVariants({ className: 'h-9 text-white' })}
+                <Link
+                  href="/signup"
+                  className={buttonVariants({ className: "h-9 text-white" })}
                 >
                   <User className="mr-2 h-4 w-4" />
                   Sign up
@@ -312,14 +355,18 @@ export function MainHeader() {
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent 
-                side="right" 
+              <SheetContent
+                side="right"
                 className="w-[280px] sm:w-[320px] p-0 flex flex-col"
               >
                 <SheetHeader className="p-4 border-b border-border">
                   <SheetTitle className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-primary">Sport</span>
-                    <span className="text-lg font-bold text-foreground">Connect</span>
+                    <span className="text-lg font-bold text-primary">
+                      Sport
+                    </span>
+                    <span className="text-lg font-bold text-foreground">
+                      Connect
+                    </span>
                     <span className="text-lg font-bold text-primary">Pro</span>
                   </SheetTitle>
                 </SheetHeader>
@@ -332,7 +379,7 @@ export function MainHeader() {
                         "flex items-center text-sm font-medium transition-colors hover:text-primary p-2 rounded-md",
                         pathname === item.href
                           ? "bg-accent text-primary font-semibold"
-                          : "text-foreground/70 hover:text-primary",
+                          : "text-foreground/70 hover:text-primary"
                       )}
                     >
                       {item.icon}
@@ -341,66 +388,75 @@ export function MainHeader() {
                   ))}
                   <div className="h-px bg-border my-2" />
                   <div className="space-y-2">
-                  {isAuthenticated ? (
-                    <>
-                      <div className="flex items-center gap-4 p-2">
-                        <Avatar className="h-10 w-10">
-                          <AvatarFallback className="bg-primary text-primary-foreground font-medium">
-                            {initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium text-foreground">
-                            {user?.fullName || user?.userName}
-                          </span>
-                          <span className="text-xs text-muted-foreground">{user?.email}</span>
+                    {isAuthenticated ? (
+                      <>
+                        <div className="flex items-center gap-4 p-2">
+                          <Avatar className="h-10 w-10">
+                            <AvatarFallback className="bg-primary text-primary-foreground font-medium">
+                              {initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium text-foreground">
+                              {user?.fullName || user?.userName}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {user?.email}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                      <Link
-                        href={getDashboardLink()}
-                        className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent transition-colors"
-                      >
-                        <User className="mr-2 h-4 w-4" />
-                        Dashboard
-                      </Link>
-                      <Link
-                        href="/dashboard/bookings"
-                        className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent transition-colors"
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        My Bookings
-                      </Link>
-                      {/* <Link
+                        <Link
+                          href={getDashboardLink()}
+                          className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent transition-colors"
+                        >
+                          <User className="mr-2 h-4 w-4" />
+                          Dashboard
+                        </Link>
+                        <Link
+                          href="/dashboard/bookings"
+                          className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent transition-colors"
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          My Bookings
+                        </Link>
+                        {/* <Link
                         href="/dashboard/settings"
                         className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent transition-colors"
                       >
                         <Settings className="mr-2 h-4 w-4" />
                         Settings
                       </Link> */}
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent text-left w-full transition-colors text-destructive"
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Log out
-                      </button>
-                    </>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      <Button asChild variant="outline" className="w-full justify-start">
-                        <Link href="/login">
-                          <LogIn className="mr-2 h-4 w-4" />
-                          Log in
-                        </Link>
-                      </Button>
-                      <Button asChild className="w-full justify-start">
-                        <Link href="/signup">
-                          <User className="mr-2 h-4 w-4" />
-                          Sign up
-                        </Link>
-                      </Button>
-                    </div>
-                  )}
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center text-sm font-medium p-2 rounded-md hover:bg-accent text-left w-full transition-colors text-destructive"
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Log out
+                        </button>
+                      </>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="w-full justify-start"
+                        >
+                          <Link href="/login">
+                            <LogIn className="mr-2 h-4 w-4" />
+                            Log in
+                          </Link>
+                        </Button>
+                        <Button
+                          asChild
+                          className="w-full justify-start text-white"
+                        >
+                          <Link href="/signup">
+                            <User className="mr-2 h-4 w-4" />
+                            Sign up
+                          </Link>
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </nav>
               </SheetContent>
@@ -409,5 +465,5 @@ export function MainHeader() {
         </div>
       </div>
     </header>
-  )
+  );
 }

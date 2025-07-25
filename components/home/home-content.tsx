@@ -4,6 +4,7 @@ import { useGetCountDataQuery, useGetEventsQuery } from "@/redux/api/publicApi";
 import { format } from "date-fns";
 import Link from "next/link";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-utils";
 import { ArrowRight, Calendar, Users, MapPin, Trophy, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -68,7 +69,7 @@ const EventCard = ({ event }: EventCardProps) => {
     >
       <div className="relative h-48 w-full">
         <Image
-          src={event.image || "/placeholder.svg"}
+          src={getImageUrl(event.image) || "/placeholder.svg"}
           alt={event.title}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"

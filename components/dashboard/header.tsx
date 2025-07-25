@@ -147,6 +147,45 @@ export function DashboardHeader() {
                     })}
                   </div>
                 </nav>
+                {/* Add avatar/profile button to mobile menu */}
+                <div className="flex items-center gap-3 border-t p-4 mt-auto">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="relative">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src="" alt={user?.fullName} />
+                          <AvatarFallback>
+                            {user?.fullName
+                              ?.split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        {/* <Link href="/dashboard/profile" className="flex items-center w-full">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Profile</span>
+                        </Link> */}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        {/* <Link href="/dashboard/settings" className="flex items-center w-full">
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Settings</span>
+                        </Link> */}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             </SheetContent>
           </Sheet>
@@ -154,7 +193,7 @@ export function DashboardHeader() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="relative w-64">
+          <div className="relative w-64 hidden sm:block">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
@@ -179,7 +218,14 @@ export function DashboardHeader() {
                   ) : null}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-80 max-h-[80vh] overflow-y-auto p-0" align="end">
+              <DropdownMenuContent 
+                className="w-80 max-h-[80vh] overflow-y-auto p-0" 
+                align="end"
+                sideOffset={8}
+                alignOffset={-10}
+                side="bottom"
+                collisionPadding={16}
+              >
                 <div className="flex items-center justify-between p-3 border-b">
                   <h3 className="font-semibold text-sm">Notifications</h3>
                   <Button 

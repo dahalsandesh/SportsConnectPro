@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://192.168.18.250:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://192.168.18.250:8000';
 
 /**
  * Constructs a proper image URL from the backend response

@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-utils";
 import { ArrowRight, Calendar, Users, MapPin } from "lucide-react";
 import { format } from "date-fns";
+import EventCard from "@/components/event-card"; // Use the shared EventCard
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,58 +41,7 @@ interface EventCardProps {
   event: SportsEvent;
 }
 
-const EventCard = ({ event }: EventCardProps) => {
-  const formattedDate = event.date ? format(new Date(event.date), 'MMM d, yyyy') : 'TBD';
-  const formattedTime = event.time ? format(new Date(`2000-01-01T${event.time}`), 'h:mm a') : '';
 
-  return (
-    <Link
-      href={`/events/${event.eventId}`}
-      className="block focus:outline-none focus:ring-2 focus:ring-green-600 rounded-lg group"
-    >
-      <Card className="h-full overflow-hidden transition-transform duration-200 group-hover:shadow-lg group-hover:-translate-y-1">
-        <div className="relative h-48">
-          <Image
-            src={event.image || "/placeholder.svg"}
-            alt={event.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-          <Badge className="absolute top-2 left-2 bg-green-600 text-white">
-            Event
-          </Badge>
-        </div>
-        <CardHeader>
-          <CardTitle className="text-xl line-clamp-2 h-14">{event.title}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="flex items-center text-muted-foreground">
-            <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
-            <span className="text-sm">
-              {formattedDate} {formattedTime && `• ${formattedTime}`}
-            </span>
-          </div>
-          {event.location && (
-            <div className="flex items-center text-muted-foreground">
-              <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span className="text-sm line-clamp-1">{event.location}</span>
-            </div>
-          )}
-          <div className="flex items-center text-muted-foreground">
-            <Users className="h-4 w-4 mr-2 flex-shrink-0" />
-            <span className="text-sm">Max Seats: {event.maxSeat || 'N/A'}</span>
-          </div>
-        </CardContent>
-        <CardFooter className="pt-2">
-          <Button size="sm" className="w-full bg-green-600 hover:bg-green-700 text-white">
-            View Details
-          </Button>
-        </CardFooter>
-      </Card>
-    </Link>
-  );
-};
 
 export default function DynamicHomeContent() {
   const {

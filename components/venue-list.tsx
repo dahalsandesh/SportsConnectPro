@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-utils";
 import Link from "next/link";
 import { MapPin, Star, Users, Clock, Navigation } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -59,7 +60,7 @@ export default function VenueList({ venues = [] }: VenueListProps) {
       {venues.map((venue: Venue, i: number) => {
         const image =
           venue.venueImages && venue.venueImages.length > 0
-            ? venue.venueImages[0].image
+            ? getImageUrl(venue.venueImages[0].image)
             : "/placeholder.svg";
         return (
           <Link href={`/venues/${venue.venueID}`} key={venue.venueID}>

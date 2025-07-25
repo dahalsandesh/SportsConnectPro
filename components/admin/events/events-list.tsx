@@ -35,7 +35,7 @@ const EventsList: React.FC<EventsListProps> = ({ onView }) => {
               events.map((event) => (
                 <tr key={event.eventId}>
                   <td className="px-4 py-2">
-                    <img src={event.image} alt={event.title} className="w-24 h-16 object-cover rounded" />
+                    <img src={getImageUrl(event.image)} alt={event.title} className="w-24 h-16 object-cover rounded" />
                   </td>
                   <td className="px-4 py-2">{event.title}</td>
                   <td className="px-4 py-2">{event.date}</td>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Trophy, Users, ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-utils";
 import Link from "next/link";
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState, use } from 'react';
@@ -134,7 +135,7 @@ export default function EventDetailPage({
           <div>
             <div className="relative h-64 w-full rounded-lg overflow-hidden mb-6">
               <Image
-                src={event.image || "/event-placeholder.jpg"}
+                src={getImageUrl(event.image || "/event-placeholder.jpg")}
                 alt={event.title}
                 fill
                 className="object-cover"
