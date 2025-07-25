@@ -221,7 +221,7 @@ export function EditCourtDialog({ open, onOpenChange, court, venueId, onSuccess 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Edit Court</DialogTitle>
           <DialogDescription>
@@ -230,7 +230,7 @@ export function EditCourtDialog({ open, onOpenChange, court, venueId, onSuccess 
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 overflow-y-auto pr-2 max-h-[calc(90vh-200px)]">
             <div className="space-y-4">
 
               <FormField
@@ -425,27 +425,25 @@ export function EditCourtDialog({ open, onOpenChange, court, venueId, onSuccess 
               />
             </div>
             
-            <DialogFooter className="gap-2 sm:gap-0">
-              <div className="flex items-center justify-end w-full space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    'Save Changes'
-                  )}
-                </Button>
-              </div>
+            <DialogFooter className="pt-4 border-t sticky bottom-0 bg-background">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  'Update Court'
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>
