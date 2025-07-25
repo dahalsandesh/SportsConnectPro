@@ -69,11 +69,11 @@ export const sidebarItems: SidebarItem[] = [
     href: "/admin/posts",
     icon: <Newspaper className="h-5 w-5" />,
   },
-  {
-    title: "Reports",
-    href: "/admin/reports",
-    icon: <BarChart className="h-5 w-5" />,
-  },
+  // {
+  //   title: "Reports",
+  //   href: "/admin/reports",
+  //   icon: <BarChart className="h-5 w-5" />,
+  // },
   {
     title: "Reels",
     href: "/admin/reels",
